@@ -89,6 +89,19 @@
   .nav-neu .plus { font-size: 16px; font-weight: 800; line-height: 1; }
   .navfoot { margin: 0 0 10px; display: flex; flex-direction: column; gap: 8px; }
   .reife-legende { color: var(--fg-muted); font-size: 12.5px; margin-top: 12px; }
+  /* Freie Fläche in Schritt 1, solange kein Steckbrief offen ist */
+  .leer-kopf { font-family: var(--display); font-size: 19px; font-weight: 700; color: var(--fg); margin-bottom: 7px; }
+  .leer-text { color: var(--fg-2); font-size: 14.5px; line-height: 1.5; max-width: 58ch; }
+  .leer-aktion { margin-top: 20px; }
+  .leer-liste { border-top: 1px solid var(--line); }
+  .leer-zeile { display: flex; align-items: baseline; gap: 12px; width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 12px 2px; cursor: pointer; font: inherit; }
+  .leer-zeile:hover { background: var(--blau-10); }
+  .leer-name { font-family: var(--display); font-weight: 700; font-size: 14.5px; color: var(--fg); }
+  .leer-fehlt { color: var(--fg-muted); font-size: 13px; margin-left: auto; }
+  .leer-kicker { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--fg); margin: 26px 0 10px; }
+  .leer-schritte { counter-reset: leerschritt; }
+  .leer-schritt { counter-increment: leerschritt; position: relative; padding: 9px 0 9px 34px; border-top: 1px solid var(--line); color: var(--fg-2); font-size: 14.5px; }
+  .leer-schritt::before { content: counter(leerschritt); position: absolute; left: 4px; top: 9px; font-family: var(--display); font-size: 12.5px; font-weight: 800; color: var(--blau-40); font-variant-numeric: tabular-nums; }
 
   .steckbrief { background: var(--weiss); border-radius: 8px; box-shadow: 0 18px 44px rgba(13,12,43,.06); padding: clamp(20px, 2.6vw, 30px); }
   .sb-kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 4px; }
@@ -916,7 +929,10 @@
       const nummer = parseInt(String(x.id).replace(/\D/g, ''), 10);
       if (Number.isFinite(nummer) && nummer >= naechsteExtern) naechsteExtern = nummer + 1;
     });
-    offenId = S.vorhaben.length ? S.vorhaben[0].id : null;
+    // Schritt 1 startet ohne geöffneten Steckbrief: Wer ankommt, sieht erst die
+    // Vorhaben der Abteilung und den Weg, eins einzutragen. Ein vorausgewähltes
+    // Vorhaben behauptet, dieses sei das erste, um das es geht.
+    offenId = null;
   }
   function speichern() {
     try { localStorage.setItem(SPEICHER, JSON.stringify(S)); } catch (fehler) { /* Privatmodus */ }
@@ -944,8 +960,9 @@
       offenId = el.dataset.nav;
       renderErfassen();
     }));
-    const reif = S.vorhaben.filter(istReif).length;
-    document.getElementById('reifeLegende').textContent = `${reif} von ${S.vorhaben.length} Steckbriefen sind vollständig. Gefüllter Punkt heißt: die Runde kann damit arbeiten.`;
+    // Der Zähler steht seit Entscheidung 53 auf der freien Fläche, hier bliebe
+    // er doppelt. Was der Punkt bedeutet, sagt die Legende weiter.
+    document.getElementById('reifeLegende').textContent = 'Gefüllter Punkt heißt: die Runde kann damit arbeiten.';
   }
 
   // Der Balken zeigt Bestandteile und Summe in einem. Die Zahl steht nie allein
@@ -1029,10 +1046,41 @@
     </div>`;
   }
 
+  // Die freie Fläche in Schritt 1, solange kein Steckbrief offen ist. Sie liegt
+  // auf derselben weißen Fläche wie der Steckbrief, damit die Ansicht beim
+  // Öffnen nicht springt und kein zweites Kartenmuster entsteht.
+  // Sie beantwortet die Frage, die beim Ankommen wirklich ansteht: Wo stehen
+  // wir mit dem Ausfüllen? Und sie führt in genau das Vorhaben, dem noch
+  // Antworten fehlen. Dieselbe Logik wie die Arbeitszone in Schritt 2:
+  // sichtbar machen, dann hinführen (Entscheidung 53).
+  function steckbriefLeer() {
+    const offen = S.vorhaben.filter(x => !istReif(x));
+    const reif = S.vorhaben.length - offen.length;
+    return `<div class="steckbrief">
+      <p class="leer-kopf">Womit fangt ihr an?</p>
+      <p class="leer-text">${reif} von ${S.vorhaben.length} Steckbriefen sind vollständig. Mit den anderen kann die Runde noch nicht arbeiten.</p>
+      <button class="btn primary leer-aktion" type="button" id="leerNeu">Vorhaben eintragen</button>
+      ${offen.length ? `<p class="leer-kicker">Hier fehlen noch Antworten</p>
+      <div class="leer-liste">${offen.map(x => `<button class="leer-zeile" type="button" data-oeffne="${x.id}">
+        <span class="leer-name">${esc(x.name)}</span>
+        <span class="leer-fehlt">${esc(luecken(x).join(', '))}</span>
+      </button>`).join('')}</div>` : ''}
+    </div>`;
+  }
+
   function renderSteckbrief() {
     const wurzel = document.getElementById('steckbrief');
     const v = nachId(offenId);
-    if (!v) { wurzel.innerHTML = '<div class="steckbrief"><p class="lane-leer">Links ein Vorhaben anlegen.</p></div>'; return; }
+    if (!v) {
+      wurzel.innerHTML = steckbriefLeer();
+      const knopf = document.getElementById('leerNeu');
+      if (knopf) knopf.addEventListener('click', () => document.getElementById('neuZeigen').click());
+      wurzel.querySelectorAll('[data-oeffne]').forEach(el => el.addEventListener('click', () => {
+        offenId = el.dataset.oeffne;
+        renderErfassen();
+      }));
+      return;
+    }
     const lf = IST_LEITUNGSFALL(v.leitung);
 
     wurzel.innerHTML = `<div class="steckbrief">
@@ -1232,7 +1280,9 @@
       S.vorhaben = S.vorhaben.filter(eintrag => eintrag.id !== v.id);
       // Verweise auf das entfernte Vorhaben gehen mit, sonst zeigen Chips ins Leere
       S.vorhaben.forEach(x => { x.haengtAn = (x.haengtAn || []).filter(a => !(a.typ === 'v' && a.id === v.id)); });
-      offenId = S.vorhaben.length ? S.vorhaben[0].id : null;
+      // Nach dem Entfernen kein Nachrücken: die freie Fläche zeigt den Stand,
+      // statt stumm den nächsten Steckbrief zu öffnen.
+      offenId = null;
       speichern();
       renderErfassen();
     });
@@ -1792,7 +1842,7 @@
     document.getElementById('reset').addEventListener('click', () => {
       if (!confirm('Alle Eingaben verwerfen und die Beispieldaten wiederherstellen?')) return;
       S = beispieldaten();
-      offenId = S.vorhaben[0].id;
+      offenId = null;
       aktivId = null;
       speichern();
       wechsle(ansicht);
