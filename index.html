@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio-Priorisierung v3, interner Prototyp</title>
+<style>
+  @font-face {
+    font-family: 'Open Sans';
+    src: url('assets/fonts/OpenSans-Variable.ttf') format('truetype');
+    font-weight: 300 800; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'BundesSans';
+    src: url('assets/fonts/BundesSans-Web-Regular.woff2') format('woff2');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  :root {
+    --blau: #36349D; --minze: #4DFFB0; --kirsche: #DB0045;
+    --lavendel: #E3E6F2; --weiss: #FFFFFF; --dunkel: #0D0C2B;
+    --blau-10: #EEEEF9; --blau-20: #C5C4EA; --blau-40: #8B89CF; --blau-60: #5957B4;
+    --minze-40: #96FFD9; --kirsche-60: #E84070;
+    /* Kirsche zweimal: der helle Ton trägt auf dunklem Grund und in Flächen,
+       der dunkle trägt als Text auf Weiß (dort hält #E84070 die 4,5:1 nicht). */
+    --kirsche-text: #C4003F;
+    /* fg-muted eine Stufe dunkler als AA verlangt (5,7:1 auf blau-10): Hilfetexte
+       müssen auch über Screenshare und Beamer lesbar bleiben (Monday, 05.08.). */
+    --fg: var(--dunkel); --fg-2: #4A4869; --fg-muted: #5B5985;
+    --line: rgba(54,52,157,0.15);
+    /* Eigene Kante für Eingabefelder: dunkel genug, dass sie auf Weiß und auf
+       Blau-10 die 3:1 für Bedienelemente hält, hell genug, um ruhig zu bleiben. */
+    --feldkante: #7A78BC;
+    --display: 'Open Sans', system-ui, sans-serif;
+    --body: 'BundesSans', 'Open Sans', system-ui, sans-serif;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* Ein sichtbarer Fokus für alles Bedienbare. Auf der dunklen Leiste minze,
+     sonst blau. Einzelne Felder überschreiben das weiter unten. */
+  :focus-visible { outline: 2px solid var(--blau); outline-offset: 2px; }
+  header.top :focus-visible, .schritte :focus-visible, .budget :focus-visible { outline-color: var(--minze); }
+  html { -webkit-font-smoothing: antialiased; }
+  body { font-family: var(--body); color: var(--fg); background: var(--blau-10); line-height: 1.55; font-size: 15px; }
+  ::selection { background: var(--minze); color: var(--dunkel); }
+  h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.14; }
+
+  /* Kopf: eine Zeile. Die Schritte stehen als Pillen in der Mitte, als
+     Unterstrich-Tabs unter dem Schriftzug gingen sie unter. Der Schriftzug
+     ist der Rückweg zu Schritt 1, einen eigenen Start gibt es nicht. */
+  header.top { background: var(--dunkel); color: var(--weiss); padding: 12px clamp(16px, 4vw, 40px); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .brand { background: none; border: 0; cursor: pointer; padding: 0; text-align: left; color: var(--weiss); font-family: var(--display); font-weight: 800; font-size: 16px; }
+  .brand .pg { color: var(--blau-20); font-weight: 600; }
+  /* Leise Pille statt Minze-Fläche: das Abzeichen ist eine Fußnote, kein
+     Feature, und Minze verliert damit eine ihrer zu vielen Bedeutungen. */
+  .mock-badge { font-family: var(--display); font-size: 12px; font-weight: 700; letter-spacing: .03em; color: var(--blau-20); background: transparent; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: 4px 10px; }
+  .schritte { display: flex; gap: 3px; background: rgba(255,255,255,.09); border-radius: 999px; padding: 3px; }
+  .schritt { background: transparent; border: 0; border-radius: 999px; cursor: pointer; font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--blau-20); padding: 8px 16px; display: flex; gap: 8px; align-items: baseline; }
+  .schritt .nr { font-size: 11.5px; font-weight: 800; color: var(--blau-40); }
+  .schritt:hover { color: var(--weiss); }
+  .schritt[aria-current="true"] { background: var(--weiss); color: var(--dunkel); }
+  .schritt[aria-current="true"] .nr { color: var(--blau); }
+
+  .buehne { max-width: 1180px; margin: 0 auto; padding: clamp(22px, 3.4vw, 38px) clamp(16px, 4vw, 24px) 80px; }
+  .anriss { max-width: 620px; margin-bottom: clamp(20px, 3vw, 30px); }
+  .anriss h1 { font-size: clamp(24px, 3.6vw, 32px); margin-bottom: 8px; }
+  .anriss p { color: var(--fg-2); font-size: 15.5px; }
+
+  /* Ansicht 1: Erfassen */
+  .erfassen { display: grid; grid-template-columns: 268px minmax(0, 1fr); gap: clamp(18px, 2.6vw, 32px); align-items: start; }
+  .nav-sp { position: sticky; top: 16px; }
+  /* Unter dieser Breite reicht der Platz nicht für zwei Spalten, sonst
+     schrumpft der Steckbrief auf Fingerbreite zusammen. */
+  @media (max-width: 760px) { .erfassen { grid-template-columns: 1fr; } .nav-sp { position: static; } }
+  .nav-kopf { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 8px; }
+  .nav-item { display: flex; align-items: center; gap: 9px; width: 100%; background: transparent; border: 0; border-radius: 6px; cursor: pointer; text-align: left; padding: 11px 10px; margin-bottom: 2px; }
+  .nav-item:hover { background: rgba(255,255,255,.6); }
+  .nav-item[aria-current="true"] { background: var(--weiss); box-shadow: 0 6px 18px rgba(13,12,43,.07); }
+  .nav-name { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+  .reife { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .reife.fertig { background: var(--blau); }
+  /* Gestrichelt heißt unfertig (wie auf den Kacheln), aber kräftig genug,
+     dass man den Unterschied nicht suchen muss */
+  .reife.entwurf { border: 2px dashed var(--blau-60); }
+  /* Anlegen steht oben in der Liste: Position statt Gewicht. Die Zeile wird
+     erst auf Klick zum Formular, ein dauerhaft leeres Eingabefeld sähe nach
+     Formular aus. */
+  .nav-neu { display: flex; align-items: center; gap: 9px; width: 100%; background: transparent; border: 0; border-radius: 6px; cursor: pointer; text-align: left; padding: 11px 10px; margin-bottom: 8px; font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--blau); }
+  .nav-neu:hover { background: rgba(255,255,255,.6); }
+  .nav-neu .plus { font-size: 16px; font-weight: 800; line-height: 1; }
+  .navfoot { margin: 0 0 10px; display: flex; flex-direction: column; gap: 8px; }
+  .reife-legende { color: var(--fg-muted); font-size: 12.5px; margin-top: 12px; }
+
+  .steckbrief { background: var(--weiss); border-radius: 8px; box-shadow: 0 18px 44px rgba(13,12,43,.06); padding: clamp(20px, 2.6vw, 30px); }
+  .sb-kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 4px; }
+  .steckbrief input.sb-titel { font-family: var(--display); font-weight: 700; font-size: 21px; border: 0; border-bottom: 1.5px solid transparent; background: transparent; color: var(--fg); width: 100%; max-width: 560px; padding: 2px 0; }
+  /* Der Titel bleibt eine Überschrift und bekommt keine Feldfläche. Damit man
+     trotzdem merkt, dass er editierbar ist, zeigt er die Kante beim Überfahren. */
+  .steckbrief input.sb-titel:hover { border-bottom-color: var(--blau-20); }
+  .steckbrief input.sb-titel:focus { outline: none; border-bottom-color: var(--blau); }
+  .sb-schritt { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); }
+
+  /* Struktur über Raum, nicht über noch eine Schriftgröße: der Block hat eine
+     Nummer in der linken Spalte, die Felder stehen eingerückt darunter. */
+  .block { display: grid; grid-template-columns: 34px minmax(0, 1fr); padding: 28px 0 4px; }
+  .block:first-of-type { padding-top: 22px; }
+  .block-nr { font-family: var(--display); font-size: 13px; font-weight: 800; color: var(--feldkante); padding-top: 4px; }
+  .frage { display: block; font-family: var(--display); font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+  .hilfe { color: var(--fg-muted); font-size: 13.5px; margin-bottom: 9px; }
+  .feld { margin-top: 18px; }
+  /* Die Beschriftung dessen, was man ausfüllen soll, steht über der Erklärung
+     dazu: gleiche Größe, aber dunkler und fett. Vorher war die Hilfe größer
+     als ihr eigenes Label. */
+  .feld > label { display: block; font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg); margin-bottom: 2px; }
+  .feld-hilfe { color: var(--fg-muted); font-size: 13px; margin-bottom: 6px; }
+  /* Ein Eingabefeld ist eine Fläche, kein Text. Immer weiß mit sichtbarer
+     Kante, damit es sich auf beiden Untergründen abhebt: auf der weißen Karte
+     über die Kante, im blau-10-Kasten zusätzlich über die Füllung.
+     Das Titelfeld ist ausgenommen, es ist die Überschrift der Karte. */
+  .steckbrief input[type="text"]:not(.sb-titel), .steckbrief select, .steckbrief textarea,
+  .pn-feld input, .navfoot input {
+    width: 100%; background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 6px;
+    color: var(--fg); font-family: var(--body); font-size: 15px; padding: 9px 12px;
+  }
+  .steckbrief input[type="text"]:not(.sb-titel):hover, .steckbrief select:hover, .steckbrief textarea:hover,
+  .pn-feld input:hover, .navfoot input:hover { border-color: var(--blau-60); }
+  .steckbrief input[type="text"]:not(.sb-titel):focus, .steckbrief select:focus, .steckbrief textarea:focus,
+  .pn-feld input:focus, .navfoot input:focus {
+    outline: 2px solid var(--blau); outline-offset: 1px; border-color: var(--blau);
+  }
+  .steckbrief select { cursor: pointer; min-height: 42px; }
+  .steckbrief textarea { min-height: 76px; resize: vertical; }
+  input.kurz { max-width: 130px !important; }
+  .zeile2 { display: flex; gap: 22px; flex-wrap: wrap; }
+  .zeile2 > * { flex: 1 1 210px; }
+  .fehlt { color: var(--kirsche-text); font-size: 13px; margin-top: 5px; }
+  .lf-kasten { background: var(--blau-10); border-radius: 6px; padding: 14px 16px 18px; margin-top: 14px; }
+  .lf-kasten .lf-titel { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--blau); margin-bottom: 2px; }
+  .lf-kasten .lf-sub { color: var(--fg-2); font-size: 13.5px; }
+
+  /* Ablesung: drei Felder in einer Zeile, alle in Worten. Kein Buchstabencode. */
+  /* Bündig mit den Feldern: die Blöcke rücken um die 34px-Nummernspalte ein,
+     die Ablesung liegt außerhalb des Rasters und muss mitziehen */
+  .ablesung { background: var(--blau-10); border-radius: 6px; padding: 16px 18px; margin-top: 22px; margin-left: 34px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+  @media (max-width: 780px) { .ablesung { grid-template-columns: 1fr; gap: 16px; } }
+  .ab-feld + .ab-feld { border-left: 1px solid var(--line); padding-left: 20px; }
+  @media (max-width: 780px) { .ab-feld + .ab-feld { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; padding-top: 14px; } }
+  .empf-label { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 6px; }
+  .empf-regel { color: var(--fg-2); font-size: 14px; }
+  .ab-wort { font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--fg); margin-bottom: 2px; }
+  .ab-wort.offen { color: var(--fg-muted); }
+  .ab-abweichung { color: var(--kirsche-text); font-size: 13px; margin-top: 5px; }
+
+  /* Der Wert sind drei Gruppen mit Lücken, kein durchgehender Balken: sechs
+     Zellen in einer Reihe lasen sich trotz Legende als Skala mit Verlauf.
+     Jede Gruppe beschriftet sich selbst mit "x von max", die Zahl tritt damit
+     weiterhin nie ohne ihre Bestandteile auf (Entscheidung 25). */
+  .sb-balken { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; }
+  .sb-gruppe { display: flex; flex-direction: column; gap: 5px; }
+  .sb-zellen { display: flex; gap: 2px; }
+  .sb-zelle { height: 14px; width: 26px; border-radius: 2px; background: var(--lavendel); }
+  .sb-zelle.folgen { background: var(--blau); }
+  .sb-zelle.leitung { background: var(--blau-60); }
+  .sb-zelle.ziel { background: var(--blau-40); }
+  .sb-label { color: var(--fg-2); font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px; }
+  .sb-label b { font-family: var(--display); font-weight: 700; }
+  .sb-label i { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; background: var(--lavendel); }
+  .sb-label.folgen i { background: var(--blau); }
+  .sb-label.leitung i { background: var(--blau-60); }
+  .sb-label.ziel i { background: var(--blau-40); }
+  .sb-summe { font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--fg); }
+  .sb-summe span { font-weight: 400; color: var(--fg-muted); font-size: 13.5px; }
+  .sb-unklar { color: var(--fg-muted); font-size: 13px; margin-top: 2px; }
+  .sb-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+
+  /* Ansicht 2: Priorisieren. Zwei Flächen insgesamt: eine dunkle Leiste, eine weiße Arbeitsfläche. */
+  .budget { background: var(--dunkel); color: var(--weiss); border-radius: 8px; padding: clamp(18px, 2.4vw, 26px) clamp(18px, 2.6vw, 30px); margin-bottom: clamp(16px, 2vw, 22px); }
+  .bd-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
+  .bd-titel { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--minze); }
+  .bd-eingabe { font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--blau-20); }
+  /* Auch auf dunklem Grund ein Feld statt einer Linie: an dieser Zahl hängt
+     der Live-Moment der Demo, sie muss als bedienbar zu erkennen sein. */
+  .bd-eingabe input { border: 1px solid rgba(255,255,255,.45); border-radius: 6px; background: rgba(255,255,255,.08); color: var(--weiss); font-family: var(--display); font-weight: 700; font-size: 15px; width: 62px; text-align: right; padding: 6px 10px; margin-left: 8px; }
+  .bd-eingabe input:hover { border-color: rgba(255,255,255,.7); }
+  .bd-eingabe input:focus { outline: 2px solid var(--minze); outline-offset: 1px; border-color: var(--minze); }
+  /* Zwei Segmente statt einem: was gedeckt ist, bleibt minze, nur der Überhang
+     wird kirsche. Die Marke sitzt genau am Farbwechsel, damit die Überbuchung
+     eine Form hat und nicht nur eine Farbe. */
+  .bd-skala { position: relative; height: 20px; border-radius: 4px; background: rgba(255,255,255,.1); margin-bottom: 26px; }
+  .bd-gedeckt { position: absolute; left: 0; top: 0; bottom: 0; background: var(--minze); border-radius: 4px 0 0 4px; transition: width .4s var(--ease); }
+  .bd-ueberhang { position: absolute; top: 0; bottom: 0; background: var(--kirsche-60); border-radius: 0 4px 4px 0; transition: width .4s var(--ease), left .4s var(--ease); }
+  .bd-marke { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--weiss); transition: left .4s var(--ease); }
+  .bd-marke b { position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%); font-family: var(--display); font-size: 11.5px; font-weight: 800; color: var(--weiss); white-space: nowrap; }
+  .bd-marke.rechts b { left: auto; right: 0; transform: none; }
+  .bd-satz { font-family: var(--display); font-size: 16px; font-weight: 700; margin-top: 13px; }
+  .bd-satz.ueber { color: var(--kirsche-60); }
+  .bd-neben { color: var(--blau-20); font-size: 14px; margin-top: 5px; }
+
+  .flaeche { background: var(--weiss); border-radius: 8px; box-shadow: 0 18px 44px rgba(13,12,43,.06); }
+  .fl-teil { padding: clamp(18px, 2.2vw, 24px) clamp(18px, 2.4vw, 26px); }
+  .fl-teil + .fl-teil { border-top: 1px solid var(--line); }
+  .bild-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+  .bild-kopf h2 { font-size: 18px; }
+  .einheit { color: var(--fg-muted); font-size: 13px; font-weight: 400; }
+  .legende { display: flex; gap: 14px; flex-wrap: wrap; color: var(--fg-muted); font-size: 12.5px; align-items: center; }
+  .lg { display: inline-flex; align-items: center; gap: 6px; }
+  .lg i { width: 13px; height: 13px; border-radius: 3px; display: inline-block; }
+  .lg i.prio { background: var(--blau); }
+  .lg i.wartet { border: 1.5px solid var(--blau-40); }
+  .lg i.nicht { background: var(--lavendel); }
+  .lg i.offen { border: 1.5px dashed var(--blau-40); }
+  .lg i.lf { background: var(--minze); width: 5px; height: 15px; border-radius: 2px; }
+  /* In der Portfolio-Sicht tragen die Bahnen den Status, die Status-Legende
+     würde dort Kachel-Codes erklären, die es in der Sicht nicht gibt. */
+  .legende.nur-lf .lg-status { display: none; }
+
+  /* Sichtwechsel */
+  .sichten { display: flex; gap: 4px; background: var(--blau-10); border-radius: 6px; padding: 3px; }
+  .sichten button { background: transparent; border: 0; border-radius: 4px; cursor: pointer; font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--fg-2); padding: 7px 13px; }
+  .sichten button:hover { color: var(--blau); }
+  .sichten button[aria-pressed="true"] { background: var(--weiss); color: var(--blau); box-shadow: 0 2px 6px rgba(13,12,43,.08); }
+
+  /* Matrix: zwei ehrliche Achsen, Felder als Fächer statt Punktwolke */
+  .mx-scroll { overflow-x: auto; padding-bottom: 4px; }
+  .mx-achse-x { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin: 2px 0 8px 158px; }
+  .matrix { display: grid; grid-template-columns: 150px repeat(4, minmax(198px, 1fr)); min-width: 940px; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+  .mx-kopf { font-family: var(--display); font-size: 12.5px; font-weight: 700; color: var(--fg-2); padding: 8px 10px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--blau-10); }
+  .mx-kopf.leer { background: transparent; }
+  .mx-zeile { font-family: var(--display); font-size: 12.5px; font-weight: 700; color: var(--fg-2); padding: 12px 10px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--blau-10); }
+  .mx-zelle { display: flex; flex-wrap: wrap; gap: 7px; align-content: flex-start; min-height: 94px; padding: 9px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  /* Die Zellen der Kandidaten-Zone haben keine eigene Füllung mehr: Rahmen,
+     Pill und Füllung zusammen waren drei Markierungen für eine Aussage.
+     Die Klasse .haus bleibt, sie benennt die Zone für Tests und Logik. */
+  /* Die Zeilen tragen nur die Vorlese-Semantik, das Raster bleibt das der Matrix */
+  .mx-reihe { display: contents; }
+  /* Die Zone ist ein eigenes Rasterfeld über den vier Zellen oben rechts.
+     Vorher war sie eine 9-Prozent-Tönung, die auf einem Beamer verschwand. */
+  .mx-zone { grid-column: 4 / 6; grid-row: 2 / 4; position: relative; z-index: 1; pointer-events: none; border: 2px solid var(--minze); border-radius: 6px; margin: -1px; }
+  .mx-zone span { position: absolute; top: -11px; right: 10px; background: var(--minze); color: var(--dunkel); font-family: var(--display); font-size: 11px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .mx-lese { color: var(--fg-2); font-size: 13.5px; margin-top: 14px; }
+  .mx-lese strong { font-family: var(--display); font-size: 13px; }
+  .mx-offen { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .mx-offen-kopf { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 8px; }
+  .mx-offen-body { display: flex; flex-wrap: wrap; gap: 7px; }
+
+  /* Abhängigkeiten-Sicht: verbundene Kacheln kommen nach vorn, der Rest tritt
+     zurück. Bewusst ohne Linien, die Positionen sind nicht stabil genug dafür. */
+  .abh-hinweis { color: var(--fg-muted); font-size: 13.5px; margin-bottom: 12px; }
+  .abh-feld { display: flex; flex-wrap: wrap; gap: 8px; }
+  #bildKoerper .abh-zurueck { opacity: .25; }
+  @keyframes abh-heben { from { transform: translateY(0); } }
+  #bildKoerper .abh-vorn { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(13,12,43,.16); animation: abh-heben .3s var(--ease); }
+
+  /* Abhängigkeiten im Steckbrief: Chips sind Verweise, das Feld darunter
+     schlägt Bestehendes vor, bevor etwas Neues entsteht */
+  .abh-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 8px; }
+  .abh-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--blau-10); border-radius: 999px; padding: 5px 6px 5px 12px; font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--fg-2); }
+  .abh-chip button { border: 0; background: transparent; cursor: pointer; color: var(--fg-muted); font-size: 15px; line-height: 1; padding: 2px 7px; border-radius: 999px; }
+  .abh-chip button:hover { background: var(--lavendel); color: var(--kirsche-text); }
+  .abh-zeile { display: flex; gap: 8px; }
+  .abh-zeile input { flex: 1; }
+
+  .lane { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px; align-items: start; border-top: 1px solid var(--line); padding: 11px 0; }
+  /* Leere Bahnen werden nicht gedimmt: sie sind die eigentliche Information
+     (Entscheidung 20). "Kein Vorhaben" steht in der Meta-Zeile wie ein Zähler. */
+  .lane-name { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--fg); }
+  .lane-meta { color: var(--fg-muted); font-size: 12.5px; }
+  .lane-sub { color: var(--fg-muted); font-size: 12.5px; margin-bottom: 2px; }
+  /* Erste Stufe der Portfolio-Sicht: der Schnitt, der Kapazität kostet.
+     Das Eingeplante bekommt eine eigene Fläche, das Nicht-Eingeplante bleibt
+     auf dem weißen Grund. Figur gegen Grund statt noch einer Farbe oder Kante.
+     In der getönten Gruppe liegen ausschließlich gefüllte Kacheln, deshalb
+     gibt es dort keine Kontrastprobleme. */
+  .pf-gruppe.gebunden { background: var(--blau-10); border-radius: 8px; padding: 15px 18px 18px; }
+  .pf-gruppe + .pf-gruppe { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .pf-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 2px; }
+  .pf-titel { font-family: var(--display); font-size: 16.5px; font-weight: 800; letter-spacing: -0.01em; color: var(--fg); }
+  .pf-titel span { font-weight: 700; color: var(--blau); font-size: 13.5px; margin-left: 8px; }
+  .pf-gruppe:not(.gebunden) .pf-titel { color: var(--fg-2); }
+  .pf-gruppe:not(.gebunden) .pf-titel span { color: var(--fg-muted); }
+  .pf-sub { color: var(--fg-muted); font-size: 13px; margin-bottom: 2px; }
+  .pf-gruppe.gebunden .lane:first-of-type { border-top: 0; padding-top: 4px; }
+  .lane-body { display: flex; gap: 8px; flex-wrap: wrap; }
+  .lane-leer { color: var(--fg-muted); font-size: 13px; padding: 6px 0; }
+  @media (max-width: 720px) { .lane { grid-template-columns: 1fr; gap: 6px; } }
+
+  .pt { position: relative; background: var(--weiss); border: 1.5px solid var(--blau-20); border-radius: 6px; cursor: pointer; text-align: left; padding: 9px 12px 8px; width: 214px; display: flex; flex-direction: column; gap: 5px; transition: transform .18s var(--ease), box-shadow .18s var(--ease); }
+  .pt:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(13,12,43,.09); }
+  .pt.aktiv { box-shadow: 0 0 0 2px var(--blau); border-color: var(--blau); }
+  .pt-name { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg); line-height: 1.28; }
+  .pt-korb { font-size: 11.5px; color: var(--fg-muted); }
+  .pt-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--fg-muted); }
+  .pt-state { font-family: var(--display); font-weight: 800; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+  .pt.prio { background: var(--blau); border-color: var(--blau); }
+  .pt.prio .pt-name, .pt.prio .pt-foot, .pt.prio .pt-state { color: var(--weiss); }
+  .pt.prio .pt-foot, .pt.prio .pt-korb { color: var(--blau-20); }
+  /* Gestrichelt heißt unfertig, wie der Punkt in der Namensliste. Die
+     Entscheidung "wartet" bekommt deshalb den soliden Umriss, "noch offen"
+     die Strichelung. Vorher war es umgekehrt und beide sahen sich zu ähnlich. */
+  .pt.wartet { border-style: solid; border-color: var(--blau-40); }
+  .pt.nicht { background: var(--lavendel); border-color: transparent; }
+  .pt.nicht .pt-name, .pt.nicht .pt-state { color: var(--fg-2); }
+  .pt.offen { border-style: dashed; border-color: var(--blau-40); background: transparent; }
+  /* Leitungsfall: Kante statt Etikett, damit die Kachel ihre Form behält */
+  .pt.lf { border-left: 5px solid var(--minze); padding-left: 9px; }
+  /* In der Portfolio-Sicht trägt die Bahn den Status, die Kacheln bleiben
+     neutral: sonst sagt jede Kachel dasselbe wie ihre Bahn in einer zweiten
+     Sprache, und fünf Kachel-Codes liegen auf einem Schirm. Nur die
+     Minze-Kante bleibt, sie trägt als einzige etwas Eigenes (Entscheidung 23).
+     Die Kante ist --feldkante, blau-20 hält auf blau-10 die 3:1 nicht. */
+  #bildKoerper.neutral .pt { background: var(--weiss); border: 1.5px solid var(--feldkante); }
+  #bildKoerper.neutral .pt .pt-name { color: var(--fg); }
+  #bildKoerper.neutral .pt .pt-state, #bildKoerper.neutral .pt .pt-foot, #bildKoerper.neutral .pt .pt-foot span { color: var(--fg-muted); }
+  #bildKoerper.neutral .pt.lf { border-left: 5px solid var(--minze); }
+
+  /* Ohne Kante links: die eigene Fläche, der Radius und die Überschrift sagen
+     schon, dass hier etwas offen ist. Die Kante war reine Dekoration. */
+  .panel { background: var(--blau-10); border-radius: 6px; padding: clamp(16px, 2.2vw, 22px) clamp(16px, 2.4vw, 24px); margin-top: 16px; }
+  .pn-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 3px; }
+  .pn-kopf h3 { font-size: 18px; }
+  .pn-empf { color: var(--fg-2); font-size: 14px; margin-bottom: 12px; }
+  .pn-wert { margin-bottom: 16px; }
+  .pn-wert .sb-summe { font-size: 14px; }
+  .wahl { display: flex; gap: 8px; flex-wrap: wrap; }
+  .wahl button { background: var(--weiss); border: 1.5px solid var(--blau-20); border-radius: 6px; cursor: pointer; font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--fg-2); padding: 10px 16px; text-align: left; }
+  .wahl button:hover { border-color: var(--blau-40); color: var(--fg); }
+  .wahl button[aria-pressed="true"] { background: var(--blau); border-color: var(--blau); color: var(--weiss); }
+  .wahl button small { display: block; font-family: var(--body); font-weight: 400; font-size: 12px; opacity: .78; }
+  .pn-landet { color: var(--fg-2); font-size: 14px; margin-top: 12px; }
+  .pn-landet strong { font-family: var(--display); }
+  .pn-feld { margin-top: 16px; max-width: 560px; }
+  .pn-feld label { display: block; font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg); margin-bottom: 4px; }
+  .pn-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+
+  .folgt-kopf { margin-bottom: 16px; }
+  .folgt-kopf h2 { font-size: 18px; }
+  .folgt-kopf p { color: var(--fg-muted); font-size: 13.5px; }
+  .zweispalt { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 34px); align-items: start; }
+  @media (max-width: 860px) { .zweispalt { grid-template-columns: 1fr; } }
+  .spalte + .spalte { border-left: 1px solid var(--line); padding-left: clamp(20px, 3vw, 34px); }
+  @media (max-width: 860px) { .spalte + .spalte { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; padding-top: 20px; } }
+  .spalte h3 { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-2); margin-bottom: 3px; }
+  .spalte .sub { color: var(--fg-muted); font-size: 13.5px; margin-bottom: 14px; }
+  /* Trennlinie oben statt Kante links, genau wie die Leitungsfälle daneben.
+     Beide Spalten von "Was daraus folgt" lesen sich damit gleich. */
+  .konflikt { border-top: 1px solid var(--line); padding: 11px 0 12px; }
+  .konflikt:first-of-type { border-top: 0; padding-top: 0; }
+  /* Die Frage zuerst: sie ist das Produkt des Spiegels, der Befund darunter
+     ihr Beleg. Vorher stand es umgekehrt, und das Auge fand keinen Anker. */
+  .konflikt .k-frage { font-family: var(--display); font-weight: 700; color: var(--fg); font-size: 14.5px; }
+  .konflikt .k-befund { color: var(--fg-muted); font-size: 13.5px; margin-top: 2px; }
+  .ruhig { color: var(--fg-muted); font-size: 14.5px; }
+  .lf-eintrag { border-top: 1px solid var(--line); padding: 11px 0 12px; }
+  .lf-eintrag:first-of-type { border-top: 0; padding-top: 0; }
+  .lf-name { font-family: var(--display); font-weight: 700; font-size: 14.5px; }
+  .lf-frage { color: var(--fg-2); font-size: 14px; margin-top: 1px; }
+  .lf-meta { color: var(--fg-muted); font-size: 12.5px; margin-top: 4px; }
+  .lf-mehr { margin-top: 4px; }
+  .lf-mehr summary { cursor: pointer; color: var(--fg-muted); font-family: var(--display); font-size: 12.5px; font-weight: 700; }
+  .lf-mehr summary:hover { color: var(--blau); }
+  .lf-mehr p { color: var(--fg-muted); font-size: 13px; margin-top: 3px; }
+  .lf-zurueck { margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--line); }
+  .lf-zurueck-kopf { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 4px; }
+
+  .btn { border: 0; border-radius: 6px; cursor: pointer; font-family: var(--display); font-size: 14.5px; font-weight: 700; padding: 11px 18px; }
+  .btn.primary { background: var(--blau); color: var(--weiss); }
+  .btn.primary:hover { background: var(--blau-60); }
+  .btn.minze { background: var(--minze); color: var(--dunkel); font-weight: 800; }
+  .btn.minze:hover { background: var(--minze-40); }
+  .btn.leise { background: var(--blau-10); color: var(--blau); }
+  .btn.leise:hover { background: var(--lavendel); }
+  .textbtn { background: none; border: 0; cursor: pointer; font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--kirsche-text); padding: 9px 0; }
+  .textbtn.blau { color: var(--blau); }
+
+  .fusszeile { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--fg-muted); font-size: 13px; }
+  .fuss-rechts { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .verborgen { display: none; }
+  /* Nur für Screenreader: die Minze-Kante allein transportiert den Leitungsfall nicht */
+  .nur-vorlesen { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+</style>
+</head>
+<body>
+<header class="top">
+  <button class="brand" type="button" id="brandHome" title="Zurück zu Schritt 1">Portfolio-Priorisierung<span class="pg" id="brandAbt"> · Abteilung</span></button>
+  <nav class="schritte">
+    <button class="schritt" type="button" data-ansicht="erfassen"><span class="nr">1</span>Vorhaben erfassen</button>
+    <button class="schritt" type="button" data-ansicht="priorisieren"><span class="nr">2</span>Portfolio entscheiden</button>
+  </nav>
+  <div class="mock-badge">Prototyp v3</div>
+</header>
+
+<div class="buehne">
+
+  <!-- Ansicht 1 -->
+  <section id="ansicht-erfassen">
+    <div class="anriss">
+      <h1>Erst beschreiben, dann entscheiden</h1>
+      <p>Pro Vorhaben ein kurzer Steckbrief, unter fünf Minuten. Hier wird noch nichts priorisiert und nichts sortiert sich um. Die Entscheidung fällt in Schritt 2, wenn alle Vorhaben nebeneinander liegen.</p>
+    </div>
+    <div class="erfassen">
+      <div class="nav-sp">
+        <p class="nav-kopf">Vorhaben der Abteilung</p>
+        <button class="nav-neu" type="button" id="neuZeigen"><span class="plus">+</span>Neues Vorhaben</button>
+        <div class="navfoot verborgen" id="neuForm">
+          <input type="text" id="neuName" placeholder="Name des Vorhabens ..." autocomplete="off" aria-label="Name des neuen Vorhabens">
+          <button class="btn minze" type="button" id="addBtn">Hinzufügen</button>
+        </div>
+        <div id="nav"></div>
+        <p class="reife-legende" id="reifeLegende"></p>
+      </div>
+      <div id="steckbrief"></div>
+    </div>
+  </section>
+
+  <!-- Ansicht 2 -->
+  <section id="ansicht-priorisieren" class="verborgen">
+    <div class="anriss">
+      <h1>Was tragen wir im nächsten Halbjahr wirklich?</h1>
+      <p>Alle Vorhaben liegen nebeneinander, geordnet nach den Zielen des Hauses. Ihr entscheidet je Vorhaben: eingeplant, wartet oder abgesagt. Die Kapazitätslinie oben zeigt, was dabei nicht mehr hineinpasst.</p>
+    </div>
+
+    <div class="budget" id="budget"></div>
+
+    <div class="flaeche">
+      <div class="fl-teil">
+        <div class="bild-kopf">
+          <h2>Das Portfolio der Abteilung <span class="einheit">Zahlen in Vollzeitäquivalenten</span></h2>
+          <div class="sichten">
+            <button type="button" data-sicht="ziele">Nach Zielen</button>
+            <button type="button" data-sicht="portfolio">Nach Portfolio</button>
+            <button type="button" data-sicht="matrix">Nach Steuerungsbedarf</button>
+            <button type="button" data-sicht="abhaengig">Abhängigkeiten</button>
+          </div>
+        </div>
+        <div class="bild-kopf">
+          <div class="legende">
+            <span class="lg lg-status"><i class="prio"></i>eingeplant</span>
+            <span class="lg lg-status"><i class="wartet"></i>wartet</span>
+            <span class="lg lg-status"><i class="nicht"></i>abgesagt</span>
+            <span class="lg lg-status"><i class="offen"></i>noch offen</span>
+            <span class="lg"><i class="lf"></i>Leitungsfall, Kandidat fürs Leitungsportfolio</span>
+          </div>
+        </div>
+        <div id="bildKoerper"></div>
+        <div id="entscheidPanel"></div>
+      </div>
+
+      <div class="fl-teil">
+        <div class="folgt-kopf">
+          <h2>Was daraus folgt</h2>
+        </div>
+        <div class="zweispalt">
+          <div class="spalte">
+            <h3>Was auffällt<span id="konflikteZahl"></span></h3>
+            <p class="sub">Das Tool bewertet nicht, es fragt nach.</p>
+            <div id="konflikte"></div>
+          </div>
+          <div class="spalte">
+            <h3>Leitungsfälle<span id="leitungsfaelleZahl"></span></h3>
+            <p class="sub">Aus den Leitungsfällen aller Abteilungen wählt das Haus sein Portfolio.</p>
+            <div id="leitungsfaelle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fusszeile">
+      <span>Interner Prototyp mit fiktiven Beispieldaten. Speichert nur lokal in diesem Browser, keine Übertragung.</span>
+      <span class="fuss-rechts">
+        <button class="btn leise" type="button" id="copy">Als Tabelle kopieren</button>
+        <button class="textbtn" type="button" id="reset">Beispieldaten wiederherstellen</button>
+      </span>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* CORE-START (reine Logik, ohne DOM) */
+
+  const WAEHLEN = 'Bitte wählen';
+
+  // Vorläufig die acht Zieldimensionen aus v1. Wenn das Haus auf vier Themenfelder
+  // mit Zielzustaenden umstellt, wird nur diese Liste ersetzt.
+  const ZIELE = ['Die große Entlastung', 'Schlanker, bürgernaher Staat', 'Klar im Gesetz', 'Bestes Netz für alle', 'Der neue Standard', 'Besser KI', 'Einfach Digital', 'Start-Up Germany'];
+  const OHNE_ZIEL = 'kein Ziel erkennbar';
+  const ZIEL_OPTIONEN = [WAEHLEN, ...ZIELE, OHNE_ZIEL];
+
+  const RUHEN = [WAEHLEN,
+    'eine Frist oder rechtliche Pflicht wird verletzt',
+    'spürbarer Schaden, Wirkung geht verloren',
+    'eine Chance verschiebt sich, kurzfristig merkt es kaum jemand',
+    'wenig, es würde auch dauerhaft kaum auffallen',
+    'wissen wir nicht'];
+
+  const LAEUFT = [WAEHLEN, 'ja, es läuft bereits', 'nein, es ist noch nicht gestartet'];
+
+  // Zwei Sachangaben aus der Gegenlese des C-Prototyps (Entscheidung 42):
+  // sie informieren die Runde und entscheiden nichts, wie der Stand
+  // (Entscheidung 34). Deshalb weder Score-Input noch Reife-Kriterium.
+  const REICHWEITE = [WAEHLEN, 'ein einzelnes Referat', 'die Abteilung', 'das ganze Haus', 'externe Zielgruppen'];
+  const WIRKUNG_AB = [WAEHLEN, 'unter 6 Monaten', '6 bis 12 Monaten', '12 bis 24 Monaten', 'über 24 Monaten'];
+
+  // Eine Achse, drei sich ausschließende Antworten: Muss die Leitung handeln?
+  // "Zur Kenntnis" fehlt bewusst, das ist kein Steuerungsbedarf. Wer die Leitung
+  // nur informieren will, schreibt das in den Hinweis für die Runde.
+  const LEITUNG = [
+    { wert: 'offen', text: WAEHLEN },
+    { wert: 'keine', text: 'nein, die Abteilung steuert das selbst' },
+    { wert: 'entscheidung', text: 'ja, eine Entscheidung der Hausleitung steht an' },
+    { wert: 'konflikt', text: 'ja, ein hausweiter Konflikt muss gelöst werden' }
+  ];
+  const IST_LEITUNGSFALL = wert => wert === 'entscheidung' || wert === 'konflikt';
+
+  // Alle drei Wörter sind Entscheidungen, keines beschreibt einen Zustand.
+  // "läuft" stand hier bis 05.08. für die Entscheidung und kollidierte mit dem
+  // Stand ("läuft bereits"). "Eingeplant" sagt zusätzlich, was die Entscheidung
+  // kostet: das Vorhaben bekommt Kapazität. Ein Rang steckt bewusst nicht drin.
+  // "Abgesagt" hieß bis 05.08. "bewusst nicht": als einzige Nicht-Partizip-Form
+  // stach es aus der Achse heraus. Die Botschaft "wir haben bewusst verzichtet"
+  // steht weiter in den Unterzeilen. Der interne Schlüssel bleibt "nicht".
+  const ENTSCHEIDUNG = {
+    prio: 'eingeplant',
+    wartet: 'wartet',
+    nicht: 'abgesagt',
+    offen: 'noch offen'
+  };
+
+  function neuesVorhaben(id, name) {
+    return {
+      id, name,
+      ziel: WAEHLEN, veraenderung: '',
+      reichweite: WAEHLEN, wirkungAb: WAEHLEN,
+      ruhen: WAEHLEN, chanceKonkret: '', pflichtKonkret: '',
+      vzae: '', laeuft: WAEHLEN,
+      leitung: 'offen', lfFrage: '', lfTermin: '', lfFolge: '', lfWer: '',
+      // Abhängigkeiten sind Verweise, kein Freitext: {typ:'v', id} zeigt auf
+      // ein Vorhaben der Liste, {typ:'x', id} auf einen externen Eintrag im
+      // gemeinsamen Register. So gibt es dasselbe Ding nie zweimal in
+      // verschiedenen Schreibweisen.
+      haengtAn: [],
+      hinweis: '',
+      entscheidung: 'offen', bedingung: '', begruendung: ''
+    };
+  }
+
+  // Eingabe auf einen bestehenden Eintrag auflösen: erst die Vorhaben, dann
+  // die schon benannten externen, verglichen ohne Groß/Klein und Randleerraum.
+  // Nur wenn nichts passt, entsteht ein neuer externer Eintrag.
+  function abhAufloesen(eingabe, liste, externe, selbstId) {
+    const norm = wert => String(wert || '').trim().toLowerCase();
+    const gesucht = norm(eingabe);
+    if (!gesucht) return null;
+    // Der eigene Name ist keine Abhängigkeit und darf auch keinen externen
+    // Doppelgänger anlegen
+    const selbst = liste.find(x => x.id === selbstId && norm(x.name) === gesucht);
+    if (selbst) return null;
+    const v = liste.find(x => x.id !== selbstId && norm(x.name) === gesucht);
+    if (v) return { typ: 'v', id: v.id };
+    const x = (externe || []).find(e => norm(e.name) === gesucht);
+    if (x) return { typ: 'x', id: x.id };
+    return { typ: 'neu', name: String(eingabe).trim() };
+  }
+
+  function abhName(a, liste, externe) {
+    if (a.typ === 'v') { const v = liste.find(x => x.id === a.id); return v ? v.name : null; }
+    const x = (externe || []).find(e => e.id === a.id);
+    return x ? x.name + ' (extern)' : null;
+  }
+
+  // Reife: kann die Runde mit diesem Steckbrief arbeiten?
+  function luecken(v) {
+    const fehlt = [];
+    if (v.ziel === WAEHLEN) fehlt.push('Ziel');
+    if (!v.veraenderung.trim()) fehlt.push('Veränderung');
+    if (v.ruhen === WAEHLEN || v.ruhen === RUHEN[5]) fehlt.push('Folgen');
+    if (v.ruhen === RUHEN[3] && !v.chanceKonkret.trim()) fehlt.push('Chance');
+    if (v.ruhen === RUHEN[1] && !v.pflichtKonkret.trim()) fehlt.push('Frist');
+    // Der Stand fehlt hier bewusst: er beeinflusst weder Empfehlung noch
+    // Steuerungsbedarf, Portfolio oder Matrix. Er ist reine Kapazitätsbuchhaltung.
+    // Ein Feld, das keine Priorisierungsaussage bewegt, darf keinen Steckbrief
+    // unreif machen. Fehlt er, meldet das die Kapazitätsleiste (siehe kapazitaet).
+    if (v.leitung === 'offen') fehlt.push('Leitungsbedarf');
+    if (IST_LEITUNGSFALL(v.leitung) && !v.lfFrage.trim()) fehlt.push('Leitungsfrage');
+    return fehlt;
+  }
+  const istReif = v => luecken(v).length === 0;
+
+  // Empfehlung liegt jetzt auf einer einzigen Achse: machen wir es im naechsten Halbjahr?
+  // Die Steuerungsebene ist ein eigenes Feld und wird nicht mehr mit hineingerechnet.
+  function empfehlung(v) {
+    if (!v.veraenderung.trim()) {
+      return { wert: 'offen', regel: 'Die angestrebte Veränderung fehlt noch. Ohne sie kann niemand priorisieren.' };
+    }
+    if (v.ruhen === WAEHLEN || v.ruhen === RUHEN[5]) {
+      return { wert: 'offen', regel: 'Die Folgen des Ruhenlassens sind noch offen. Erst klären, dann entscheiden.' };
+    }
+    if (v.ruhen === RUHEN[1]) {
+      return { wert: 'prio', regel: 'Ruhenlassen verletzt eine Frist oder eine rechtliche Pflicht.' };
+    }
+    if (v.ruhen === RUHEN[2]) {
+      return { wert: 'prio', regel: 'Ruhenlassen richtet spürbaren Schaden an oder Wirkung geht verloren.' };
+    }
+    if (v.ruhen === RUHEN[4] && v.ziel === OHNE_ZIEL) {
+      return { wert: 'nicht', regel: 'Das Vorhaben zahlt auf kein Ziel des Hauses ein und würde dauerhaft kaum fehlen.' };
+    }
+    if (v.ruhen === RUHEN[4]) {
+      return { wert: 'wartet', regel: 'Es würde dauerhaft kaum fehlen. Dann muss es in diesem Halbjahr nicht eingeplant werden.' };
+    }
+    return { wert: 'prio', regel: 'Eine Chance verschiebt sich, und das Vorhaben zahlt auf ein Ziel des Hauses ein.' };
+  }
+
+  const gewaehlt = v => v.entscheidung === 'offen' ? empfehlung(v).wert : v.entscheidung;
+  const weichtAb = v => v.entscheidung !== 'offen' && v.entscheidung !== empfehlung(v).wert;
+
+  // Steuerungsbedarf: drei Teilwerte, jeder direkt aus einer Antwort, nichts gewichtet.
+  // Die Ressourcen fehlen hier bewusst: Kapazität ist ein Preis, kein Wert.
+  // Der Wert entscheidet nichts, er fasst zusammen und wird nie ohne seine Teile gezeigt.
+  const SCORE_FOLGEN = {};
+  SCORE_FOLGEN[RUHEN[4]] = 0; SCORE_FOLGEN[RUHEN[3]] = 1; SCORE_FOLGEN[RUHEN[2]] = 2; SCORE_FOLGEN[RUHEN[1]] = 3;
+  const SCORE_LEITUNG = { keine: 0, entscheidung: 1, konflikt: 2 };
+  const SCORE_MAX = 6;
+
+  function steuerungsbedarf(v) {
+    const folgen = SCORE_FOLGEN[v.ruhen];
+    const leitung = SCORE_LEITUNG[v.leitung];
+    const ziel = v.ziel === WAEHLEN ? undefined : (v.ziel === OHNE_ZIEL ? 0 : 1);
+    const teile = [
+      { name: 'Folgen', wert: folgen, max: 3 },
+      { name: 'Leitung', wert: leitung, max: 2 },
+      { name: 'Ziel', wert: ziel, max: 1 }
+    ];
+    const vollstaendig = teile.every(t => t.wert !== undefined);
+    const summe = teile.reduce((wert, t) => wert + (t.wert || 0), 0);
+    return { teile, summe, max: SCORE_MAX, vollstaendig };
+  }
+
+  // Wo das Vorhaben landet. Ergibt sich aus zwei getrennten Feldern: der Entscheidung
+  // (eingeplant, wartet, abgesagt) und dem Leitungsbedarf. Niemand wählt das direkt aus.
+  const PORTFOLIO = {
+    haus: 'Leitungsportfolio',
+    fach: 'Abteilungsportfolio',
+    warte: 'Warteliste',
+    nicht: 'Abgesagt',
+    offen: 'Erst klären'
+  };
+
+  function portfolio(v) {
+    const wahl = gewaehlt(v);
+    if (wahl === 'offen') return { wert: 'offen', satz: 'Noch nicht einzuordnen, es fehlen Antworten.' };
+    if (wahl === 'wartet') return { wert: 'warte', satz: 'Wartet auf die benannte Bedingung, mit Wiedervorlage.' };
+    if (wahl === 'nicht') return { wert: 'nicht', satz: 'In diesem Halbjahr bewusst abgesagt, sichtbar ausgewiesen.' };
+    if (IST_LEITUNGSFALL(v.leitung)) {
+      return { wert: 'haus', satz: 'Eingeplant und braucht die Leitung. Als Leitungsfall gemeldet, ausgewählt wird im Haus.' };
+    }
+    return { wert: 'fach', satz: 'Eingeplant, die Abteilung steuert es selbst.' };
+  }
+
+  function vzaeWert(v) {
+    const zahl = parseFloat(String(v.vzae || '').replace(',', '.'));
+    return Number.isFinite(zahl) && zahl > 0 ? zahl : 0;
+  }
+  const runde1 = zahl => Math.round(zahl * 10) / 10;
+  const zahlText = zahl => String(runde1(zahl)).replace('.', ',');
+
+  // Kapazitaet ehrlich getrennt: was das kommende Halbjahr binden soll, was heute laeuft
+  // und tatsaechlich gestoppt wird, und was gar nicht erst neu gebunden wird.
+  function kapazitaet(liste, verfuegbar) {
+    let gebunden = 0, gestoppt = 0, nichtGebunden = 0, standOffen = 0;
+    liste.forEach(v => {
+      const wert = vzaeWert(v);
+      const wahl = gewaehlt(v);
+      if (wahl === 'prio') { gebunden += wert; return; }
+      if (wahl !== 'nicht' && wahl !== 'wartet') return;
+      // Ohne Stand lässt sich nicht sagen, ob hier etwas frei wird oder nur
+      // nichts gebunden. Das wird ausgewiesen statt stillschweigend geraten.
+      if (v.laeuft === WAEHLEN) { standOffen += wert; return; }
+      const laeuftSchon = v.laeuft === LAEUFT[1];
+      if (laeuftSchon && wahl === 'nicht') gestoppt += wert;
+      else if (!laeuftSchon) nichtGebunden += wert;
+    });
+    return {
+      gebunden: runde1(gebunden),
+      gestoppt: runde1(gestoppt),
+      nichtGebunden: runde1(nichtGebunden),
+      standOffen: runde1(standOffen),
+      verfuegbar: runde1(verfuegbar),
+      ueber: runde1(Math.max(0, gebunden - verfuegbar))
+    };
+  }
+
+  // Gemeldet wird, was auch eingeplant ist. Vorher meldete diese Liste auch
+  // wartende Leitungsfälle, während portfolio() sie ausdrücklich nicht ins
+  // Leitungsportfolio nahm. Dasselbe Vorhaben war je nach Blickwinkel drin oder
+  // draußen. Jetzt entscheidet portfolio(), und der Rest verschwindet nicht
+  // lautlos, sondern steht als Notiz darunter.
+  const leitungsfaelle = liste => liste.filter(v => IST_LEITUNGSFALL(v.leitung) && gewaehlt(v) === 'prio');
+  const leitungsfaelleZurueck = liste => liste.filter(v => IST_LEITUNGSFALL(v.leitung) && gewaehlt(v) !== 'prio');
+
+  // Konflikte: konkret, bearbeitbar, nach Schaerfe sortiert. Hart auf vier gedeckelt,
+  // damit die Karte kein Noergel-Dashboard wird.
+  function konflikte(liste, verfuegbar) {
+    const punkte = [];
+    const kap = kapazitaet(liste, verfuegbar);
+
+    if (kap.ueber > 0) {
+      punkte.push({
+        // Die Zahlen stehen schon in der Leiste oben, hier nur die Konsequenz
+        text: 'Die Kapazität reicht nicht für alles, was eingeplant ist.',
+        frage: 'Welches Vorhaben wartet stattdessen?'
+      });
+    }
+
+    const laufend = liste.filter(v => gewaehlt(v) === 'prio');
+    const gestoppt = liste.filter(v => gewaehlt(v) === 'nicht');
+    if (kap.ueber > 0 && gestoppt.length === 0) {
+      punkte.push({
+        text: 'Kein einziges Vorhaben steht auf "abgesagt", obwohl die Kapazität nicht reicht.',
+        frage: 'Was legt ihr weg?'
+      });
+    }
+
+    // Abhängigkeiten: eingeplant auf einer Voraussetzung, die nicht kommt.
+    // Nur interne Kanten, externe Einträge haben keinen prüfbaren Zustand.
+    liste.forEach(v => {
+      if (gewaehlt(v) !== 'prio') return;
+      (v.haengtAn || []).filter(a => a.typ === 'v').forEach(a => {
+        const d = liste.find(x => x.id === a.id);
+        if (!d) return;
+        const zustand = gewaehlt(d);
+        if (zustand !== 'wartet' && zustand !== 'nicht') return;
+        punkte.push({
+          text: `"${v.name}" ist eingeplant, hängt aber an "${d.name}" (${ENTSCHEIDUNG[zustand]}).`,
+          frage: 'Trägt der Plan, wenn die Voraussetzung fehlt?'
+        });
+      });
+    });
+
+    const entschieden = liste.filter(v => gewaehlt(v) !== 'offen');
+    if (entschieden.length >= 4 && entschieden.every(v => gewaehlt(v) === 'prio')) {
+      punkte.push({
+        text: `Alle ${entschieden.length} Vorhaben sind eingeplant. Ein Portfolio, das nichts weglässt, ist eine Liste.`,
+        frage: 'Welche zwei würdet ihr streichen, wenn ihr müsstet?'
+      });
+    }
+
+    const ohneFrage = liste.filter(v => IST_LEITUNGSFALL(v.leitung) && !v.lfFrage.trim());
+    if (ohneFrage.length) {
+      punkte.push({
+        text: `${ohneFrage.length === 1 ? 'Ein Leitungsfall hat' : ohneFrage.length + ' Leitungsfälle haben'} keine konkrete Frage: ${ohneFrage.map(v => v.name).join(', ')}.`,
+        frage: 'Die Leitung kann nichts entscheiden, was niemand gefragt hat.'
+      });
+    }
+
+    const parkplatz = liste.filter(v => gewaehlt(v) === 'wartet' && !v.bedingung.trim());
+    if (parkplatz.length) {
+      punkte.push({
+        text: `${parkplatz.length === 1 ? 'Ein Vorhaben wartet' : parkplatz.length + ' Vorhaben warten'} ohne benannte Bedingung: ${parkplatz.map(v => v.name).join(', ')}.`,
+        frage: 'Ohne Bedingung ist die Warteliste ein Parkplatz.'
+      });
+    }
+
+    if (laufend.length >= 2) {
+      const bespielt = new Set(laufend.map(v => v.ziel).filter(ziel => ziel !== WAEHLEN && ziel !== OHNE_ZIEL));
+      const leer = ZIELE.filter(ziel => !bespielt.has(ziel));
+      if (leer.length && leer.length < ZIELE.length) {
+        punkte.push({
+          text: `Auf ${leer.length} von ${ZIELE.length} Zielen zahlt kein eingeplantes Vorhaben ein: ${leer.join(', ')}.`,
+          frage: 'Ist das eine bewusste Schwerpunktsetzung oder eine Lücke?'
+        });
+      }
+    }
+
+    return punkte.slice(0, 4);
+  }
+
+  // Achsen der Matrix. Beide kommen aus je einer direkt beantworteten Frage,
+  // es wird nichts verrechnet: jede Position ist auf ein Dropdown zurückführbar.
+  const MX_SPALTEN = [
+    { wert: RUHEN[4], kopf: 'kaum etwas' },
+    { wert: RUHEN[3], kopf: 'eine Chance verschiebt sich' },
+    { wert: RUHEN[2], kopf: 'spürbarer Schaden' },
+    { wert: RUHEN[1], kopf: 'Frist oder Pflicht platzt' }
+  ];
+  const MX_ZEILEN = [
+    { wert: 'konflikt', kopf: 'hausweiter Konflikt' },
+    { wert: 'entscheidung', kopf: 'Entscheidung der Leitung' },
+    { wert: 'keine', kopf: 'Abteilung steuert selbst' }
+  ];
+  const mxEinsortierbar = v => MX_SPALTEN.some(s => s.wert === v.ruhen) && MX_ZEILEN.some(z => z.wert === v.leitung);
+
+  function cleanCell(wert) { return String(wert || '').replace(/[\t\r\n]+/g, ' ').trim(); }
+
+  function tsv(abteilung, liste, externe) {
+    // Der Wert wandert nur zerlegt in die Tabelle: drei Teilspalten plus Summe
+    const kopf = ['Abteilung', 'Vorhaben', 'Ziel', 'Angestrebte Veränderung', 'Wer profitiert', 'Erste Wirkung in', 'Folgen des Ruhenlassens', 'Konkretisierung', 'VZÄ', 'Stand', 'Leitungsbedarf', 'Leitungsfrage', 'Entscheidungstermin', 'Folge des Nichtentscheidens', 'Verantwortlich', 'Hängt an', 'Punkte Folgen (0 bis 3)', 'Punkte Leitung (0 bis 2)', 'Punkte Ziel (0 bis 1)', 'Steuerungsbedarf (0 bis 6)', 'Empfehlung', 'Regel', 'Entscheidung der Abteilung', 'Portfolio (abgeleitet)', 'Begründung bei Abweichung', 'Bedingung', 'Hinweis für die Runde'];
+    const zeilen = liste.map(v => {
+      const e = empfehlung(v);
+      const s = steuerungsbedarf(v);
+      const punkt = i => s.teile[i].wert === undefined ? '' : s.teile[i].wert;
+      const konkret = v.ruhen === RUHEN[3] ? v.chanceKonkret : v.ruhen === RUHEN[1] ? v.pflichtKonkret : '';
+      const lb = (LEITUNG.find(o => o.wert === v.leitung) || {}).text;
+      const haengt = (v.haengtAn || []).map(a => abhName(a, liste, externe)).filter(Boolean).join('; ');
+      return [abteilung, v.name, v.ziel === WAEHLEN ? '' : v.ziel, v.veraenderung,
+        v.reichweite === WAEHLEN ? '' : v.reichweite, v.wirkungAb === WAEHLEN ? '' : v.wirkungAb,
+        v.ruhen === WAEHLEN ? '' : v.ruhen, konkret, v.vzae, v.laeuft === WAEHLEN ? '' : v.laeuft,
+        v.leitung === 'offen' ? '' : lb, v.lfFrage, v.lfTermin, v.lfFolge, v.lfWer, haengt,
+        punkt(0), punkt(1), punkt(2), s.vollstaendig ? s.summe : '',
+        ENTSCHEIDUNG[e.wert], e.regel, ENTSCHEIDUNG[gewaehlt(v)], PORTFOLIO[portfolio(v).wert],
+        weichtAb(v) ? v.begruendung : '', gewaehlt(v) === 'wartet' ? v.bedingung : '', v.hinweis
+      ].map(cleanCell).join('\t');
+    });
+    return [kopf.join('\t'), ...zeilen].join('\n');
+  }
+
+  /* CORE-END */
+
+  const SPEICHER = 'portfolio-prio-v3';
+  const SPEICHER_V2 = 'portfolio-prio-v2';
+
+  function beispieldaten() {
+    const roh = [
+      { name: 'Digitale Antragsstrecke Wohngeld', ziel: 'Einfach Digital', veraenderung: 'Die häufigsten Wohngeld-Fälle kommen vollständig digital an, die Sachbearbeitung entscheidet ohne Rückfragen.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[2], vzae: '2', laeuft: LAEUFT[1], leitung: 'entscheidung', lfFrage: 'Geht die Strecke vor der Registeranbindung live oder danach?', lfTermin: 'Oktober 2026', lfFolge: 'Ohne Entscheidung steht die Entwicklung ab November still.', lfWer: 'AL Z', haengtAn: [{ typ: 'v', id: 'v2' }] },
+      { name: 'Registeranbindung Meldewesen', ziel: 'Der neue Standard', veraenderung: 'Die Fachverfahren beziehen Meldedaten automatisch, niemand reicht mehr Meldebescheinigungen ein.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[1], pflichtKonkret: 'Gesetzliche Anbindungsfrist Ende März 2027.', vzae: '1,5', laeuft: LAEUFT[1], leitung: 'keine', haengtAn: [{ typ: 'x', id: 'x1' }] },
+      { name: 'Interner KI-Leitfaden', ziel: 'Besser KI', veraenderung: 'Referate nutzen die freigegebenen KI-Werkzeuge für Entwürfe, ohne die Zulässigkeit jedes Mal neu zu prüfen.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[3], chanceKonkret: 'Weniger Schatten-KI: die Freigabe-Anfragen an den Datenschutz sinken, weil der Leitfaden die Standardfälle klärt.', vzae: '0,5', laeuft: LAEUFT[1], leitung: 'keine' },
+      { name: 'Datenkooperation mit den Ländern', ziel: 'Der neue Standard', veraenderung: 'Bund und Länder tauschen Verfahrensdaten über eine gemeinsame Schnittstelle statt über Listen per Mail.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[2], vzae: '2', laeuft: LAEUFT[2], leitung: 'konflikt', lfFrage: 'Wer trägt den Betrieb der Schnittstelle, Bund oder die Länder gemeinsam?', lfTermin: 'Klausur Ende September', lfFolge: 'Ohne Klärung startet das Vorhaben nicht, die Länder warten seit Mai.', lfWer: 'St', entscheidung: 'wartet', bedingung: 'Wird aktiv, sobald die Schnittstellen-Stelle nachbesetzt ist.' },
+      { name: 'Ausstellungsfläche Digitalprojekte im Foyer', ziel: OHNE_ZIEL, veraenderung: 'Besuchergruppen sehen im Foyer laufende Digitalprojekte des Hauses.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[4], vzae: '1', laeuft: LAEUFT[1], leitung: 'keine' },
+      { name: 'Cloud-Pilot Fachverfahren', ziel: 'Einfach Digital', veraenderung: 'Ein Fachverfahren läuft produktiv in der Verwaltungscloud, Betriebserfahrung liegt vor.', ruhen: RUHEN[5], vzae: '1', laeuft: LAEUFT[2], leitung: 'offen' },
+      { name: 'Servicestandard für Förderanträge', ziel: 'Die große Entlastung', veraenderung: 'Antragstellende erhalten in allen Förderprogrammen dieselbe Rückmeldefrist und denselben Statusverlauf.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], chanceKonkret: 'Die Zahl der Nachfragen zum Bearbeitungsstand sinkt messbar, weil der Status sichtbar ist.', vzae: '1,5', laeuft: LAEUFT[2], leitung: 'keine', haengtAn: [{ typ: 'v', id: 'v4' }] },
+      { name: 'Evaluierung Beteiligungsplattform', ziel: 'Schlanker, bürgernaher Staat', veraenderung: 'Das Haus weiß belastbar, ob die Plattform genutzt wird und ob sich der Betrieb lohnt.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], chanceKonkret: 'Die Entscheidung über Weiterbetrieb oder Abschaltung wird belegbar statt Bauchgefühl.', vzae: '0,5', laeuft: LAEUFT[2], leitung: 'keine' }
+    ];
+    return {
+      v: 3,
+      abteilung: 'Abteilung Z (fiktive Beispieldaten)',
+      verfuegbar: '5',
+      // Externe Abhängigkeiten leben einmal im Register, Vorhaben verweisen darauf
+      externe: [{ id: 'x1', name: 'Registermodernisierung des Bundes' }],
+      vorhaben: roh.map((teil, i) => Object.assign(neuesVorhaben('v' + (i + 1), teil.name), teil))
+    };
+  }
+
+  let S, ansicht = 'erfassen', sicht = 'ziele', offenId = null, aktivId = null, naechste = 1, naechsteExtern = 1;
+
+  function laden() {
+    try {
+      // Erst der eigene Stand, sonst ein vorhandener v2-Stand: der bekommt die
+      // neuen Felder leer und läuft ab dann unter dem v3-Schlüssel weiter.
+      const roh = localStorage.getItem(SPEICHER) || localStorage.getItem(SPEICHER_V2);
+      if (roh) {
+        const daten = JSON.parse(roh);
+        if (daten && Array.isArray(daten.vorhaben) && (daten.v === 2 || daten.v === 3)) {
+          S = daten;
+          S.v = 3;
+          if (!Array.isArray(S.externe)) S.externe = [];
+          S.vorhaben = S.vorhaben.map(v => Object.assign(neuesVorhaben(v.id, v.name), v));
+          // Gespeicherte Staende aus der Fassung mit "zur Kenntnis" auf "keine" ziehen
+          S.vorhaben.forEach(v => { if (v.leitung === 'kenntnis') v.leitung = 'keine'; });
+        }
+      }
+    } catch (fehler) { S = null; }
+    if (!S) S = beispieldaten();
+    S.vorhaben.forEach(v => {
+      const nummer = parseInt(String(v.id).replace(/\D/g, ''), 10);
+      if (Number.isFinite(nummer) && nummer >= naechste) naechste = nummer + 1;
+    });
+    (S.externe || []).forEach(x => {
+      const nummer = parseInt(String(x.id).replace(/\D/g, ''), 10);
+      if (Number.isFinite(nummer) && nummer >= naechsteExtern) naechsteExtern = nummer + 1;
+    });
+    offenId = S.vorhaben.length ? S.vorhaben[0].id : null;
+  }
+  function speichern() {
+    try { localStorage.setItem(SPEICHER, JSON.stringify(S)); } catch (fehler) { /* Privatmodus */ }
+  }
+  const nachId = id => S.vorhaben.find(v => v.id === id) || null;
+  const verfuegbarWert = () => {
+    const zahl = parseFloat(String(S.verfuegbar || '').replace(',', '.'));
+    return Number.isFinite(zahl) && zahl > 0 ? zahl : 0;
+  };
+
+  function esc(wert) {
+    return String(wert == null ? '' : wert).replace(/[&<>"']/g, z => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[z]));
+  }
+  const optionen = (liste, aktuell) => liste.map(w => `<option value="${esc(w)}" ${w === aktuell ? 'selected' : ''}>${esc(w)}</option>`).join('');
+
+  /* ---------- Ansicht 1: Erfassen ---------- */
+
+  function renderNav() {
+    document.getElementById('nav').innerHTML = S.vorhaben.map(v => `
+      <button class="nav-item" type="button" data-nav="${v.id}" aria-current="${v.id === offenId}" title="${esc(v.name)}">
+        <span class="reife ${istReif(v) ? 'fertig' : 'entwurf'}"></span>
+        <span class="nav-name">${esc(v.name)}</span>
+      </button>`).join('') || '<p class="lane-leer">Noch kein Vorhaben.</p>';
+    document.getElementById('nav').querySelectorAll('[data-nav]').forEach(el => el.addEventListener('click', () => {
+      offenId = el.dataset.nav;
+      renderErfassen();
+    }));
+    const reif = S.vorhaben.filter(istReif).length;
+    document.getElementById('reifeLegende').textContent = `${reif} von ${S.vorhaben.length} Steckbriefen sind vollständig. Gefüllter Punkt heißt: die Runde kann damit arbeiten.`;
+  }
+
+  // Der Balken zeigt Bestandteile und Summe in einem. Die Zahl steht nie allein
+  // da. Jede Gruppe füllt ihre eigenen max-Zellen und beschriftet sich selbst,
+  // eine separate Aufschlüsselungszeile braucht es deshalb nicht mehr.
+  function balkenHtml(v) {
+    const s = steuerungsbedarf(v);
+    const gruppen = s.teile.map(t => {
+      const art = t.name.toLowerCase();
+      const zellen = Array.from({ length: t.max }, (leer, i) =>
+        `<span class="sb-zelle ${i < (t.wert || 0) ? art : ''}"></span>`).join('');
+      return `<div class="sb-gruppe">
+          <div class="sb-zellen">${zellen}</div>
+          <span class="sb-label ${art}"><i></i>${esc(t.name)} <b>${t.wert === undefined ? '?' : t.wert}</b> von ${t.max}</span>
+        </div>`;
+    }).join('');
+    const vorlesen = s.teile.map(t => `${t.name} ${t.wert === undefined ? 'offen' : t.wert} von ${t.max}`).join(', ');
+    return `<div class="sb-balken" role="img" aria-label="Steuerungsbedarf ${s.summe} von ${s.max}: ${vorlesen}">${gruppen}</div>
+      <p class="sb-summe">${s.summe} <span>von ${s.max}</span></p>
+      ${s.vollstaendig ? '' : '<p class="sb-unklar">Noch nicht vollständig, der Wert kann steigen.</p>'}`;
+  }
+
+  // Ansicht 1 zeigt keine Empfehlung mehr (Entscheidung 43): Sie widersprach
+  // dem Versprechen "hier wird noch nichts priorisiert" und ließ Schritt 2
+  // zeremoniell wirken. Stattdessen steht hier die Spannung aus dem Steckbrief,
+  // ohne Entscheidungswort. Die Empfehlung selbst steht im Entscheidungspanel
+  // in Schritt 2, dort, wo entschieden wird.
+  function abwaegung(v) {
+    const e = empfehlung(v);
+    if (e.wert === 'offen') return { wort: 'noch unvollständig', satz: e.regel, offen: true };
+    if (v.ruhen === RUHEN[1]) return { wort: 'Aufschub verletzt eine Frist', satz: 'Laut Steckbrief platzt beim Ruhenlassen eine Frist oder rechtliche Pflicht.' };
+    if (v.ruhen === RUHEN[2]) return { wort: 'Aufschub kritisch', satz: 'Laut Steckbrief richtet Ruhenlassen spürbaren Schaden an oder Wirkung geht verloren.' };
+    if (v.ruhen === RUHEN[3]) return { wort: 'Aufschub kostet eine Chance', satz: 'Laut Steckbrief verschiebt sich beim Ruhenlassen eine benannte Chance.' };
+    return { wort: 'Aufschub unkritisch', satz: 'Laut Steckbrief würde das Vorhaben auch dauerhaft kaum fehlen.' };
+  }
+
+  // Rechts daneben: was die Runde in Schritt 2 daraus gemacht hat. Die
+  // Kapazitätsspalte ist raus, sie hat Block 4 wörtlich wiederholt. Der
+  // Steuerungsbedarf ist raus, er vergleicht, und hier steht nur ein Vorhaben.
+  // Er bleibt im Entscheidungspanel in Schritt 2.
+  function ablesungHtml(v) {
+    const a = abwaegung(v);
+    const offen = v.entscheidung === 'offen';
+    return `<div class="ab-feld">
+        <p class="empf-label">Hinweis für die Abwägung</p>
+        <p class="ab-wort ${a.offen ? 'offen' : ''}">${esc(a.wort)}</p>
+        <p class="empf-regel">${esc(a.satz)}</p>
+      </div>
+      <div class="ab-feld">
+        <p class="empf-label">Entscheidung der Runde</p>
+        ${offen
+          ? `<p class="ab-wort offen">noch nicht entschieden</p>
+             <p class="empf-regel">Fällt in Schritt 2, wenn alle Vorhaben nebeneinander liegen.</p>`
+          : `<p class="ab-wort">${esc(ENTSCHEIDUNG[v.entscheidung])}, also ${esc(PORTFOLIO[portfolio(v).wert])}</p>
+             <p class="empf-regel">${esc(portfolio(v).satz)}</p>
+             ${weichtAb(v) ? `<p class="ab-abweichung">Weicht von der Empfehlung ab${v.begruendung.trim() ? ': ' + esc(v.begruendung) : '.'}</p>` : ''}`}
+      </div>`;
+  }
+
+  function abhChips(v) {
+    const chips = (v.haengtAn || []).map((a, i) => {
+      const name = abhName(a, S.vorhaben, S.externe);
+      if (!name) return '';
+      return `<span class="abh-chip">${esc(name)}<button type="button" data-abh-weg="${i}" aria-label="Abhängigkeit entfernen">&times;</button></span>`;
+    }).join('');
+    return chips ? `<div class="abh-chips">${chips}</div>` : '';
+  }
+
+  function abhVorschlaege(v) {
+    const schon = new Set((v.haengtAn || []).map(a => a.typ + a.id));
+    const namen = S.vorhaben.filter(x => x.id !== v.id && !schon.has('v' + x.id)).map(x => x.name)
+      .concat((S.externe || []).filter(e => !schon.has('x' + e.id)).map(e => e.name));
+    return namen.map(n => `<option value="${esc(n)}"></option>`).join('');
+  }
+
+  function feldFolge(v, feld, frage, hinweisText) {
+    return `<div class="feld">
+      <label for="${feld}-${v.id}">${esc(frage)}</label>
+      <input type="text" id="${feld}-${v.id}" data-id="${v.id}" data-feld="${feld}" maxlength="240" value="${esc(v[feld])}">
+      ${v[feld].trim() ? '' : `<p class="fehlt">${esc(hinweisText)}</p>`}
+    </div>`;
+  }
+
+  function renderSteckbrief() {
+    const wurzel = document.getElementById('steckbrief');
+    const v = nachId(offenId);
+    if (!v) { wurzel.innerHTML = '<div class="steckbrief"><p class="lane-leer">Links ein Vorhaben anlegen.</p></div>'; return; }
+    const lf = IST_LEITUNGSFALL(v.leitung);
+
+    wurzel.innerHTML = `<div class="steckbrief">
+      <div class="sb-kopf">
+        <input class="sb-titel" type="text" id="titel" value="${esc(v.name)}" maxlength="90" aria-label="Name des Vorhabens">
+        <span class="sb-schritt">Steckbrief</span>
+      </div>
+
+      <div class="block">
+        <span class="block-nr">1</span>
+        <div>
+          <!-- Blocktexte, die nur zählen, sind raus: die Felder zeigen selbst,
+               woraus der Block besteht. Hilfe steht nur, wo sie das
+               Antwortverhalten ändert (Entscheidung 43). -->
+          <span class="frage">Worum geht es, und worauf zahlt es ein?</span>
+          <div class="feld">
+            <label for="ziel">Ziel des Hauses</label>
+            <p class="feld-hilfe">"Kein Ziel erkennbar" ist eine zulässige Antwort.</p>
+            <select id="ziel" data-id="${v.id}" data-feld="ziel">${optionen(ZIEL_OPTIONEN, v.ziel)}</select>
+          </div>
+          <div class="feld">
+            <!-- "für wen" fragt seit v3 Block 2, hier stand es doppelt -->
+            <label for="veraenderung">Angestrebte Veränderung</label>
+            <p class="feld-hilfe">Ein Zustand, kein Ding: Was machen Menschen künftig anders?</p>
+            <textarea id="veraenderung" data-id="${v.id}" data-feld="veraenderung" maxlength="240">${esc(v.veraenderung)}</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <span class="block-nr">2</span>
+        <div>
+          <span class="frage">Wen erreicht es, und ab wann?</span>
+          <p class="hilfe">Beide Angaben informieren die Runde. Sie bewerten das Vorhaben nicht.</p>
+          <div class="zeile2">
+            <div class="feld">
+              <label for="reichweite">Wer profitiert vor allem</label>
+              <select id="reichweite" data-id="${v.id}" data-feld="reichweite">${optionen(REICHWEITE, v.reichweite)}</select>
+            </div>
+            <div class="feld">
+              <label for="wirkungAb">Erste spürbare Wirkung in</label>
+              <select id="wirkungAb" data-id="${v.id}" data-feld="wirkungAb">${optionen(WIRKUNG_AB, v.wirkungAb)}</select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <span class="block-nr">3</span>
+        <div>
+          <span class="frage">Was passiert, wenn das Haus es sechs Monate ruhen lässt?</span>
+          <p class="hilfe">Wen würde es treffen, und wie schnell? Bei Innovationsvorhaben kann auch eine entgangene Chance ausschlaggebend sein, ein konkreter Schaden muss nicht vorliegen.</p>
+          <div class="feld">
+            <select id="ruhen" data-id="${v.id}" data-feld="ruhen">${optionen(RUHEN, v.ruhen)}</select>
+          </div>
+          ${v.ruhen === RUHEN[3] ? feldFolge(v, 'chanceKonkret', 'Welche Chance, und woran würde man in einem Jahr merken, dass sie genutzt ist?', 'Chance ist noch nicht benannt.') : ''}
+          ${v.ruhen === RUHEN[1] ? feldFolge(v, 'pflichtKonkret', 'Welche Frist oder Vorgabe?', 'Frist oder Vorgabe ist noch nicht benannt.') : ''}
+        </div>
+      </div>
+
+      <div class="block">
+        <span class="block-nr">4</span>
+        <div>
+          <span class="frage">Welche Kapazität bindet es?</span>
+          <div class="zeile2">
+            <div class="feld">
+              <label for="vzae">Bedarf in VZÄ</label>
+              <p class="feld-hilfe">Grob geschätzt genügt.</p>
+              <input type="text" inputmode="decimal" class="kurz" id="vzae" data-id="${v.id}" data-feld="vzae" maxlength="6" value="${esc(v.vzae)}">
+            </div>
+            <div class="feld">
+              <label for="laeuft">Läuft es bereits?</label>
+              <p class="feld-hilfe">Nur was heute läuft, kann durch eine Absage frei werden.</p>
+              <select id="laeuft" data-id="${v.id}" data-feld="laeuft">${optionen(LAEUFT, v.laeuft)}</select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <span class="block-nr">5</span>
+        <div>
+          <span class="frage">Braucht es dafür die Hausleitung?</span>
+          <p class="hilfe">Nicht "ist es wichtig", sondern: liegt eine Entscheidung an, die nur die Leitung treffen kann. Alles andere steuert die Abteilung selbst.</p>
+          <div class="feld">
+            <select id="leitung" data-id="${v.id}" data-feld="leitung">
+              ${LEITUNG.map(o => `<option value="${o.wert}" ${o.wert === v.leitung ? 'selected' : ''}>${esc(o.text)}</option>`).join('')}
+            </select>
+          </div>
+        ${lf ? `<div class="lf-kasten">
+          <p class="lf-titel">Leitungsfall</p>
+          <p class="lf-sub">Vier Angaben, damit die Hausleitung entscheiden kann.</p>
+          <div class="feld">
+            <label for="lfFrage">Die Frage an die Hausleitung, in einem Satz</label>
+            <input type="text" id="lfFrage" data-id="${v.id}" data-feld="lfFrage" maxlength="240" value="${esc(v.lfFrage)}">
+            ${v.lfFrage.trim() ? '' : '<p class="fehlt">Ohne Frage ist es kein Leitungsfall.</p>'}
+          </div>
+          <div class="zeile2">
+            <div class="feld">
+              <label for="lfTermin">Bis wann wird die Entscheidung gebraucht</label>
+              <input type="text" id="lfTermin" data-id="${v.id}" data-feld="lfTermin" maxlength="60" value="${esc(v.lfTermin)}">
+            </div>
+            <div class="feld">
+              <label for="lfWer">Wer entscheidet</label>
+              <input type="text" id="lfWer" data-id="${v.id}" data-feld="lfWer" maxlength="60" value="${esc(v.lfWer)}">
+            </div>
+          </div>
+          <div class="feld">
+            <label for="lfFolge">Was passiert, wenn nicht entschieden wird</label>
+            <input type="text" id="lfFolge" data-id="${v.id}" data-feld="lfFolge" maxlength="240" value="${esc(v.lfFolge)}">
+          </div>
+        </div>` : ''}
+        </div>
+      </div>
+
+      <div class="block">
+        <span class="block-nr">6</span>
+        <div>
+          <span class="frage">Muss die Runde sonst etwas wissen? (optional)</span>
+          <p class="hilfe">Leer lassen ist eine vollwertige Antwort.</p>
+          <div class="feld">
+            <label for="abhNeu">Hängt ab von</label>
+            <p class="feld-hilfe">Beim Tippen erscheinen bestehende Einträge. Neues wird einmal angelegt und künftig ebenfalls vorgeschlagen.</p>
+            ${abhChips(v)}
+            <div class="abh-zeile">
+              <input type="text" id="abhNeu" list="abhListe" maxlength="90" placeholder="Vorhaben oder externe Voraussetzung ..." autocomplete="off">
+              <button class="btn leise" type="button" id="abhAdd">Hinzufügen</button>
+              <datalist id="abhListe">${abhVorschlaege(v)}</datalist>
+            </div>
+          </div>
+          <div class="feld">
+            <label for="hinweis">Hinweis für die Runde</label>
+            <p class="feld-hilfe">Ein Zielkonflikt, eine Bedingung. Kein Statusbericht.</p>
+            <textarea id="hinweis" data-id="${v.id}" data-feld="hinweis" maxlength="240">${esc(v.hinweis)}</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="ablesung">${ablesungHtml(v)}</div>
+
+      <div class="sb-foot">
+        <button class="textbtn" type="button" id="loeschen">Vorhaben entfernen</button>
+        <span class="lane-meta">${istReif(v) ? 'Steckbrief vollständig.' : 'Offen: ' + luecken(v).join(', ') + '.'}</span>
+        <button class="btn primary" type="button" id="zuSchritt2">In Schritt 2 entscheiden</button>
+      </div>
+    </div>`;
+
+    wurzel.querySelectorAll('[data-feld]').forEach(el => {
+      el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', event => {
+        const ziel = nachId(event.target.dataset.id);
+        if (!ziel) return;
+        ziel[event.target.dataset.feld] = event.target.value;
+        speichern();
+        if (event.target.tagName === 'SELECT') renderErfassen();
+        else renderNachTippen();
+      });
+    });
+    const titel = document.getElementById('titel');
+    titel.addEventListener('input', () => {
+      v.name = titel.value;
+      speichern();
+      renderNav();
+    });
+    document.getElementById('zuSchritt2').addEventListener('click', () => {
+      aktivId = v.id;
+      wechsle('priorisieren');
+    });
+    const abhFeld = document.getElementById('abhNeu');
+    const abhUebernehmen = () => {
+      const treffer = abhAufloesen(abhFeld.value, S.vorhaben, S.externe, v.id);
+      if (!treffer) { abhFeld.focus(); return; }
+      let eintrag = treffer;
+      if (treffer.typ === 'neu') {
+        const x = { id: 'x' + (naechsteExtern++), name: treffer.name };
+        S.externe.push(x);
+        eintrag = { typ: 'x', id: x.id };
+      }
+      if (!(v.haengtAn || []).some(a => a.typ === eintrag.typ && a.id === eintrag.id)) v.haengtAn.push(eintrag);
+      speichern();
+      renderErfassen();
+      const neu = document.getElementById('abhNeu');
+      if (neu) neu.focus();
+    };
+    document.getElementById('abhAdd').addEventListener('click', abhUebernehmen);
+    abhFeld.addEventListener('keydown', event => {
+      if (event.key === 'Enter') { event.preventDefault(); abhUebernehmen(); }
+    });
+    wurzel.querySelectorAll('[data-abh-weg]').forEach(el => el.addEventListener('click', () => {
+      v.haengtAn.splice(Number(el.dataset.abhWeg), 1);
+      speichern();
+      renderErfassen();
+    }));
+    document.getElementById('loeschen').addEventListener('click', () => {
+      if (!confirm(`"${v.name}" wirklich entfernen?`)) return;
+      S.vorhaben = S.vorhaben.filter(eintrag => eintrag.id !== v.id);
+      // Verweise auf das entfernte Vorhaben gehen mit, sonst zeigen Chips ins Leere
+      S.vorhaben.forEach(x => { x.haengtAn = (x.haengtAn || []).filter(a => !(a.typ === 'v' && a.id === v.id)); });
+      offenId = S.vorhaben.length ? S.vorhaben[0].id : null;
+      speichern();
+      renderErfassen();
+    });
+  }
+
+  // Beim Tippen nur das Noetige neu zeichnen, damit der Fokus im Feld bleibt
+  function renderNachTippen() {
+    renderNav();
+    const v = nachId(offenId);
+    if (!v) return;
+    // Die Ablesung ganz neu setzen: sie hat kein Eingabefeld, kann also den
+    // Fokus nicht klauen, und so können Empfehlung und Abweichung nicht driften.
+    const ablesung = document.querySelector('.ablesung');
+    if (ablesung) ablesung.innerHTML = ablesungHtml(v);
+    const fuss = document.querySelector('.sb-foot .lane-meta');
+    if (fuss) fuss.textContent = istReif(v) ? 'Steckbrief vollständig.' : 'Offen: ' + luecken(v).join(', ') + '.';
+  }
+
+  function renderErfassen() {
+    renderNav();
+    renderSteckbrief();
+  }
+
+  /* ---------- Ansicht 2: Priorisieren ---------- */
+
+  function renderBudget() {
+    const kap = kapazitaet(S.vorhaben, verfuegbarWert());
+    const skala = Math.max(kap.gebunden, kap.verfuegbar, 1);
+    // Der gedeckte Teil und der Überhang sind zwei Segmente. Die Marke sitzt
+    // beim verfügbaren Wert, also genau an der Naht zwischen beiden. Sie heißt
+    // Grenze: "verfügbar" las sich wie ein Rest, obwohl die Zahl die
+    // Gesamtkapazität ist.
+    const gedeckt = Math.min(kap.gebunden, kap.verfuegbar);
+    const breiteGedeckt = (gedeckt / skala) * 100;
+    const breiteUeber = (kap.ueber / skala) * 100;
+    const marke = (kap.verfuegbar / skala) * 100;
+    // Die Einheit steht einmal in der Überschrift, danach nur noch Zahlen
+    const eins = zahl => runde1(zahl) === 1;
+    const rest = runde1(Math.max(0, kap.verfuegbar - kap.gebunden));
+    const satz = kap.ueber > 0
+      ? `Was eingeplant ist, bindet ${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)}. Das ${eins(kap.ueber) ? 'ist 1' : 'sind ' + zahlText(kap.ueber)} zu viel.`
+      : `Was eingeplant ist, bindet ${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)}. Passt, ${zahlText(rest)} ${eins(rest) ? 'bleibt' : 'bleiben'} frei.`;
+    const neben = [];
+    if (kap.gestoppt > 0) neben.push(`${zahlText(kap.gestoppt)} ${eins(kap.gestoppt) ? 'wird' : 'werden'} aus laufender Arbeit frei, weil ihr sie bewusst beendet.`);
+    if (kap.nichtGebunden > 0) neben.push(`${zahlText(kap.nichtGebunden)} ${eins(kap.nichtGebunden) ? 'wird' : 'werden'} gar nicht erst gebunden (wartet oder abgesagt, noch nicht gestartet).`);
+    if (kap.standOffen > 0) neben.push(`Bei ${zahlText(kap.standOffen)} ist der Stand nicht angegeben. Ob dabei etwas frei wird oder nur nichts gebunden, lässt sich deshalb nicht sagen.`);
+
+    document.getElementById('budget').innerHTML = `
+      <div class="bd-kopf">
+        <span class="bd-titel">Kapazität im nächsten Halbjahr · Vollzeitäquivalente</span>
+        <span class="bd-eingabe">Die Abteilung hat<input type="text" inputmode="decimal" id="verfuegbar" value="${esc(S.verfuegbar)}" maxlength="6" aria-label="Verfügbare Vollzeitäquivalente"></span>
+      </div>
+      <div class="bd-skala" role="img" aria-label="Gebunden ${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} Vollzeitäquivalenten">
+        <div class="bd-gedeckt" style="width:${breiteGedeckt}%"></div>
+        ${kap.ueber > 0 ? `<div class="bd-ueberhang" style="left:${marke}%; width:${breiteUeber}%"></div>` : ''}
+        <div class="bd-marke ${marke > 88 ? 'rechts' : ''}" style="left:${marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>
+      </div>
+      <p class="bd-satz ${kap.ueber > 0 ? 'ueber' : ''}">${esc(satz)}</p>
+      ${neben.map(zeile => `<p class="bd-neben">${esc(zeile)}</p>`).join('')}`;
+
+    const feld = document.getElementById('verfuegbar');
+    feld.addEventListener('input', () => {
+      S.verfuegbar = feld.value;
+      speichern();
+      const stelle = feld.selectionStart;
+      renderPriorisieren();
+      const neu = document.getElementById('verfuegbar');
+      neu.focus();
+      neu.setSelectionRange(stelle, stelle);
+    });
+  }
+
+  // Die Kachel nennt Zustand und Korb. In der Portfolio-Sicht bleibt der Korb
+  // weg, dort steht er schon als Name der Bahn und wäre reine Wiederholung.
+  function kachel(v, ohneKorb) {
+    const wahl = gewaehlt(v);
+    const vzae = vzaeWert(v);
+    const lf = IST_LEITUNGSFALL(v.leitung) && wahl !== 'nicht';
+    const korb = PORTFOLIO[portfolio(v).wert];
+    return `<button class="pt ${wahl} ${lf ? 'lf' : ''} ${v.id === aktivId ? 'aktiv' : ''}" type="button" data-kachel="${v.id}" title="${esc(korb)}">
+      <span class="pt-name">${esc(v.name)}</span>
+      ${lf ? '<span class="nur-vorlesen">Leitungsfall</span>' : ''}
+      ${ohneKorb ? '' : `<span class="pt-korb">${esc(korb)}</span>`}
+      <span class="pt-foot">
+        <span class="pt-state">${esc(ENTSCHEIDUNG[wahl])}</span>
+        <span>${vzae ? zahlText(vzae) : '?'}</span>
+      </span>
+    </button>`;
+  }
+
+  // Innerhalb einer Bahn zuerst das Laufende, darin die Leitungsfälle nach vorn
+  const RANG = { prio: 0, wartet: 1, offen: 2, nicht: 3 };
+  function sortiert(liste) {
+    return liste.slice().sort((a, b) => {
+      const stufe = RANG[gewaehlt(a)] - RANG[gewaehlt(b)];
+      if (stufe) return stufe;
+      return (IST_LEITUNGSFALL(b.leitung) ? 1 : 0) - (IST_LEITUNGSFALL(a.leitung) ? 1 : 0);
+    });
+  }
+
+  function renderMatrix() {
+    const wurzel = document.getElementById('bildKoerper');
+    const offen = S.vorhaben.filter(v => !mxEinsortierbar(v));
+    // Wie viele der Vorhaben in der Zone tatsächlich ins Leitungsportfolio gehen.
+    // Die Zone selbst kommt nur aus den zwei Achsen, das Landen hängt zusätzlich
+    // an der Entscheidung. Deshalb heißt sie Kandidaten und nicht Leitungsportfolio.
+    const inZone = S.vorhaben.filter(v => mxEinsortierbar(v) && IST_LEITUNGSFALL(v.leitung)
+      && (v.ruhen === RUHEN[1] || v.ruhen === RUHEN[2]));
+    const drin = inZone.filter(v => portfolio(v).wert === 'haus');
+
+    const zellen = MX_ZEILEN.map((zeile, zi) => {
+      const felder = MX_SPALTEN.map((spalte, si) => {
+        const inhalt = sortiert(S.vorhaben.filter(v => v.ruhen === spalte.wert && v.leitung === zeile.wert));
+        // Oben rechts: Leitung muss steuern und Ruhenlassen kostet etwas.
+        const haus = zi <= 1 && si >= 2;
+        // Jede Zelle steht explizit im Raster. Die Zone unten ist ein eigenes
+        // Rasterfeld, und ein fest platziertes Feld würde die automatische
+        // Verteilung sonst verschieben.
+        return `<div class="mx-zelle ${haus ? 'haus' : ''}" role="cell" style="grid-column:${si + 2}; grid-row:${zi + 2}">${inhalt.map(v => kachel(v)).join('')}</div>`;
+      }).join('');
+      return `<div class="mx-reihe" role="row"><div class="mx-zeile" role="rowheader" style="grid-column:1; grid-row:${zi + 2}">${esc(zeile.kopf)}</div>${felder}</div>`;
+    }).join('');
+
+    const zonenSatz = inZone.length === 0
+      ? 'Zurzeit liegt dort kein Vorhaben.'
+      : drin.length === inZone.length
+        ? `Alle ${inZone.length} sind eingeplant und gehen damit als Leitungsfall ins Leitungsportfolio.`
+        : `${drin.length} von ${inZone.length} sind eingeplant und gehen damit ins Leitungsportfolio, der Rest wartet oder ist bewusst abgesagt.`;
+
+    wurzel.innerHTML = `
+      <p class="mx-achse-x">Was kostet es, das Vorhaben liegen zu lassen? &rarr;</p>
+      <div class="mx-scroll">
+        <div class="matrix" role="table" aria-label="Vorhaben nach Kosten des Ruhenlassens und Entscheidungsbedarf">
+          <div class="mx-reihe" role="row">
+            <div class="mx-kopf leer" role="columnheader" style="grid-column:1; grid-row:1">Wer muss entscheiden?</div>
+            ${MX_SPALTEN.map((s, si) => `<div class="mx-kopf" role="columnheader" style="grid-column:${si + 2}; grid-row:1">${esc(s.kopf)}</div>`).join('')}
+          </div>
+          ${zellen}
+          <div class="mx-zone" aria-hidden="true"><span>Kandidaten fürs Leitungsportfolio</span></div>
+        </div>
+      </div>
+      <p class="mx-lese"><strong>So liest sich das Bild:</strong> Im minze umrandeten Feld oben rechts steht, was die Leitung wirklich steuern muss und wo Liegenlassen etwas kostet. Das sind die Kandidaten fürs Leitungsportfolio. ${esc(zonenSatz)} Unten links steht, was niemand entscheiden muss und was auch dauerhaft kaum fehlen würde. Das sind die Kandidaten für "Abgesagt".</p>
+      ${offen.length ? `<div class="mx-offen">
+        <p class="mx-offen-kopf">Noch nicht einsortierbar · ${offen.length}</p>
+        <div class="mx-offen-body">${sortiert(offen).map(v => kachel(v)).join('')}</div>
+      </div>` : ''}`;
+  }
+
+  function renderLanes() {
+    const bahnen = [...ZIELE, OHNE_ZIEL, WAEHLEN];
+    document.getElementById('bildKoerper').innerHTML = bahnen.map(bahn => {
+      const drin = sortiert(S.vorhaben.filter(v => v.ziel === bahn));
+      if (bahn === WAEHLEN && !drin.length) return '';
+      const summe = drin.reduce((wert, v) => wert + vzaeWert(v), 0);
+      const name = bahn === WAEHLEN ? 'Ziel noch nicht gewählt' : bahn;
+      return `<div class="lane">
+        <div>
+          <p class="lane-name">${esc(name)}</p>
+          <p class="lane-meta">${drin.length ? (drin.length === 1 ? 'ein Vorhaben' : drin.length + ' Vorhaben') + ' · ' + zahlText(summe) : 'kein Vorhaben'}</p>
+        </div>
+        <div class="lane-body">${drin.map(v => kachel(v)).join('')}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Die Portfolio-Sicht beantwortet die Frage, die die Leitungsrunde zuerst
+  // stellt: was geht ans Haus, was steuert die Abteilung, was machen wir nicht.
+  // Zwei Stufen: oben der Schnitt eingeplant gegen nicht eingeplant, darin die
+  // Körbe. Die Körbe sind abgeleitet, hier wird nichts eingeordnet.
+  const PF_GRUPPEN = [
+    { kopf: 'Eingeplant', sub: 'bindet Kapazität im nächsten Halbjahr', koerbe: ['haus', 'fach'], gebunden: true },
+    { kopf: 'Nicht eingeplant', sub: 'bindet keine Kapazität', koerbe: ['warte', 'nicht'] }
+  ];
+  const PF_SUB = {
+    haus: 'Vorschlag ans Haus, ausgewählt wird dort',
+    fach: 'die Abteilung steuert selbst',
+    warte: 'wartet auf eine benannte Bedingung',
+    nicht: 'in diesem Halbjahr bewusst abgesagt'
+  };
+
+  function renderPortfolio() {
+    const bahn = (korb) => {
+      const drin = sortiert(S.vorhaben.filter(v => portfolio(v).wert === korb));
+      const summe = drin.reduce((wert, v) => wert + vzaeWert(v), 0);
+      return `<div class="lane">
+        <div>
+          <p class="lane-name">${esc(PORTFOLIO[korb])}</p>
+          <p class="lane-sub">${esc(PF_SUB[korb])}</p>
+          <p class="lane-meta">${drin.length ? (drin.length === 1 ? 'ein Vorhaben' : drin.length + ' Vorhaben') + ' · ' + zahlText(summe) : 'kein Vorhaben'}</p>
+        </div>
+        <div class="lane-body">${drin.map(v => kachel(v, true)).join('')}</div>
+      </div>`;
+    };
+    const offen = sortiert(S.vorhaben.filter(v => portfolio(v).wert === 'offen'));
+    document.getElementById('bildKoerper').innerHTML = PF_GRUPPEN.map(g => {
+      const summe = g.koerbe.reduce((wert, korb) =>
+        wert + S.vorhaben.filter(v => portfolio(v).wert === korb).reduce((s, v) => s + vzaeWert(v), 0), 0);
+      return `<div class="pf-gruppe ${g.gebunden ? 'gebunden' : ''}">
+        <div class="pf-kopf">
+          <p class="pf-titel">${esc(g.kopf)} <span>${zahlText(summe)} VZÄ</span></p>
+          <p class="pf-sub">${esc(g.sub)}</p>
+        </div>
+        ${g.koerbe.map(bahn).join('')}
+      </div>`;
+    }).join('') + (offen.length ? `<div class="mx-offen">
+      <p class="mx-offen-kopf">${esc(PORTFOLIO.offen)} · ${offen.length}</p>
+      <p class="lane-sub">Noch kein Korb, es fehlen Antworten im Steckbrief.</p>
+      <div class="mx-offen-body">${offen.map(v => kachel(v, true)).join('')}</div>
+    </div>` : '');
+  }
+
+  // Vierte Sicht: Abhängigkeiten ohne Linien. Ein Klick holt das Vorhaben und
+  // seine Nachbarn nach vorn, der Rest tritt zurück. Linien gäbe es nur als
+  // Spaghetti, die Kacheln haben in den Sichten keine stabilen Positionen.
+  function renderAbhaengig() {
+    const wurzel = document.getElementById('bildKoerper');
+    const verbunden = new Set();
+    let lese = '';
+    const v = aktivId ? nachId(aktivId) : null;
+    if (v) {
+      verbunden.add(v.id);
+      const hin = [], extern = [];
+      (v.haengtAn || []).forEach(a => {
+        if (a.typ === 'v') {
+          verbunden.add(a.id);
+          const d = nachId(a.id);
+          if (d) hin.push(`"${d.name}" (${ENTSCHEIDUNG[gewaehlt(d)]})`);
+        } else {
+          const x = (S.externe || []).find(e => e.id === a.id);
+          if (x) extern.push(`"${x.name}" (extern)`);
+        }
+      });
+      const her = S.vorhaben.filter(x => (x.haengtAn || []).some(a => a.typ === 'v' && a.id === v.id));
+      her.forEach(x => verbunden.add(x.id));
+      const anListe = hin.concat(extern);
+      const teile = [anListe.length ? `Hängt an: ${anListe.join(', ')}.` : 'Hängt an nichts Erfasstem.'];
+      if (her.length) teile.push(`Daran ${her.length === 1 ? 'hängt' : 'hängen'}: ${her.map(x => `"${x.name}"`).join(', ')}.`);
+      lese = `<p class="mx-lese"><strong>${esc(v.name)}.</strong> ${esc(teile.join(' '))}</p>`;
+    }
+    wurzel.innerHTML = `
+      <p class="abh-hinweis">Ein Vorhaben anklicken: Wovon es abhängt und was daran hängt, kommt nach vorn, der Rest tritt zurück. Erfasst werden Abhängigkeiten im Steckbrief ("Hängt ab von").</p>
+      <div class="abh-feld">${sortiert(S.vorhaben).map(k => kachel(k)).join('')}</div>
+      ${lese}`;
+    if (v) wurzel.querySelectorAll('[data-kachel]').forEach(el => {
+      el.classList.add(verbunden.has(el.dataset.kachel) ? 'abh-vorn' : 'abh-zurueck');
+    });
+  }
+
+  function renderBild() {
+    if (sicht === 'matrix') renderMatrix();
+    else if (sicht === 'portfolio') renderPortfolio();
+    else if (sicht === 'abhaengig') renderAbhaengig();
+    else renderLanes();
+    // In der Portfolio-Sicht tragen die Bahnen den Status: Kacheln neutral,
+    // Status-Legende ausgeblendet (siehe CSS zu .neutral und .nur-lf).
+    document.getElementById('bildKoerper').classList.toggle('neutral', sicht === 'portfolio');
+    document.querySelector('.legende').classList.toggle('nur-lf', sicht === 'portfolio');
+    document.querySelectorAll('.sichten button').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.sicht === sicht)));
+    document.getElementById('bildKoerper').querySelectorAll('[data-kachel]').forEach(el => el.addEventListener('click', () => {
+      aktivId = aktivId === el.dataset.kachel ? null : el.dataset.kachel;
+      renderPriorisieren();
+      if (aktivId) document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }));
+  }
+
+  // FLIP: alte Positionen messen, neu zeichnen, Kacheln von der alten Stelle
+  // an die neue fliegen lassen. Nur verschieben, nicht skalieren, damit die
+  // Schrift scharf bleibt.
+  function sichtWechseln(neu) {
+    if (neu === sicht) return;
+    const vorher = new Map();
+    document.getElementById('bildKoerper').querySelectorAll('[data-kachel]').forEach(el => {
+      vorher.set(el.dataset.kachel, el.getBoundingClientRect());
+    });
+    sicht = neu;
+    renderBild();
+    document.getElementById('bildKoerper').querySelectorAll('[data-kachel]').forEach(el => {
+      const alt = vorher.get(el.dataset.kachel);
+      if (!alt) return;
+      const jetzt = el.getBoundingClientRect();
+      const dx = alt.left - jetzt.left;
+      const dy = alt.top - jetzt.top;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+      el.style.transition = 'none';
+      el.style.transform = `translate(${dx}px, ${dy}px)`;
+      requestAnimationFrame(() => {
+        el.style.transition = 'transform .6s var(--ease)';
+        el.style.transform = '';
+      });
+    });
+  }
+
+  function renderPanel() {
+    const wurzel = document.getElementById('entscheidPanel');
+    const v = nachId(aktivId);
+    if (!v) {
+      wurzel.innerHTML = '';
+      return;
+    }
+    const e = empfehlung(v);
+    const wahl = gewaehlt(v);
+    const abweichend = weichtAb(v);
+    const knopf = (wert, titel, unter) => `<button type="button" data-wahl="${wert}" aria-pressed="${wahl === wert}">${esc(titel)}<small>${esc(unter)}</small></button>`;
+
+    wurzel.innerHTML = `<div class="panel">
+      <div class="pn-kopf">
+        <h3>${esc(v.name)}</h3>
+        <button class="textbtn blau" type="button" id="zumSteckbrief">Steckbrief öffnen</button>
+      </div>
+      <p class="pn-empf">Empfehlung: <strong>${esc(ENTSCHEIDUNG[e.wert])}</strong>. ${esc(e.regel)}</p>
+      <div class="pn-wert">${balkenHtml(v)}</div>
+      <div class="wahl">
+        ${knopf('prio', 'Eingeplant', 'wird im nächsten Halbjahr gemacht und bekommt Kapazität')}
+        ${knopf('wartet', 'Wartet', 'gewollt, startet erst bei einer benannten Bedingung')}
+        ${knopf('nicht', 'Abgesagt', 'in diesem Halbjahr bewusst nicht weiter')}
+      </div>
+      <!-- Ohne Artikel formuliert, sonst hieße es "im Warteliste" -->
+      <p class="pn-landet">Landet damit hier: <strong>${esc(PORTFOLIO[portfolio(v).wert])}</strong>. ${esc(portfolio(v).satz)}</p>
+      ${abweichend ? `<div class="pn-feld">
+        <label for="begruendung">Ihr weicht von der Empfehlung ab. Warum, in einem Satz?</label>
+        <input type="text" id="begruendung" data-res="begruendung" maxlength="240" value="${esc(v.begruendung)}">
+        ${v.begruendung.trim() ? '' : '<p class="fehlt">Begründung fehlt noch.</p>'}
+      </div>` : ''}
+      ${wahl === 'wartet' ? `<div class="pn-feld">
+        <label for="bedingung">Wird aktiv, wenn ...</label>
+        <input type="text" id="bedingung" data-res="bedingung" maxlength="200" value="${esc(v.bedingung)}">
+        ${v.bedingung.trim() ? '' : '<p class="fehlt">Ohne Bedingung ist das ein Parkplatz.</p>'}
+      </div>` : ''}
+      <div class="pn-foot">
+        <span class="lane-meta">${v.hinweis.trim() ? 'Hinweis der Erfassung: ' + esc(v.hinweis) : ''}</span>
+        <button class="btn leise" type="button" id="panelZu">Fertig</button>
+      </div>
+    </div>`;
+
+    wurzel.querySelectorAll('[data-wahl]').forEach(el => el.addEventListener('click', () => {
+      v.entscheidung = v.entscheidung === el.dataset.wahl ? 'offen' : el.dataset.wahl;
+      speichern();
+      renderPriorisieren();
+    }));
+    wurzel.querySelectorAll('[data-res]').forEach(el => el.addEventListener('input', () => {
+      v[el.dataset.res] = el.value;
+      speichern();
+      const fehlt = el.parentElement.querySelector('.fehlt');
+      if (fehlt && el.value.trim()) fehlt.remove();
+      renderKonflikte();
+    }));
+    document.getElementById('panelZu').addEventListener('click', () => {
+      aktivId = null;
+      renderPriorisieren();
+    });
+    document.getElementById('zumSteckbrief').addEventListener('click', () => {
+      offenId = v.id;
+      wechsle('erfassen');
+    });
+  }
+
+  function renderKonflikte() {
+    const punkte = konflikte(S.vorhaben, verfuegbarWert());
+    // Die Frage steht zuerst, der Befund darunter: der Spiegel fragt, er
+    // bewertet nicht, also ist die Frage der Anker fürs Auge.
+    document.getElementById('konflikte').innerHTML = punkte.length
+      ? punkte.map(p => `<div class="konflikt"><p class="k-frage">${esc(p.frage)}</p><p class="k-befund">${esc(p.text)}</p></div>`).join('')
+      : '<p class="ruhig">Nichts auffällig. Das Gesamtbild passt zu dem, was ihr eingetragen habt.</p>';
+    document.getElementById('konflikteZahl').textContent = punkte.length ? ' · ' + punkte.length : '';
+  }
+
+  function renderLeitungsfaelle() {
+    const faelle = leitungsfaelle(S.vorhaben);
+    // Name, Frage und Meta bleiben sichtbar, die Folge des Nichtentscheidens
+    // klappt auf: sie ist der längste Text und wird erst im Gespräch gebraucht.
+    // Der frühere Vorsatz "Ohne Entscheidung:" ist raus, die Sätze im Feld
+    // fangen selbst so an und lasen sich doppelt.
+    document.getElementById('leitungsfaelle').innerHTML = faelle.length
+      ? faelle.map(v => `<div class="lf-eintrag">
+          <p class="lf-name">${esc(v.name)}</p>
+          <p class="lf-frage">${v.lfFrage.trim() ? esc(v.lfFrage) : '<span style="color:var(--kirsche-text)">Frage fehlt noch.</span>'}</p>
+          <p class="lf-meta">${[v.lfTermin ? 'bis ' + v.lfTermin : '', v.lfWer ? 'entscheidet: ' + v.lfWer : '', v.leitung === 'konflikt' ? 'hausweiter Konflikt' : ''].filter(Boolean).map(esc).join(' · ')}</p>
+          ${v.lfFolge.trim() ? `<details class="lf-mehr"><summary>Was ohne Entscheidung passiert</summary><p>${esc(v.lfFolge)}</p></details>` : ''}
+        </div>`).join('')
+      : '<p class="ruhig">Kein Leitungsfall gemeldet. Die Abteilung steuert ihr Portfolio in diesem Halbjahr allein.</p>';
+    document.getElementById('leitungsfaelleZahl').textContent = faelle.length ? ' · ' + faelle.length : '';
+
+    // Leitungsfälle, die nicht eingeplant sind, gehen nicht ans Haus. Sie
+    // verschwinden aber auch nicht: hier steht, welche es sind und warum.
+    const zurueck = leitungsfaelleZurueck(S.vorhaben);
+    document.getElementById('leitungsfaelle').insertAdjacentHTML('beforeend', zurueck.length
+      ? `<div class="lf-zurueck">
+          <p class="lf-zurueck-kopf">Nicht gemeldet · ${zurueck.length}</p>
+          ${zurueck.map(v => `<p class="lf-meta">${esc(v.name)}: ${esc(ENTSCHEIDUNG[gewaehlt(v)])}, geht damit nicht ins Leitungsportfolio.</p>`).join('')}
+        </div>`
+      : '');
+  }
+
+  function renderPriorisieren() {
+    renderBudget();
+    renderBild();
+    renderPanel();
+    renderKonflikte();
+    renderLeitungsfaelle();
+  }
+
+  /* ---------- Rahmen ---------- */
+
+  function wechsle(neu) {
+    ansicht = neu;
+    document.querySelectorAll('.schritt').forEach(el => el.setAttribute('aria-current', String(el.dataset.ansicht === ansicht)));
+    document.getElementById('ansicht-erfassen').classList.toggle('verborgen', ansicht !== 'erfassen');
+    document.getElementById('ansicht-priorisieren').classList.toggle('verborgen', ansicht !== 'priorisieren');
+    if (ansicht === 'erfassen') renderErfassen(); else renderPriorisieren();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function start() {
+    laden();
+    document.getElementById('brandAbt').textContent = ' · ' + (S.abteilung || 'Abteilung');
+    document.getElementById('brandHome').addEventListener('click', () => wechsle('erfassen'));
+    document.querySelectorAll('.schritt').forEach(el => el.addEventListener('click', () => wechsle(el.dataset.ansicht)));
+    document.querySelectorAll('.sichten button').forEach(el => el.addEventListener('click', () => sichtWechseln(el.dataset.sicht)));
+    document.getElementById('neuZeigen').addEventListener('click', () => {
+      document.getElementById('neuZeigen').classList.add('verborgen');
+      document.getElementById('neuForm').classList.remove('verborgen');
+      document.getElementById('neuName').focus();
+    });
+    document.getElementById('addBtn').addEventListener('click', anlegen);
+    document.getElementById('neuName').addEventListener('keydown', event => {
+      if (event.key === 'Enter') anlegen();
+      if (event.key === 'Escape') neuSchliessen();
+    });
+    document.getElementById('copy').addEventListener('click', kopieren);
+    document.getElementById('reset').addEventListener('click', () => {
+      if (!confirm('Alle Eingaben verwerfen und die Beispieldaten wiederherstellen?')) return;
+      S = beispieldaten();
+      offenId = S.vorhaben[0].id;
+      aktivId = null;
+      speichern();
+      wechsle(ansicht);
+    });
+    // Direktlinks fürs Vorführen: springen gleich in Ansicht 2, teils in eine Sicht
+    const sprung = { '#entscheiden': null, '#portfolio': 'portfolio', '#matrix': 'matrix', '#abhaengig': 'abhaengig' };
+    if (location.hash in sprung) {
+      if (sprung[location.hash]) sicht = sprung[location.hash];
+      wechsle('priorisieren');
+    } else {
+      wechsle('erfassen');
+    }
+  }
+
+  function neuSchliessen() {
+    document.getElementById('neuForm').classList.add('verborgen');
+    document.getElementById('neuZeigen').classList.remove('verborgen');
+    document.getElementById('neuName').value = '';
+  }
+
+  function anlegen() {
+    const feld = document.getElementById('neuName');
+    const name = feld.value.trim();
+    if (!name) { feld.focus(); return; }
+    const v = neuesVorhaben('v' + naechste++, name);
+    S.vorhaben.push(v);
+    offenId = v.id;
+    neuSchliessen();
+    speichern();
+    renderErfassen();
+  }
+
+  function kopieren() {
+    const text = tsv(S.abteilung, S.vorhaben, S.externe);
+    const knopf = document.getElementById('copy');
+    const fertig = () => { knopf.textContent = 'Kopiert'; setTimeout(() => { knopf.textContent = 'Als Tabelle kopieren'; }, 1600); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(fertig, () => window.prompt('Kopieren mit Strg+C:', text));
+    } else {
+      window.prompt('Kopieren mit Strg+C:', text);
+    }
+  }
+
+  start();
+})();
+</script>
+</body>
+</html>
