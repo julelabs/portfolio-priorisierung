@@ -358,8 +358,8 @@
      in der Zeile und nichts ragt über die Kante der Arbeitsfläche hinaus:
      jede Spalte beginnt exakt an der Kante ihrer Fläche. */
   .spalte h3 i.lf { flex: none; width: 5px; height: 15px; margin-right: 3px; border-radius: 2px; background: var(--minze); }
-  .flaeche { background: var(--weiss); border: 1px solid var(--line); border-radius: 9px; }
-  .flaeche > * + * { border-top: 1px solid var(--line); }
+  .arbeitsflaeche { background: var(--weiss); border: 1px solid var(--line); border-radius: 9px; }
+  .arbeitsflaeche > * + * { border-top: 1px solid var(--line); }
   #konflikte { counter-reset: arbeitsfrage; }
   /* Jede Zeile ist ein Arbeitsauftrag und führt mit einer sichtbaren Aktion
      zurück ins Portfolio oder zum Vorhaben. Die Ziffer steht in einer eigenen
@@ -382,7 +382,7 @@
   .textbtn.k-zum::after { content: '\2192'; font-size: 15px; line-height: 1; }
   .textbtn.k-zum:hover { background: var(--lavendel); }
   .ruhig { color: var(--fg-muted); font-size: 14.5px; }
-  .flaeche > .ruhig { padding: 17px 20px 19px; line-height: 1.5; }
+  .arbeitsflaeche > .ruhig { padding: 17px 20px 19px; line-height: 1.5; }
   .lf-intro { padding: 15px 18px 16px; color: var(--fg-muted); font-size: 13.5px; line-height: 1.45; }
   .lf-eintrag, .lf-zurueck { padding: 15px 18px 16px; }
   .lf-name { font-family: var(--display); font-weight: 700; font-size: 15px; }
@@ -396,7 +396,7 @@
   @media (max-width: 620px) {
     .konflikt { padding: 16px 16px 18px 48px; }
     .konflikt::before { left: 16px; top: 16px; }
-    .lf-intro, .lf-eintrag, .lf-zurueck, .flaeche > .ruhig { padding-left: 16px; padding-right: 16px; }
+    .lf-intro, .lf-eintrag, .lf-zurueck, .arbeitsflaeche > .ruhig { padding-left: 16px; padding-right: 16px; }
   }
 
   .btn { border: 0; border-radius: 6px; cursor: pointer; font-family: var(--display); font-size: 14.5px; font-weight: 700; padding: 11px 18px; }
@@ -489,11 +489,11 @@
         <div class="zweispalt">
           <section class="spalte fragen-spalte" aria-labelledby="konflikteTitel">
             <h3 id="konflikteTitel"></h3>
-            <div class="flaeche" id="konflikte"></div>
+            <div class="arbeitsflaeche" id="konflikte"></div>
           </section>
           <aside class="spalte leitungs-spalte" aria-labelledby="leitungsfaelleTitel">
             <h3 id="leitungsfaelleTitel"><i class="lf" aria-hidden="true"></i>Leitungsfälle<span id="leitungsfaelleZahl"></span></h3>
-            <div class="flaeche" id="leitungsfaelle"></div>
+            <div class="arbeitsflaeche" id="leitungsfaelle"></div>
           </aside>
         </div>
       </div>
