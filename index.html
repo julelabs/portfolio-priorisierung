@@ -338,41 +338,66 @@
   .pn-feld label { display: block; font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg); margin-bottom: 4px; }
   .pn-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
 
-  .folgt-kopf { margin-bottom: 16px; }
-  .folgt-kopf h2 { font-size: 18px; }
-  .folgt-kopf p { color: var(--fg-muted); font-size: 13.5px; }
-  .zweispalt { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 34px); align-items: start; }
-  @media (max-width: 860px) { .zweispalt { grid-template-columns: 1fr; } }
-  .spalte + .spalte { border-left: 1px solid var(--line); padding-left: clamp(20px, 3vw, 34px); }
-  @media (max-width: 860px) { .spalte + .spalte { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; padding-top: 20px; } }
-  .spalte h3 { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-2); margin-bottom: 3px; }
-  .spalte .sub { color: var(--fg-muted); font-size: 13.5px; margin-bottom: 14px; }
-  /* Trennlinie oben statt Kante links, genau wie die Leitungsfälle daneben.
-     Beide Spalten von "Was daraus folgt" lesen sich damit gleich. */
-  .konflikt { border-top: 1px solid var(--line); padding: 11px 0 12px; }
-  .konflikt:first-of-type { border-top: 0; padding-top: 0; }
+  /* Der Block ist keine Fußnote unter dem Bild, sondern der Übergang vom
+     Betrachten zum Handeln. Die getönte Fläche fasst ihn als Arbeitszone,
+     ohne eine weitere dunkle Bühne oder eine gleichförmige Card-Reihe zu bauen.
+     Beide Spalten stehen auf demselben Raster (Entscheidung 52): die
+     Überschrift auf der getönten Fläche, darunter je eine weiße Arbeitsfläche
+     mit gleicher Oberkante. Die Einträge sind Zeilen dieser Fläche, getrennt
+     durch eine Haarlinie, nicht einzeln schwebende Karten. */
+  .entscheid-hinweise { background: var(--blau-10); box-shadow: inset 0 4px 0 var(--blau); padding-top: clamp(24px, 3vw, 34px); padding-bottom: clamp(28px, 3.5vw, 40px); }
+  .fl-teil + .entscheid-hinweise { border-top: 0; }
+  .folgt-kopf { margin-bottom: 20px; }
+  .folgt-kopf h2 { font-size: clamp(22px, 2.1vw, 28px); text-wrap: balance; }
+  .zweispalt { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, .75fr); gap: clamp(20px, 2.5vw, 30px); align-items: start; }
+  @media (max-width: 900px) { .zweispalt { grid-template-columns: 1fr; } }
+  /* Beide Spaltentitel sind gleich laut und gleich hoch, damit die zwei
+     Arbeitsflächen darunter auf derselben Linie beginnen. */
+  .spalte h3 { display: flex; align-items: center; gap: 4px; min-height: 20px; font-family: var(--display); font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--fg); margin: 0 0 12px; }
+  /* Das Minze-Zeichen ist dasselbe wie in der Legende: Leitungsfall. Es steht
+     in der Zeile und nichts ragt über die Kante der Arbeitsfläche hinaus:
+     jede Spalte beginnt exakt an der Kante ihrer Fläche. */
+  .spalte h3 i.lf { flex: none; width: 5px; height: 15px; margin-right: 3px; border-radius: 2px; background: var(--minze); }
+  .flaeche { background: var(--weiss); border: 1px solid var(--line); border-radius: 9px; }
+  .flaeche > * + * { border-top: 1px solid var(--line); }
+  #konflikte { counter-reset: arbeitsfrage; }
+  /* Jede Zeile ist ein Arbeitsauftrag und führt mit einer sichtbaren Aktion
+     zurück ins Portfolio oder zum Vorhaben. Die Ziffer steht in einer eigenen
+     Spalte, damit alle Texte auf einer Kante beginnen. */
+  .konflikt { counter-increment: arbeitsfrage; position: relative; padding: 17px 20px 19px 54px; }
+  .konflikt::before { content: counter(arbeitsfrage, decimal-leading-zero); position: absolute; left: 20px; top: 17px; font-family: var(--display); font-size: 12.5px; font-weight: 800; line-height: 16px; color: var(--blau-40); font-variant-numeric: tabular-nums; }
   /* Der Befund zuerst, mit den Vorhaben-Namen als Trägern, die Frage leise
      darunter (Entscheidung 50, revidiert Entscheidung 40 an dieser Stelle:
      ohne den Befund hing die Frage in der Luft). Der Typ steht als Wort,
      nicht als Farbe, die Ampel bleibt draußen. */
-  #konflikteTitel { margin-bottom: 12px; }
-  .k-typ { font-family: var(--display); font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 3px; }
-  .konflikt .k-befund { color: var(--fg); font-size: 14px; }
+  /* Die gefüllte Pille bleibt (Julias Wahl 06.08.): laut war der Block durch
+     Schatten und drei blaue Vollknöpfe, nicht durch dieses kleine Zeichen. Der
+     negative Rand gleicht das Innenmaß aus, damit das Wort auf der Textkante
+     der Zeile sitzt. Keine Umriss-Form: die bedeutet im Bild "wartet". */
+  .k-typ { display: inline-block; background: var(--lavendel); border-radius: 3px; padding: 3px 8px; margin: -3px 0 8px -8px; font-family: var(--display); font-size: 10.5px; font-weight: 800; line-height: 16px; letter-spacing: .08em; text-transform: uppercase; color: var(--blau); }
+  .konflikt .k-befund { color: var(--fg); font-size: 15.5px; line-height: 1.4; text-wrap: pretty; }
   .konflikt .k-befund strong { font-family: var(--display); font-weight: 700; }
-  .konflikt .k-frage { color: var(--fg-muted); font-size: 13.5px; margin-top: 3px; }
-  .k-zum { margin-top: 5px; font-size: 12.5px; }
+  .konflikt .k-frage { color: var(--fg-2); font-size: 14.5px; line-height: 1.48; margin-top: 5px; text-wrap: pretty; }
+  .textbtn.k-zum { display: inline-flex; align-items: center; gap: 7px; background: var(--blau-10); color: var(--blau) !important; border-radius: 5px; margin-top: 11px; padding: 7px 11px; font-size: 12.5px; transition: background .18s var(--ease); }
+  .textbtn.k-zum::after { content: '\2192'; font-size: 15px; line-height: 1; }
+  .textbtn.k-zum:hover { background: var(--lavendel); }
   .ruhig { color: var(--fg-muted); font-size: 14.5px; }
-  .lf-eintrag { border-top: 1px solid var(--line); padding: 11px 0 12px; }
-  .lf-eintrag:first-of-type { border-top: 0; padding-top: 0; }
-  .lf-name { font-family: var(--display); font-weight: 700; font-size: 14.5px; }
+  .flaeche > .ruhig { padding: 17px 20px 19px; line-height: 1.5; }
+  .lf-intro { padding: 15px 18px 16px; color: var(--fg-muted); font-size: 13.5px; line-height: 1.45; }
+  .lf-eintrag, .lf-zurueck { padding: 15px 18px 16px; }
+  .lf-name { font-family: var(--display); font-weight: 700; font-size: 15px; }
   .lf-frage { color: var(--fg-2); font-size: 14px; margin-top: 1px; }
   .lf-meta { color: var(--fg-muted); font-size: 12.5px; margin-top: 4px; }
-  .lf-mehr { margin-top: 4px; }
+  .lf-mehr { margin-top: 5px; }
   .lf-mehr summary { cursor: pointer; color: var(--fg-muted); font-family: var(--display); font-size: 12.5px; font-weight: 700; }
   .lf-mehr summary:hover { color: var(--blau); }
   .lf-mehr p { color: var(--fg-muted); font-size: 13px; margin-top: 3px; }
-  .lf-zurueck { margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--line); }
   .lf-zurueck-kopf { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 4px; }
+  @media (max-width: 620px) {
+    .konflikt { padding: 16px 16px 18px 48px; }
+    .konflikt::before { left: 16px; top: 16px; }
+    .lf-intro, .lf-eintrag, .lf-zurueck, .flaeche > .ruhig { padding-left: 16px; padding-right: 16px; }
+  }
 
   .btn { border: 0; border-radius: 6px; cursor: pointer; font-family: var(--display); font-size: 14.5px; font-weight: 700; padding: 11px 18px; }
   .btn.primary { background: var(--blau); color: var(--weiss); }
@@ -457,20 +482,19 @@
         <div id="entscheidPanel"></div>
       </div>
 
-      <div class="fl-teil">
+      <div class="fl-teil entscheid-hinweise">
         <div class="folgt-kopf">
           <h2>Bevor ihr entscheidet</h2>
         </div>
         <div class="zweispalt">
-          <div class="spalte">
+          <section class="spalte fragen-spalte" aria-labelledby="konflikteTitel">
             <h3 id="konflikteTitel"></h3>
-            <div id="konflikte"></div>
-          </div>
-          <div class="spalte">
-            <h3>Leitungsfälle<span id="leitungsfaelleZahl"></span></h3>
-            <p class="sub">Aus den Leitungsfällen aller Abteilungen wählt das Haus sein Portfolio.</p>
-            <div id="leitungsfaelle"></div>
-          </div>
+            <div class="flaeche" id="konflikte"></div>
+          </section>
+          <aside class="spalte leitungs-spalte" aria-labelledby="leitungsfaelleTitel">
+            <h3 id="leitungsfaelleTitel"><i class="lf" aria-hidden="true"></i>Leitungsfälle<span id="leitungsfaelleZahl"></span></h3>
+            <div class="flaeche" id="leitungsfaelle"></div>
+          </aside>
         </div>
       </div>
     </div>
@@ -1679,17 +1703,23 @@
       return html;
     };
     document.getElementById('konflikte').innerHTML = punkte.length
-      ? punkte.map(p => `<div class="konflikt">
+      ? punkte.map(p => `<article class="konflikt">
           <p class="k-typ">${K_TYP[p.typ]}</p>
           <p class="k-befund">${fett(p)}</p>
           <p class="k-frage">${esc(p.frage)}</p>
-          ${p.vId ? `<button class="textbtn blau k-zum" type="button" data-zum="${p.vId}">Zum Vorhaben</button>` : ''}
-        </div>`).join('')
+          ${p.vId
+            ? `<button class="textbtn k-zum" type="button" data-zum="${p.vId}">Zum Vorhaben</button>`
+            : `<button class="textbtn k-zum" type="button" data-portfolio>${p.typ === 'ausprobieren' ? 'Im Portfolio ausprobieren' : 'Im Portfolio prüfen'}</button>`}
+        </article>`).join('')
       : '<p class="ruhig">Das Gesamtbild passt zu dem, was ihr eingetragen habt.</p>';
     document.getElementById('konflikte').querySelectorAll('[data-zum]').forEach(el => el.addEventListener('click', () => {
       aktivId = el.dataset.zum;
       renderPriorisieren();
       document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }));
+    document.getElementById('konflikte').querySelectorAll('[data-portfolio]').forEach(el => el.addEventListener('click', () => {
+      sichtWechseln('portfolio');
+      document.getElementById('bildKoerper').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }));
   }
 
@@ -1699,14 +1729,17 @@
     // klappt auf: sie ist der längste Text und wird erst im Gespräch gebraucht.
     // Der frühere Vorsatz "Ohne Entscheidung:" ist raus, die Sätze im Feld
     // fangen selbst so an und lasen sich doppelt.
-    document.getElementById('leitungsfaelle').innerHTML = faelle.length
+    // Der einordnende Satz ist die erste Zeile der Arbeitsfläche, nicht ein
+    // Vorspann darüber: sonst begänne die rechte Fläche tiefer als die linke.
+    const intro = '<p class="lf-intro">Aus den Leitungsfällen aller Abteilungen wählt das Haus sein Portfolio.</p>';
+    document.getElementById('leitungsfaelle').innerHTML = intro + (faelle.length
       ? faelle.map(v => `<div class="lf-eintrag">
           <p class="lf-name">${esc(v.name)}</p>
           <p class="lf-frage">${v.lfFrage.trim() ? esc(v.lfFrage) : '<span style="color:var(--kirsche-text)">Frage fehlt noch.</span>'}</p>
           <p class="lf-meta">${[v.lfTermin ? 'bis ' + v.lfTermin : '', v.lfWer ? 'entscheidet: ' + v.lfWer : '', v.leitung === 'konflikt' ? 'hausweiter Konflikt' : ''].filter(Boolean).map(esc).join(' · ')}</p>
           ${v.lfFolge.trim() ? `<details class="lf-mehr"><summary>Was ohne Entscheidung passiert</summary><p>${esc(v.lfFolge)}</p></details>` : ''}
         </div>`).join('')
-      : '<p class="ruhig">Kein Leitungsfall gemeldet. Die Abteilung steuert ihr Portfolio in diesem Halbjahr allein.</p>';
+      : '<p class="ruhig">Kein Leitungsfall gemeldet. Die Abteilung steuert ihr Portfolio in diesem Halbjahr allein.</p>');
     document.getElementById('leitungsfaelleZahl').textContent = faelle.length ? ' · ' + faelle.length : '';
 
     // Leitungsfälle, die nicht eingeplant sind, gehen nicht ans Haus. Sie
