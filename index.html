@@ -246,7 +246,6 @@
   /* Abhängigkeiten-Sicht: verbundene Kacheln kommen nach vorn, der Rest tritt
      zurück. Bewusst ohne Linien, die Positionen sind nicht stabil genug dafür. */
   .abh-hinweis { color: var(--fg-muted); font-size: 13.5px; margin-bottom: 12px; }
-  .abh-feld { display: flex; flex-wrap: wrap; gap: 8px; }
   #bildKoerper .abh-zurueck { opacity: .25; }
   @keyframes abh-heben { from { transform: translateY(0); } }
   #bildKoerper .abh-vorn { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(13,12,43,.16); animation: abh-heben .3s var(--ease); }
@@ -284,7 +283,7 @@
   /* Ziehen: nur in der Portfolio-Sicht. Die Zielspalte markiert sich beim
      Ziehen über eine gestrichelte Innenkante, die gezogene Kachel tritt
      zurück. Kein neuer Kachel-Code, beides ist ein flüchtiger Zustand. */
-  .matrix.pf .pt { cursor: grab; }
+  .matrix.pf.ziehbar .pt { cursor: grab; }
   .pt.zieht { opacity: .45; }
   .mx-zelle.drop-ziel { outline: 2px dashed var(--blau); outline-offset: -5px; }
   .mx-zieh-hinweis { background: var(--blau-10); border-radius: 6px; color: var(--fg-2); font-size: 13px; padding: 8px 12px; margin-bottom: 10px; }
@@ -423,7 +422,7 @@
   <section id="ansicht-priorisieren" class="verborgen">
     <div class="anriss">
       <h1>Was tragen wir im nächsten Halbjahr wirklich?</h1>
-      <p>Alle Vorhaben liegen nebeneinander, geordnet nach den Zielen des Hauses. Ihr entscheidet je Vorhaben: eingeplant, wartet oder abgesagt. Die Kapazitätslinie oben zeigt, was dabei nicht mehr hineinpasst.</p>
+      <p>Alle Vorhaben liegen nebeneinander. Ihr entscheidet je Vorhaben: eingeplant, wartet oder abgesagt. Die Kapazitätslinie oben zeigt, was dabei nicht mehr hineinpasst.</p>
     </div>
 
     <div class="budget" id="budget"></div>
@@ -433,9 +432,9 @@
         <div class="bild-kopf">
           <h2>Das Portfolio der Abteilung <span class="einheit">Zahlen in Vollzeitäquivalenten</span></h2>
           <div class="sichten">
-            <button type="button" data-sicht="ziele">Ziele</button>
             <button type="button" data-sicht="portfolio">Portfolio</button>
             <button type="button" data-sicht="matrix">Steuerungsbedarf</button>
+            <button type="button" data-sicht="ziele">Ziele</button>
             <button type="button" data-sicht="abhaengig">Abhängigkeiten</button>
           </div>
         </div>
@@ -849,7 +848,9 @@
     };
   }
 
-  let S, ansicht = 'erfassen', sicht = 'ziele', offenId = null, aktivId = null, ziehId = null, naechste = 1, naechsteExtern = 1;
+  // Portfolio ist die erste und die Standard-Sicht: der erste Tab muss dem
+  // entsprechen, was man beim Einstieg sieht (Entscheidung 49)
+  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, ziehId = null, naechste = 1, naechsteExtern = 1;
 
   function laden() {
     try {
@@ -1396,7 +1397,7 @@
     document.getElementById('bildKoerper').innerHTML = `
       <p class="mx-achse-x">Entscheidung der Abteilung &rarr;</p>
       <div class="mx-scroll">
-        <div class="matrix pf" role="table" aria-label="Vorhaben nach Entscheidung und Steuerung">
+        <div class="matrix pf${sicht === 'portfolio' ? ' ziehbar' : ''}" role="table" aria-label="Vorhaben nach Entscheidung und Steuerung">
           <div class="mx-reihe" role="row">
             <div class="mx-kopf leer" role="columnheader" style="grid-column:1; grid-row:1">Wer steuert?</div>
             ${koepfe}
@@ -1421,39 +1422,41 @@
       </div>` : ''}`;
   }
 
-  // Vierte Sicht: Abhängigkeiten ohne Linien. Ein Klick holt das Vorhaben und
-  // seine Nachbarn nach vorn, der Rest tritt zurück. Linien gäbe es nur als
-  // Spaghetti, die Kacheln haben in den Sichten keine stabilen Positionen.
+  // Vierte Sicht: Abhängigkeiten als Linse auf dem Portfolio-Raster
+  // (Entscheidung 49). Gleiche Positionen wie die Portfolio-Sicht, ein Klick
+  // holt das Vorhaben und seine Nachbarn in beide Richtungen nach vorn, der
+  // Rest tritt zurück. So steht der Widerspruch am Ort seiner Entscheidung,
+  // etwa ein wartender Leitungsfall, an dem Eingeplantes hängt. Linien gäbe
+  // es nur als Spaghetti. Gezogen wird hier nicht, das kann nur die
+  // Portfolio-Sicht selbst.
   function renderAbhaengig() {
+    renderPortfolio();
     const wurzel = document.getElementById('bildKoerper');
-    const verbunden = new Set();
-    let lese = '';
+    // Die Portfolio-Lesehilfe weicht der Linsen-Lese
+    wurzel.querySelector('.mx-lese').remove();
+    wurzel.insertAdjacentHTML('afterbegin',
+      '<p class="abh-hinweis">Ein Vorhaben anklicken: Wovon es abhängt und was daran hängt, kommt nach vorn, der Rest tritt zurück. Die Plätze bleiben die der Portfolio-Sicht. Erfasst werden Abhängigkeiten im Steckbrief ("Hängt ab von").</p>');
     const v = aktivId ? nachId(aktivId) : null;
-    if (v) {
-      verbunden.add(v.id);
-      const hin = [], extern = [];
-      (v.haengtAn || []).forEach(a => {
-        if (a.typ === 'v') {
-          verbunden.add(a.id);
-          const d = nachId(a.id);
-          if (d) hin.push(`"${d.name}" (${ENTSCHEIDUNG[gewaehlt(d)]})`);
-        } else {
-          const x = (S.externe || []).find(e => e.id === a.id);
-          if (x) extern.push(`"${x.name}" (extern)`);
-        }
-      });
-      const her = S.vorhaben.filter(x => (x.haengtAn || []).some(a => a.typ === 'v' && a.id === v.id));
-      her.forEach(x => verbunden.add(x.id));
-      const anListe = hin.concat(extern);
-      const teile = [anListe.length ? `Hängt an: ${anListe.join(', ')}.` : 'Hängt an nichts Erfasstem.'];
-      if (her.length) teile.push(`Daran ${her.length === 1 ? 'hängt' : 'hängen'}: ${her.map(x => `"${x.name}"`).join(', ')}.`);
-      lese = `<p class="mx-lese"><strong>${esc(v.name)}.</strong> ${esc(teile.join(' '))}</p>`;
-    }
-    wurzel.innerHTML = `
-      <p class="abh-hinweis">Ein Vorhaben anklicken: Wovon es abhängt und was daran hängt, kommt nach vorn, der Rest tritt zurück. Erfasst werden Abhängigkeiten im Steckbrief ("Hängt ab von").</p>
-      <div class="abh-feld">${sortiert(S.vorhaben).map(k => kachel(k)).join('')}</div>
-      ${lese}`;
-    if (v) wurzel.querySelectorAll('[data-kachel]').forEach(el => {
+    if (!v) return;
+    const verbunden = new Set([v.id]);
+    const hin = [], extern = [];
+    (v.haengtAn || []).forEach(a => {
+      if (a.typ === 'v') {
+        verbunden.add(a.id);
+        const d = nachId(a.id);
+        if (d) hin.push(`"${d.name}" (${ENTSCHEIDUNG[gewaehlt(d)]})`);
+      } else {
+        const x = (S.externe || []).find(e => e.id === a.id);
+        if (x) extern.push(`"${x.name}" (extern)`);
+      }
+    });
+    const her = S.vorhaben.filter(x => (x.haengtAn || []).some(a => a.typ === 'v' && a.id === v.id));
+    her.forEach(x => verbunden.add(x.id));
+    const anListe = hin.concat(extern);
+    const teile = [anListe.length ? `Hängt an: ${anListe.join(', ')}.` : 'Hängt an nichts Erfasstem.'];
+    if (her.length) teile.push(`Daran ${her.length === 1 ? 'hängt' : 'hängen'}: ${her.map(x => `"${x.name}"`).join(', ')}.`);
+    wurzel.insertAdjacentHTML('beforeend', `<p class="mx-lese"><strong>${esc(v.name)}.</strong> ${esc(teile.join(' '))}</p>`);
+    wurzel.querySelectorAll('[data-kachel]').forEach(el => {
       el.classList.add(verbunden.has(el.dataset.kachel) ? 'abh-vorn' : 'abh-zurueck');
     });
   }
