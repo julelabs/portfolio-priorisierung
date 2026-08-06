@@ -185,14 +185,18 @@
   /* Zwei Segmente statt einem: was gedeckt ist, bleibt minze, nur der Überhang
      wird kirsche. Die Marke sitzt genau am Farbwechsel, damit die Überbuchung
      eine Form hat und nicht nur eine Farbe. */
-  .bd-skala { position: relative; height: 20px; border-radius: 4px; background: rgba(255,255,255,.1); margin-bottom: 26px; }
+  .bd-skala { position: relative; height: 20px; border-radius: 4px; background: rgba(255,255,255,.1); margin: 24px 0 26px; }
   .bd-gedeckt { position: absolute; left: 0; top: 0; bottom: 0; background: var(--minze); border-radius: 4px 0 0 4px; transition: width .4s var(--ease); }
   .bd-ueberhang { position: absolute; top: 0; bottom: 0; background: var(--kirsche-60); border-radius: 0 4px 4px 0; transition: width .4s var(--ease), left .4s var(--ease); }
   .bd-marke { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--weiss); transition: left .4s var(--ease); }
   .bd-marke b { position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%); font-family: var(--display); font-size: 11.5px; font-weight: 800; color: var(--weiss); white-space: nowrap; }
   .bd-marke.rechts b { left: auto; right: 0; transform: none; }
-  .bd-satz { font-family: var(--display); font-size: 16px; font-weight: 700; margin-top: 13px; }
-  .bd-satz.ueber { color: var(--kirsche-60); }
+  /* Die Segmente beschriften sich selbst, in der Farbe ihres Segments
+     (gleiches Muster wie beim Steuerungsbedarf). Der frühere Satz darunter
+     rechnete vor, was die Grafik zeigt, und las sich belehrend. */
+  .bd-wert { position: absolute; top: -22px; transform: translateX(-50%); font-family: var(--display); font-size: 12.5px; font-weight: 800; white-space: nowrap; }
+  .bd-wert.gedeckt { color: var(--minze); }
+  .bd-wert.ueber { color: var(--kirsche-60); }
   .bd-neben { color: var(--blau-20); font-size: 14px; margin-top: 5px; }
 
   .flaeche { background: var(--weiss); border-radius: 8px; box-shadow: 0 18px 44px rgba(13,12,43,.06); }
@@ -204,14 +208,11 @@
   .legende { display: flex; gap: 14px; flex-wrap: wrap; color: var(--fg-muted); font-size: 12.5px; align-items: center; }
   .lg { display: inline-flex; align-items: center; gap: 6px; }
   .lg i { width: 13px; height: 13px; border-radius: 3px; display: inline-block; }
-  .lg i.prio { background: var(--blau); }
+  .lg i.prio { border: 2px solid var(--blau); }
   .lg i.wartet { border: 1.5px solid var(--blau-40); }
   .lg i.nicht { background: var(--lavendel); }
   .lg i.offen { border: 1.5px dashed var(--blau-40); }
   .lg i.lf { background: var(--minze); width: 5px; height: 15px; border-radius: 2px; }
-  /* In der Portfolio-Sicht tragen die Bahnen den Status, die Status-Legende
-     würde dort Kachel-Codes erklären, die es in der Sicht nicht gibt. */
-  .legende.nur-lf .lg-status { display: none; }
 
   /* Sichtwechsel */
   .sichten { display: flex; gap: 4px; background: var(--blau-10); border-radius: 6px; padding: 3px; }
@@ -270,15 +271,26 @@
      auf dem weißen Grund. Figur gegen Grund statt noch einer Farbe oder Kante.
      In der getönten Gruppe liegen ausschließlich gefüllte Kacheln, deshalb
      gibt es dort keine Kontrastprobleme. */
-  .pf-gruppe.gebunden { background: var(--blau-10); border-radius: 8px; padding: 15px 18px 18px; }
-  .pf-gruppe + .pf-gruppe { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); }
-  .pf-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 2px; }
-  .pf-titel { font-family: var(--display); font-size: 16.5px; font-weight: 800; letter-spacing: -0.01em; color: var(--fg); }
-  .pf-titel span { font-weight: 700; color: var(--blau); font-size: 13.5px; margin-left: 8px; }
-  .pf-gruppe:not(.gebunden) .pf-titel { color: var(--fg-2); }
-  .pf-gruppe:not(.gebunden) .pf-titel span { color: var(--fg-muted); }
-  .pf-sub { color: var(--fg-muted); font-size: 13px; margin-bottom: 2px; }
-  .pf-gruppe.gebunden .lane:first-of-type { border-top: 0; padding-top: 4px; }
+  /* Portfolio als Raster (06.08.): dieselbe Grammatik wie die Matrix, nur die
+     Achsen wechseln. Die getönte Spalte trägt den Kapazitätsschnitt aus
+     Entscheidung 36 weiter: Figur gegen Grund statt einer weiteren Farbe. */
+  .matrix.pf { grid-template-columns: 170px repeat(3, minmax(200px, 1fr)); min-width: 780px; }
+  /* Das Achsenwort führt, die Zahl stützt (Kleinigkeiten-Notiz 06.08.:
+     VZÄ war dominanter als die Entscheidungswörter) */
+  .matrix.pf .mx-kopf .pf-vzae { font-weight: 400; color: var(--fg-muted); margin-left: 8px; }
+  .matrix.pf .mx-kopf small { display: block; font-weight: 400; color: var(--fg-muted); font-size: 11.5px; margin-top: 2px; }
+  .matrix.pf .mx-zelle.pf-gebunden { background: var(--blau-10); }
+  .matrix.pf .mx-zelle { min-height: 110px; }
+  /* Ziehen: nur in der Portfolio-Sicht. Die Zielspalte markiert sich beim
+     Ziehen über eine gestrichelte Innenkante, die gezogene Kachel tritt
+     zurück. Kein neuer Kachel-Code, beides ist ein flüchtiger Zustand. */
+  .matrix.pf .pt { cursor: grab; }
+  .pt.zieht { opacity: .45; }
+  .mx-zelle.drop-ziel { outline: 2px dashed var(--blau); outline-offset: -5px; }
+  .mx-zieh-hinweis { background: var(--blau-10); border-radius: 6px; color: var(--fg-2); font-size: 13px; padding: 8px 12px; margin-bottom: 10px; }
+
+  .pf-korb, .pf-korb-leer { flex-basis: 100%; min-height: 13px; }
+  .pf-korb { font-family: var(--display); font-size: 10.5px; line-height: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); }
   .lane-body { display: flex; gap: 8px; flex-wrap: wrap; }
   .lane-leer { color: var(--fg-muted); font-size: 13px; padding: 6px 0; }
   @media (max-width: 720px) { .lane { grid-template-columns: 1fr; gap: 6px; } }
@@ -290,9 +302,11 @@
   .pt-korb { font-size: 11.5px; color: var(--fg-muted); }
   .pt-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--fg-muted); }
   .pt-state { font-family: var(--display); font-weight: 800; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
-  .pt.prio { background: var(--blau); border-color: var(--blau); }
-  .pt.prio .pt-name, .pt.prio .pt-foot, .pt.prio .pt-state { color: var(--weiss); }
-  .pt.prio .pt-foot, .pt.prio .pt-korb { color: var(--blau-20); }
+  /* Die Kachel ist das konstante Objekt, die Sicht nur die Linse (Entscheidung
+     46). Deshalb sieht derselbe Status in allen Sichten gleich aus: ruhige
+     weiße Fläche, das Statuswort benennt, die Behandlung stützt nur noch.
+     Die frühere dunkle Füllung für "eingeplant" dominierte die Raster. */
+  .pt.prio { border-width: 2px; border-color: var(--blau); }
   /* Gestrichelt heißt unfertig, wie der Punkt in der Namensliste. Die
      Entscheidung "wartet" bekommt deshalb den soliden Umriss, "noch offen"
      die Strichelung. Vorher war es umgekehrt und beide sahen sich zu ähnlich. */
@@ -300,17 +314,11 @@
   .pt.nicht { background: var(--lavendel); border-color: transparent; }
   .pt.nicht .pt-name, .pt.nicht .pt-state { color: var(--fg-2); }
   .pt.offen { border-style: dashed; border-color: var(--blau-40); background: transparent; }
-  /* Leitungsfall: Kante statt Etikett, damit die Kachel ihre Form behält */
-  .pt.lf { border-left: 5px solid var(--minze); padding-left: 9px; }
-  /* In der Portfolio-Sicht trägt die Bahn den Status, die Kacheln bleiben
-     neutral: sonst sagt jede Kachel dasselbe wie ihre Bahn in einer zweiten
-     Sprache, und fünf Kachel-Codes liegen auf einem Schirm. Nur die
-     Minze-Kante bleibt, sie trägt als einzige etwas Eigenes (Entscheidung 23).
-     Die Kante ist --feldkante, blau-20 hält auf blau-10 die 3:1 nicht. */
-  #bildKoerper.neutral .pt { background: var(--weiss); border: 1.5px solid var(--feldkante); }
-  #bildKoerper.neutral .pt .pt-name { color: var(--fg); }
-  #bildKoerper.neutral .pt .pt-state, #bildKoerper.neutral .pt .pt-foot, #bildKoerper.neutral .pt .pt-foot span { color: var(--fg-muted); }
-  #bildKoerper.neutral .pt.lf { border-left: 5px solid var(--minze); }
+  /* Leitungsfall: eingelassener Streifen statt dicker Rand-Kante. Die alte
+     border-left lief in den Eckradius und wirkte auf den weißen Karten wie
+     ein angeklebter Blob (Kleinigkeiten-Notiz 06.08.). Der Streifen liegt
+     innerhalb der Kartenkante, die Kachelform und das Padding bleiben gleich. */
+  .pt.lf::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--minze); border-radius: 5px 0 0 5px; }
 
   /* Ohne Kante links: die eigene Fläche, der Radius und die Überschrift sagen
      schon, dass hier etwas offen ist. Die Kante war reine Dekoration. */
@@ -425,9 +433,9 @@
         <div class="bild-kopf">
           <h2>Das Portfolio der Abteilung <span class="einheit">Zahlen in Vollzeitäquivalenten</span></h2>
           <div class="sichten">
-            <button type="button" data-sicht="ziele">Nach Zielen</button>
-            <button type="button" data-sicht="portfolio">Nach Portfolio</button>
-            <button type="button" data-sicht="matrix">Nach Steuerungsbedarf</button>
+            <button type="button" data-sicht="ziele">Ziele</button>
+            <button type="button" data-sicht="portfolio">Portfolio</button>
+            <button type="button" data-sicht="matrix">Steuerungsbedarf</button>
             <button type="button" data-sicht="abhaengig">Abhängigkeiten</button>
           </div>
         </div>
@@ -437,7 +445,7 @@
             <span class="lg lg-status"><i class="wartet"></i>wartet</span>
             <span class="lg lg-status"><i class="nicht"></i>abgesagt</span>
             <span class="lg lg-status"><i class="offen"></i>noch offen</span>
-            <span class="lg"><i class="lf"></i>Leitungsfall, Kandidat fürs Leitungsportfolio</span>
+            <span class="lg"><i class="lf"></i>Leitungsfall</span>
           </div>
         </div>
         <div id="bildKoerper"></div>
@@ -841,7 +849,7 @@
     };
   }
 
-  let S, ansicht = 'erfassen', sicht = 'ziele', offenId = null, aktivId = null, naechste = 1, naechsteExtern = 1;
+  let S, ansicht = 'erfassen', sicht = 'ziele', offenId = null, aktivId = null, ziehId = null, naechste = 1, naechsteExtern = 1;
 
   function laden() {
     try {
@@ -1129,7 +1137,7 @@
       <div class="sb-foot">
         <button class="textbtn" type="button" id="loeschen">Vorhaben entfernen</button>
         <span class="lane-meta">${istReif(v) ? 'Steckbrief vollständig.' : 'Offen: ' + luecken(v).join(', ') + '.'}</span>
-        <button class="btn primary" type="button" id="zuSchritt2">In Schritt 2 entscheiden</button>
+        <button class="btn primary" type="button" id="zuSchritt2">Weiter zum Portfolio</button>
       </div>
     </div>`;
 
@@ -1149,8 +1157,10 @@
       speichern();
       renderNav();
     });
+    // Bewusst ohne Vorauswahl: Schritt 2 verspricht den Blick auf alle
+    // Vorhaben nebeneinander. Ein schon offenes Entscheidungspanel wäre das
+    // v1-Muster (einzeln klassifizieren) durch die Hintertür.
     document.getElementById('zuSchritt2').addEventListener('click', () => {
-      aktivId = v.id;
       wechsle('priorisieren');
     });
     const abhFeld = document.getElementById('abhNeu');
@@ -1220,15 +1230,13 @@
     const breiteGedeckt = (gedeckt / skala) * 100;
     const breiteUeber = (kap.ueber / skala) * 100;
     const marke = (kap.verfuegbar / skala) * 100;
-    // Die Einheit steht einmal in der Überschrift, danach nur noch Zahlen
+    // Die Einheit steht einmal in der Überschrift, danach nur noch Zahlen.
+    // Die Segmente tragen ihre Werte selbst: der Rechenweg stand vorher als
+    // Satz darunter ("Das ist eins zu viel"), und der las sich belehrend.
     const eins = zahl => runde1(zahl) === 1;
-    const rest = runde1(Math.max(0, kap.verfuegbar - kap.gebunden));
-    const satz = kap.ueber > 0
-      ? `Was eingeplant ist, bindet ${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)}. Das ${eins(kap.ueber) ? 'ist 1' : 'sind ' + zahlText(kap.ueber)} zu viel.`
-      : `Was eingeplant ist, bindet ${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)}. Passt, ${zahlText(rest)} ${eins(rest) ? 'bleibt' : 'bleiben'} frei.`;
     const neben = [];
     if (kap.gestoppt > 0) neben.push(`${zahlText(kap.gestoppt)} ${eins(kap.gestoppt) ? 'wird' : 'werden'} aus laufender Arbeit frei, weil ihr sie bewusst beendet.`);
-    if (kap.nichtGebunden > 0) neben.push(`${zahlText(kap.nichtGebunden)} ${eins(kap.nichtGebunden) ? 'wird' : 'werden'} gar nicht erst gebunden (wartet oder abgesagt, noch nicht gestartet).`);
+    if (kap.nichtGebunden > 0) neben.push(`${zahlText(kap.nichtGebunden)} ${eins(kap.nichtGebunden) ? 'wird' : 'werden'} gar nicht erst gebunden: noch nicht gestartet, und die Runde plant sie nicht ein.`);
     if (kap.standOffen > 0) neben.push(`Bei ${zahlText(kap.standOffen)} ist der Stand nicht angegeben. Ob dabei etwas frei wird oder nur nichts gebunden, lässt sich deshalb nicht sagen.`);
 
     document.getElementById('budget').innerHTML = `
@@ -1236,12 +1244,13 @@
         <span class="bd-titel">Kapazität im nächsten Halbjahr · Vollzeitäquivalente</span>
         <span class="bd-eingabe">Die Abteilung hat<input type="text" inputmode="decimal" id="verfuegbar" value="${esc(S.verfuegbar)}" maxlength="6" aria-label="Verfügbare Vollzeitäquivalente"></span>
       </div>
-      <div class="bd-skala" role="img" aria-label="Gebunden ${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} Vollzeitäquivalenten">
+      <div class="bd-skala" role="img" aria-label="Gebunden ${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} Vollzeitäquivalenten${kap.ueber > 0 ? ', ' + zahlText(kap.ueber) + ' über der Grenze' : ''}">
         <div class="bd-gedeckt" style="width:${breiteGedeckt}%"></div>
         ${kap.ueber > 0 ? `<div class="bd-ueberhang" style="left:${marke}%; width:${breiteUeber}%"></div>` : ''}
+        ${gedeckt > 0 ? `<span class="bd-wert gedeckt" style="left:${breiteGedeckt / 2}%">${zahlText(gedeckt)}</span>` : ''}
+        ${kap.ueber > 0 ? `<span class="bd-wert ueber" style="left:${marke + breiteUeber / 2}%">+${zahlText(kap.ueber)}</span>` : ''}
         <div class="bd-marke ${marke > 88 ? 'rechts' : ''}" style="left:${marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>
       </div>
-      <p class="bd-satz ${kap.ueber > 0 ? 'ueber' : ''}">${esc(satz)}</p>
       ${neben.map(zeile => `<p class="bd-neben">${esc(zeile)}</p>`).join('')}`;
 
     const feld = document.getElementById('verfuegbar');
@@ -1314,7 +1323,7 @@
         : `${drin.length} von ${inZone.length} sind eingeplant und gehen damit ins Leitungsportfolio, der Rest wartet oder ist bewusst abgesagt.`;
 
     wurzel.innerHTML = `
-      <p class="mx-achse-x">Was kostet es, das Vorhaben liegen zu lassen? &rarr;</p>
+      <p class="mx-achse-x">Folgen des Ruhenlassens &rarr;</p>
       <div class="mx-scroll">
         <div class="matrix" role="table" aria-label="Vorhaben nach Kosten des Ruhenlassens und Entscheidungsbedarf">
           <div class="mx-reihe" role="row">
@@ -1349,50 +1358,67 @@
     }).join('');
   }
 
-  // Die Portfolio-Sicht beantwortet die Frage, die die Leitungsrunde zuerst
-  // stellt: was geht ans Haus, was steuert die Abteilung, was machen wir nicht.
-  // Zwei Stufen: oben der Schnitt eingeplant gegen nicht eingeplant, darin die
-  // Körbe. Die Körbe sind abgeleitet, hier wird nichts eingeordnet.
-  const PF_GRUPPEN = [
-    { kopf: 'Eingeplant', sub: 'bindet Kapazität im nächsten Halbjahr', koerbe: ['haus', 'fach'], gebunden: true },
-    { kopf: 'Nicht eingeplant', sub: 'bindet keine Kapazität', koerbe: ['warte', 'nicht'] }
+  // Die Portfolio-Sicht ist die gefaltete Schwester der Matrix (Entscheidung
+  // 46): gleiche Grammatik, keine künstlichen Zellen. "Wartet" und "abgesagt"
+  // führen unabhängig vom Leitungsbedarf in ihren Korb, ihre Zellen
+  // überspannen deshalb beide Zeilen. Nur "eingeplant" teilt sich danach, wer
+  // steuert. Die Verbindlichkeit steigt nach rechts, wie in der Matrix die
+  // Folgen: der Aufmerksamkeitsort oben rechts ist das Leitungsportfolio.
+  const PF_SPALTEN = [
+    { wahl: 'nicht', sub: 'in diesem Halbjahr bewusst abgesagt' },
+    { wahl: 'wartet', sub: 'wird aktiv, wenn die benannte Bedingung eintritt' },
+    { wahl: 'prio', sub: 'bindet Kapazität im nächsten Halbjahr', gebunden: true }
   ];
-  const PF_SUB = {
-    haus: 'Vorschlag ans Haus, ausgewählt wird dort',
-    fach: 'die Abteilung steuert selbst',
-    warte: 'wartet auf eine benannte Bedingung',
-    nicht: 'in diesem Halbjahr bewusst abgesagt'
-  };
 
   function renderPortfolio() {
-    const bahn = (korb) => {
-      const drin = sortiert(S.vorhaben.filter(v => portfolio(v).wert === korb));
-      const summe = drin.reduce((wert, v) => wert + vzaeWert(v), 0);
-      return `<div class="lane">
-        <div>
-          <p class="lane-name">${esc(PORTFOLIO[korb])}</p>
-          <p class="lane-sub">${esc(PF_SUB[korb])}</p>
-          <p class="lane-meta">${drin.length ? (drin.length === 1 ? 'ein Vorhaben' : drin.length + ' Vorhaben') + ' · ' + zahlText(summe) : 'kein Vorhaben'}</p>
-        </div>
-        <div class="lane-body">${drin.map(v => kachel(v, true)).join('')}</div>
-      </div>`;
+    const imKorb = korb => sortiert(S.vorhaben.filter(v => portfolio(v).wert === korb));
+    const vzaeSumme = liste => liste.reduce((wert, v) => wert + vzaeWert(v), 0);
+    const zelle = (korb, spalte, zeile, spannt, label) => {
+      const drin = imKorb(korb);
+      // Die überspannenden Zellen bekommen einen leeren Platzhalter in Höhe
+      // der Korb-Beschriftung, damit die erste Kachelzeile bündig beginnt.
+      // data-wahl macht die Zelle zum Zieh-Ziel: die Spalte ist die
+      // Entscheidung, die man treffen darf (Entscheidung 48).
+      const wahl = korb === 'haus' || korb === 'fach' ? 'prio' : (korb === 'warte' ? 'wartet' : 'nicht');
+      return `<div class="mx-zelle ${spalte === 4 ? 'pf-gebunden' : ''}" role="cell" data-wahl="${wahl}"${spannt ? ' aria-rowspan="2"' : ''} style="grid-column:${spalte}; grid-row:${zeile}${spannt ? ' / span 2' : ''}">
+        ${label ? `<span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))}</span>` : '<span class="pf-korb-leer" aria-hidden="true"></span>'}
+        ${drin.map(v => kachel(v, true)).join('')}</div>`;
     };
-    const offen = sortiert(S.vorhaben.filter(v => portfolio(v).wert === 'offen'));
-    document.getElementById('bildKoerper').innerHTML = PF_GRUPPEN.map(g => {
-      const summe = g.koerbe.reduce((wert, korb) =>
-        wert + S.vorhaben.filter(v => portfolio(v).wert === korb).reduce((s, v) => s + vzaeWert(v), 0), 0);
-      return `<div class="pf-gruppe ${g.gebunden ? 'gebunden' : ''}">
-        <div class="pf-kopf">
-          <p class="pf-titel">${esc(g.kopf)} <span>${zahlText(summe)} VZÄ</span></p>
-          <p class="pf-sub">${esc(g.sub)}</p>
+
+    const koepfe = PF_SPALTEN.map((spalte, si) => {
+      const summe = vzaeSumme(S.vorhaben.filter(v => gewaehlt(v) === spalte.wahl));
+      return `<div class="mx-kopf ${spalte.gebunden ? 'pf-gebunden' : ''}" role="columnheader" style="grid-column:${si + 2}; grid-row:1">
+        ${esc(ENTSCHEIDUNG[spalte.wahl])} <span class="pf-vzae">${zahlText(summe)} VZÄ</span>
+        <small>${esc(spalte.sub)}</small></div>`;
+    }).join('');
+
+    const offen = imKorb('offen');
+    document.getElementById('bildKoerper').innerHTML = `
+      <p class="mx-achse-x">Entscheidung der Abteilung &rarr;</p>
+      <div class="mx-scroll">
+        <div class="matrix pf" role="table" aria-label="Vorhaben nach Entscheidung und Steuerung">
+          <div class="mx-reihe" role="row">
+            <div class="mx-kopf leer" role="columnheader" style="grid-column:1; grid-row:1">Wer steuert?</div>
+            ${koepfe}
+          </div>
+          <div class="mx-reihe" role="row">
+            <div class="mx-zeile" role="rowheader" style="grid-column:1; grid-row:2">Leitungsfall</div>
+            ${zelle('nicht', 2, 2, true)}
+            ${zelle('warte', 3, 2, true)}
+            ${zelle('haus', 4, 2, false, PORTFOLIO.haus)}
+          </div>
+          <div class="mx-reihe" role="row">
+            <div class="mx-zeile" role="rowheader" style="grid-column:1; grid-row:3">Abteilung steuert selbst</div>
+            ${zelle('fach', 4, 3, false, PORTFOLIO.fach)}
+          </div>
         </div>
-        ${g.koerbe.map(bahn).join('')}
-      </div>`;
-    }).join('') + (offen.length ? `<div class="mx-offen">
-      <p class="mx-offen-kopf">${esc(PORTFOLIO.offen)} · ${offen.length}</p>
-      <p class="lane-sub">Noch kein Korb, es fehlen Antworten im Steckbrief.</p>
-      <div class="mx-offen-body">${offen.map(v => kachel(v, true)).join('')}</div>
-    </div>` : '');
+      </div>
+      <p class="mx-lese"><strong>So liest sich das Bild:</strong> Der Korb wird nicht gewählt, er fällt aus Spalte und Zeile heraus. Nur bei eingeplant entscheidet die Zeile: oben geht es als Leitungsfall ans Haus, unten steuert die Abteilung selbst.</p>
+      ${offen.length ? `<div class="mx-offen">
+        <p class="mx-offen-kopf">${esc(PORTFOLIO.offen)} · ${offen.length}</p>
+        <p class="lane-sub">Noch kein Korb, es fehlen Antworten im Steckbrief.</p>
+        <div class="mx-offen-body">${offen.map(v => kachel(v, true)).join('')}</div>
+      </div>` : ''}`;
   }
 
   // Vierte Sicht: Abhängigkeiten ohne Linien. Ein Klick holt das Vorhaben und
@@ -1437,29 +1463,103 @@
     else if (sicht === 'portfolio') renderPortfolio();
     else if (sicht === 'abhaengig') renderAbhaengig();
     else renderLanes();
-    // In der Portfolio-Sicht tragen die Bahnen den Status: Kacheln neutral,
-    // Status-Legende ausgeblendet (siehe CSS zu .neutral und .nur-lf).
-    document.getElementById('bildKoerper').classList.toggle('neutral', sicht === 'portfolio');
-    document.querySelector('.legende').classList.toggle('nur-lf', sicht === 'portfolio');
     document.querySelectorAll('.sichten button').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.sicht === sicht)));
     document.getElementById('bildKoerper').querySelectorAll('[data-kachel]').forEach(el => el.addEventListener('click', () => {
       aktivId = aktivId === el.dataset.kachel ? null : el.dataset.kachel;
       renderPriorisieren();
       if (aktivId) document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }));
+    if (sicht === 'portfolio') verdrahteZiehen();
+    if (sicht === 'matrix') verdrahteZiehVersuch();
+  }
+
+  /* ---------- Ziehen (Entscheidung 48) ---------- */
+
+  // Nur in der Portfolio-Sicht und nur waagerecht: die Spalte ist die
+  // Entscheidung, die man treffen darf. Die Zeile ist der Leitungsbedarf,
+  // der braucht seine vier Pflichtangaben und ist keine Zieh-Geste.
+  // Bedingungs- und Begründungspflicht laufen weiter über das Panel, das
+  // Ziehen ist nur ein schnellerer Weg zum selben Feld. Tastatur und Panel
+  // bleiben der vollwertige Weg ohne Maus.
+  function verdrahteZiehen() {
+    const koerper = document.getElementById('bildKoerper');
+    const markiere = wahl => koerper.querySelectorAll('.mx-zelle').forEach(z =>
+      z.classList.toggle('drop-ziel', z.dataset.wahl === wahl));
+    koerper.querySelectorAll('[data-kachel]').forEach(el => {
+      el.setAttribute('draggable', 'true');
+      el.addEventListener('dragstart', e => {
+        ziehId = el.dataset.kachel;
+        el.classList.add('zieht');
+        if (e.dataTransfer) {
+          e.dataTransfer.effectAllowed = 'move';
+          try { e.dataTransfer.setData('text/plain', ziehId); } catch (fehler) { /* Testumgebung ohne DataTransfer */ }
+        }
+      });
+      el.addEventListener('dragend', () => {
+        ziehId = null;
+        el.classList.remove('zieht');
+        markiere(null);
+      });
+    });
+    koerper.querySelectorAll('.mx-zelle').forEach(zelle => {
+      zelle.addEventListener('dragover', e => {
+        if (!ziehId) return;
+        e.preventDefault();
+        if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+        markiere(zelle.dataset.wahl);
+      });
+      zelle.addEventListener('drop', e => {
+        e.preventDefault();
+        ablegen(zelle.dataset.wahl);
+      });
+    });
+  }
+
+  function ablegen(wahl) {
+    const v = nachId(ziehId);
+    ziehId = null;
+    if (!v) return;
+    v.entscheidung = wahl;
+    speichern();
+    // Wo das Panel eine Pflicht einfordert, öffnet es sich mit dem Feld:
+    // wartet braucht die Bedingung, Abweichen von der Empfehlung den Satz.
+    const brauchtPanel = (wahl === 'wartet' && !v.bedingung.trim())
+      || (weichtAb(v) && !v.begruendung.trim());
+    if (brauchtPanel) aktivId = v.id;
+    mitFlug(renderPriorisieren);
+    if (brauchtPanel) document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // In der Matrix kommt die Position aus zwei Sachantworten, dort wird nicht
+  // geschoben (Entscheidungen 21 und 36). Der Versuch bekommt eine Erklärung
+  // statt stummer Verweigerung.
+  function verdrahteZiehVersuch() {
+    document.getElementById('bildKoerper').querySelectorAll('[data-kachel]').forEach(el => {
+      el.setAttribute('draggable', 'true');
+      el.addEventListener('dragstart', e => {
+        e.preventDefault();
+        if (document.getElementById('mxZiehHinweis')) return;
+        const p = document.createElement('p');
+        p.id = 'mxZiehHinweis';
+        p.className = 'mx-zieh-hinweis';
+        p.setAttribute('role', 'status');
+        p.textContent = 'Die Position kommt aus zwei Antworten im Steckbrief. Verschieben geht in der Portfolio-Sicht.';
+        document.querySelector('.mx-scroll').before(p);
+        setTimeout(() => p.remove(), 5000);
+      });
+    });
   }
 
   // FLIP: alte Positionen messen, neu zeichnen, Kacheln von der alten Stelle
   // an die neue fliegen lassen. Nur verschieben, nicht skalieren, damit die
-  // Schrift scharf bleibt.
-  function sichtWechseln(neu) {
-    if (neu === sicht) return;
+  // Schrift scharf bleibt. Als Helfer, weil neben dem Sichtwechsel auch das
+  // Ablegen beim Ziehen die Kacheln fliegen lässt.
+  function mitFlug(zeichne) {
     const vorher = new Map();
     document.getElementById('bildKoerper').querySelectorAll('[data-kachel]').forEach(el => {
       vorher.set(el.dataset.kachel, el.getBoundingClientRect());
     });
-    sicht = neu;
-    renderBild();
+    zeichne();
     document.getElementById('bildKoerper').querySelectorAll('[data-kachel]').forEach(el => {
       const alt = vorher.get(el.dataset.kachel);
       if (!alt) return;
@@ -1473,6 +1573,14 @@
         el.style.transition = 'transform .6s var(--ease)';
         el.style.transform = '';
       });
+    });
+  }
+
+  function sichtWechseln(neu) {
+    if (neu === sicht) return;
+    mitFlug(() => {
+      sicht = neu;
+      renderBild();
     });
   }
 
