@@ -351,10 +351,16 @@
      Beide Spalten von "Was daraus folgt" lesen sich damit gleich. */
   .konflikt { border-top: 1px solid var(--line); padding: 11px 0 12px; }
   .konflikt:first-of-type { border-top: 0; padding-top: 0; }
-  /* Die Frage zuerst: sie ist das Produkt des Spiegels, der Befund darunter
-     ihr Beleg. Vorher stand es umgekehrt, und das Auge fand keinen Anker. */
-  .konflikt .k-frage { font-family: var(--display); font-weight: 700; color: var(--fg); font-size: 14.5px; }
-  .konflikt .k-befund { color: var(--fg-muted); font-size: 13.5px; margin-top: 2px; }
+  /* Der Befund zuerst, mit den Vorhaben-Namen als Trägern, die Frage leise
+     darunter (Entscheidung 50, revidiert Entscheidung 40 an dieser Stelle:
+     ohne den Befund hing die Frage in der Luft). Der Typ steht als Wort,
+     nicht als Farbe, die Ampel bleibt draußen. */
+  #konflikteTitel { margin-bottom: 12px; }
+  .k-typ { font-family: var(--display); font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 3px; }
+  .konflikt .k-befund { color: var(--fg); font-size: 14px; }
+  .konflikt .k-befund strong { font-family: var(--display); font-weight: 700; }
+  .konflikt .k-frage { color: var(--fg-muted); font-size: 13.5px; margin-top: 3px; }
+  .k-zum { margin-top: 5px; font-size: 12.5px; }
   .ruhig { color: var(--fg-muted); font-size: 14.5px; }
   .lf-eintrag { border-top: 1px solid var(--line); padding: 11px 0 12px; }
   .lf-eintrag:first-of-type { border-top: 0; padding-top: 0; }
@@ -453,12 +459,11 @@
 
       <div class="fl-teil">
         <div class="folgt-kopf">
-          <h2>Was daraus folgt</h2>
+          <h2>Bevor ihr entscheidet</h2>
         </div>
         <div class="zweispalt">
           <div class="spalte">
-            <h3>Was auffällt<span id="konflikteZahl"></span></h3>
-            <p class="sub">Das Tool bewertet nicht, es fragt nach.</p>
+            <h3 id="konflikteTitel"></h3>
             <div id="konflikte"></div>
           </div>
           <div class="spalte">
@@ -706,25 +711,30 @@
   const leitungsfaelle = liste => liste.filter(v => IST_LEITUNGSFALL(v.leitung) && gewaehlt(v) === 'prio');
   const leitungsfaelleZurueck = liste => liste.filter(v => IST_LEITUNGSFALL(v.leitung) && gewaehlt(v) !== 'prio');
 
-  // Konflikte: konkret, bearbeitbar, nach Schaerfe sortiert. Hart auf vier gedeckelt,
-  // damit die Karte kein Noergel-Dashboard wird.
+  // Fragen für die Runde: konkret, bearbeitbar, nach Schaerfe sortiert. Hart
+  // auf vier gedeckelt, damit der Block kein Noergel-Dashboard wird. Jede
+  // Meldung ist Befund plus Frage (Befund zuerst, das Vorhaben ist die
+  // Information, die Frage ihre Deutung, Entscheidung 50) und traegt einen
+  // Typ als Wort: "besprechen" braucht die Runde, "ausprobieren" laedt ein,
+  // im Bild zu experimentieren. Keine Farbcodes, die Ampel bleibt draussen.
   function konflikte(liste, verfuegbar) {
     const punkte = [];
     const kap = kapazitaet(liste, verfuegbar);
 
     if (kap.ueber > 0) {
       punkte.push({
+        typ: 'ausprobieren',
         // Die Zahlen stehen schon in der Leiste oben, hier nur die Konsequenz
-        text: 'Die Kapazität reicht nicht für alles, was eingeplant ist.',
-        frage: 'Welches Vorhaben wartet stattdessen?'
+        befund: 'Die Kapazität reicht nicht für alles, was eingeplant ist.',
+        frage: 'Welches Vorhaben wartet stattdessen? Zieht es in der Portfolio-Sicht auf wartet, die Leiste rechnet sofort mit.'
       });
     }
 
-    const laufend = liste.filter(v => gewaehlt(v) === 'prio');
     const gestoppt = liste.filter(v => gewaehlt(v) === 'nicht');
     if (kap.ueber > 0 && gestoppt.length === 0) {
       punkte.push({
-        text: 'Kein einziges Vorhaben steht auf "abgesagt", obwohl die Kapazität nicht reicht.',
+        typ: 'besprechen',
+        befund: 'Kein einziges Vorhaben steht auf "abgesagt", obwohl die Kapazität nicht reicht.',
         frage: 'Was legt ihr weg?'
       });
     }
@@ -739,8 +749,11 @@
         const zustand = gewaehlt(d);
         if (zustand !== 'wartet' && zustand !== 'nicht') return;
         punkte.push({
-          text: `"${v.name}" ist eingeplant, hängt aber an "${d.name}" (${ENTSCHEIDUNG[zustand]}).`,
-          frage: 'Trägt der Plan, wenn die Voraussetzung fehlt?'
+          typ: 'besprechen',
+          befund: `"${v.name}" ist eingeplant, hängt aber an "${d.name}" (${ENTSCHEIDUNG[zustand]}).`,
+          frage: 'Soll das so bleiben?',
+          namen: [v.name, d.name],
+          vId: v.id
         });
       });
     });
@@ -748,7 +761,8 @@
     const entschieden = liste.filter(v => gewaehlt(v) !== 'offen');
     if (entschieden.length >= 4 && entschieden.every(v => gewaehlt(v) === 'prio')) {
       punkte.push({
-        text: `Alle ${entschieden.length} Vorhaben sind eingeplant. Ein Portfolio, das nichts weglässt, ist eine Liste.`,
+        typ: 'besprechen',
+        befund: `Alle ${entschieden.length} Vorhaben sind eingeplant. Ein Portfolio, das nichts weglässt, ist eine Liste.`,
         frage: 'Welche zwei würdet ihr streichen, wenn ihr müsstet?'
       });
     }
@@ -756,29 +770,29 @@
     const ohneFrage = liste.filter(v => IST_LEITUNGSFALL(v.leitung) && !v.lfFrage.trim());
     if (ohneFrage.length) {
       punkte.push({
-        text: `${ohneFrage.length === 1 ? 'Ein Leitungsfall hat' : ohneFrage.length + ' Leitungsfälle haben'} keine konkrete Frage: ${ohneFrage.map(v => v.name).join(', ')}.`,
-        frage: 'Die Leitung kann nichts entscheiden, was niemand gefragt hat.'
+        typ: 'besprechen',
+        befund: `${ohneFrage.length === 1 ? 'Ein Leitungsfall hat' : ohneFrage.length + ' Leitungsfälle haben'} keine konkrete Frage: ${ohneFrage.map(v => v.name).join(', ')}.`,
+        frage: 'Was soll die Leitung entscheiden?',
+        namen: ohneFrage.map(v => v.name),
+        vId: ohneFrage.length === 1 ? ohneFrage[0].id : undefined
       });
     }
 
     const parkplatz = liste.filter(v => gewaehlt(v) === 'wartet' && !v.bedingung.trim());
     if (parkplatz.length) {
       punkte.push({
-        text: `${parkplatz.length === 1 ? 'Ein Vorhaben wartet' : parkplatz.length + ' Vorhaben warten'} ohne benannte Bedingung: ${parkplatz.map(v => v.name).join(', ')}.`,
-        frage: 'Ohne Bedingung ist die Warteliste ein Parkplatz.'
+        typ: 'besprechen',
+        befund: `${parkplatz.length === 1 ? 'Ein Vorhaben wartet' : parkplatz.length + ' Vorhaben warten'} ohne benannte Bedingung: ${parkplatz.map(v => v.name).join(', ')}.`,
+        frage: 'Was muss eintreten, damit es startet?',
+        namen: parkplatz.map(v => v.name),
+        vId: parkplatz.length === 1 ? parkplatz[0].id : undefined
       });
     }
 
-    if (laufend.length >= 2) {
-      const bespielt = new Set(laufend.map(v => v.ziel).filter(ziel => ziel !== WAEHLEN && ziel !== OHNE_ZIEL));
-      const leer = ZIELE.filter(ziel => !bespielt.has(ziel));
-      if (leer.length && leer.length < ZIELE.length) {
-        punkte.push({
-          text: `Auf ${leer.length} von ${ZIELE.length} Zielen zahlt kein eingeplantes Vorhaben ein: ${leer.join(', ')}.`,
-          frage: 'Ist das eine bewusste Schwerpunktsetzung oder eine Lücke?'
-        });
-      }
-    }
+    // Die frühere Ziellücken-Meldung ist raus (Entscheidung 50): Eine
+    // Abteilung zahlt naturgemäß auf ein bis zwei Ziele ein, die Meldung
+    // feuerte fast immer und wurde zu Rauschen. Im Bild bleiben leere
+    // Bahnen sichtbar (Entscheidung 20), dort ist die Lücke Information.
 
     return punkte.slice(0, 4);
   }
@@ -1651,14 +1665,32 @@
     });
   }
 
+  const K_TYP = { besprechen: 'Besprechen', ausprobieren: 'Ausprobieren' };
+  const FRAGEN_TITEL = ['Keine offenen Fragen', 'Eine Frage für die Runde', 'Zwei Fragen für die Runde', 'Drei Fragen für die Runde', 'Vier Fragen für die Runde'];
+
   function renderKonflikte() {
     const punkte = konflikte(S.vorhaben, verfuegbarWert());
-    // Die Frage steht zuerst, der Befund darunter: der Spiegel fragt, er
-    // bewertet nicht, also ist die Frage der Anker fürs Auge.
+    document.getElementById('konflikteTitel').textContent = FRAGEN_TITEL[punkte.length];
+    // Der Befund zuerst, die Frage darunter (Entscheidung 50): das Vorhaben
+    // ist die Information, die Frage ihre Deutung. Die Namen tragen Gewicht.
+    const fett = p => {
+      let html = esc(p.befund);
+      (p.namen || []).forEach(name => { html = html.split(esc(name)).join(`<strong>${esc(name)}</strong>`); });
+      return html;
+    };
     document.getElementById('konflikte').innerHTML = punkte.length
-      ? punkte.map(p => `<div class="konflikt"><p class="k-frage">${esc(p.frage)}</p><p class="k-befund">${esc(p.text)}</p></div>`).join('')
-      : '<p class="ruhig">Nichts auffällig. Das Gesamtbild passt zu dem, was ihr eingetragen habt.</p>';
-    document.getElementById('konflikteZahl').textContent = punkte.length ? ' · ' + punkte.length : '';
+      ? punkte.map(p => `<div class="konflikt">
+          <p class="k-typ">${K_TYP[p.typ]}</p>
+          <p class="k-befund">${fett(p)}</p>
+          <p class="k-frage">${esc(p.frage)}</p>
+          ${p.vId ? `<button class="textbtn blau k-zum" type="button" data-zum="${p.vId}">Zum Vorhaben</button>` : ''}
+        </div>`).join('')
+      : '<p class="ruhig">Das Gesamtbild passt zu dem, was ihr eingetragen habt.</p>';
+    document.getElementById('konflikte').querySelectorAll('[data-zum]').forEach(el => el.addEventListener('click', () => {
+      aktivId = el.dataset.zum;
+      renderPriorisieren();
+      document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }));
   }
 
   function renderLeitungsfaelle() {
