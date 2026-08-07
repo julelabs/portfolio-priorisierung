@@ -352,33 +352,23 @@
   .pn-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
 
   /* Der Block ist keine Fußnote unter dem Bild, sondern der Übergang vom
-     Betrachten zum Handeln. Die getönte Fläche fasst ihn als Arbeitszone,
-     ohne eine weitere dunkle Bühne oder eine gleichförmige Card-Reihe zu bauen.
-     Beide Spalten stehen auf demselben Raster (Entscheidung 52): die
-     Überschrift auf der getönten Fläche, darunter je eine weiße Arbeitsfläche
-     mit gleicher Oberkante. Die Einträge sind Zeilen dieser Fläche, getrennt
-     durch eine Haarlinie, nicht einzeln schwebende Karten. */
+     Betrachten zum Handeln. Die Fragen führen und bekommen die volle Breite.
+     Leitungsfälle bleiben als Kontext erhalten, öffnen sich aber erst auf
+     Nachfrage (Entscheidung 54). */
   .entscheid-hinweise { background: var(--blau-10); box-shadow: inset 0 4px 0 var(--blau); padding-top: clamp(24px, 3vw, 34px); padding-bottom: clamp(28px, 3.5vw, 40px); }
   .fl-teil + .entscheid-hinweise { border-top: 0; }
-  .folgt-kopf { margin-bottom: 20px; }
-  .folgt-kopf h2 { font-size: clamp(22px, 2.1vw, 28px); text-wrap: balance; }
-  .zweispalt { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, .75fr); gap: clamp(20px, 2.5vw, 30px); align-items: start; }
-  @media (max-width: 900px) { .zweispalt { grid-template-columns: 1fr; } }
-  /* Beide Spaltentitel sind gleich laut und gleich hoch, damit die zwei
-     Arbeitsflächen darunter auf derselben Linie beginnen. */
-  .spalte h3 { display: flex; align-items: center; gap: 4px; min-height: 20px; font-family: var(--display); font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--fg); margin: 0 0 12px; }
-  /* Das Minze-Zeichen ist dasselbe wie in der Legende: Leitungsfall. Es steht
-     in der Zeile und nichts ragt über die Kante der Arbeitsfläche hinaus:
-     jede Spalte beginnt exakt an der Kante ihrer Fläche. */
-  .spalte h3 i.lf { flex: none; width: 5px; height: 15px; margin-right: 3px; border-radius: 2px; background: var(--minze); }
+  .folgt-kopf { margin-bottom: 18px; }
+  .folgt-kopf h2 { font-size: clamp(24px, 2.3vw, 30px); text-wrap: balance; }
+  .fragen-spalte h3 { min-height: 20px; font-family: var(--display); font-size: 12.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-2); margin: 0 0 12px; }
   .arbeitsflaeche { background: var(--weiss); border: 1px solid var(--line); border-radius: 9px; }
   .arbeitsflaeche > * + * { border-top: 1px solid var(--line); }
   #konflikte { counter-reset: arbeitsfrage; }
   /* Jede Zeile ist ein Arbeitsauftrag und führt mit einer sichtbaren Aktion
      zurück ins Portfolio oder zum Vorhaben. Die Ziffer steht in einer eigenen
      Spalte, damit alle Texte auf einer Kante beginnen. */
-  .konflikt { counter-increment: arbeitsfrage; position: relative; padding: 17px 20px 19px 54px; }
-  .konflikt::before { content: counter(arbeitsfrage, decimal-leading-zero); position: absolute; left: 20px; top: 17px; font-family: var(--display); font-size: 12.5px; font-weight: 800; line-height: 16px; color: var(--blau-40); font-variant-numeric: tabular-nums; }
+  .konflikt { counter-increment: arbeitsfrage; position: relative; padding: 20px 24px 22px 60px; }
+  .konflikt::before { content: counter(arbeitsfrage, decimal-leading-zero); position: absolute; left: 22px; top: 20px; font-family: var(--display); font-size: 13px; font-weight: 800; line-height: 16px; color: var(--blau-40); font-variant-numeric: tabular-nums; }
+  .konflikt > * { max-width: 76ch; }
   /* Der Befund zuerst, mit den Vorhaben-Namen als Trägern, die Frage leise
      darunter (Entscheidung 50, revidiert Entscheidung 40 an dieser Stelle:
      ohne den Befund hing die Frage in der Luft). Der Typ steht als Wort,
@@ -387,15 +377,28 @@
      Schatten und drei blaue Vollknöpfe, nicht durch dieses kleine Zeichen. Der
      negative Rand gleicht das Innenmaß aus, damit das Wort auf der Textkante
      der Zeile sitzt. Keine Umriss-Form: die bedeutet im Bild "wartet". */
-  .k-typ { display: inline-block; background: var(--lavendel); border-radius: 3px; padding: 3px 8px; margin: -3px 0 8px -8px; font-family: var(--display); font-size: 10.5px; font-weight: 800; line-height: 16px; letter-spacing: .08em; text-transform: uppercase; color: var(--blau); }
-  .konflikt .k-befund { color: var(--fg); font-size: 15.5px; line-height: 1.4; text-wrap: pretty; }
+  .k-typ { display: inline-block; background: var(--lavendel); border-radius: 3px; padding: 2px 9px; margin: -2px 0 9px -9px; font-family: var(--display); font-size: 12px; font-weight: 700; line-height: 16px; color: var(--blau); }
+  .konflikt .k-befund { font-family: var(--display); font-weight: 600; letter-spacing: -0.008em; color: var(--fg); font-size: 17px; line-height: 1.36; text-wrap: pretty; }
   .konflikt .k-befund strong { font-family: var(--display); font-weight: 700; }
-  .konflikt .k-frage { color: var(--fg-2); font-size: 14.5px; line-height: 1.48; margin-top: 5px; text-wrap: pretty; }
-  .textbtn.k-zum { display: inline-flex; align-items: center; gap: 7px; background: var(--blau-10); color: var(--blau) !important; border-radius: 5px; margin-top: 11px; padding: 7px 11px; font-size: 12.5px; transition: background .18s var(--ease); }
+  .konflikt .k-frage { color: var(--fg-2); font-size: 15px; line-height: 1.5; margin-top: 6px; text-wrap: pretty; }
+  .textbtn.k-zum { display: inline-flex; align-items: center; gap: 7px; background: var(--blau-10); color: var(--blau) !important; border-radius: 5px; margin: 11px 0 0 -9px; padding: 7px 9px; font-size: 12.5px; transition: background .18s var(--ease); }
   .textbtn.k-zum::after { content: '\2192'; font-size: 15px; line-height: 1; }
   .textbtn.k-zum:hover { background: var(--lavendel); }
   .ruhig { color: var(--fg-muted); font-size: 14.5px; }
   .arbeitsflaeche > .ruhig { padding: 17px 20px 19px; line-height: 1.5; }
+  /* Die Meldeliste wiederholt das Bild nicht als zweite Hauptfläche. Ihr
+     Schalter nennt Anzahl und Nutzen; die Details erscheinen erst, wenn die
+     Runde sie für den nächsten Schritt braucht. */
+  .leitungs-details { margin-top: 18px; border-top: 1px solid var(--line); }
+  .leitungs-details > summary { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 15px 2px 2px; cursor: pointer; list-style: none; color: var(--fg); }
+  .leitungs-details > summary::-webkit-details-marker { display: none; }
+  .leitungs-details > summary::after { content: '+'; display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid var(--blau-20); border-radius: 50%; color: var(--blau); font-family: var(--display); font-size: 16px; font-weight: 700; line-height: 1; }
+  .leitungs-details[open] > summary::after { content: '\2212'; }
+  .lf-summary-title { display: inline-flex; align-items: center; gap: 8px; font-family: var(--display); font-size: 12.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-2); }
+  .lf-summary-title i.lf { flex: none; width: 5px; height: 15px; border-radius: 2px; background: var(--minze); }
+  .lf-summary-hint { justify-self: end; color: var(--fg-muted); font-size: 12.5px; }
+  .leitungs-details[open] > summary { padding-bottom: 12px; }
+  .leitungs-details > .arbeitsflaeche { overflow: hidden; }
   .lf-intro { padding: 15px 18px 16px; color: var(--fg-muted); font-size: 13.5px; line-height: 1.45; }
   .lf-eintrag, .lf-zurueck { padding: 15px 18px 16px; }
   .lf-name { font-family: var(--display); font-weight: 700; font-size: 15px; }
@@ -409,6 +412,9 @@
   @media (max-width: 620px) {
     .konflikt { padding: 16px 16px 18px 48px; }
     .konflikt::before { left: 16px; top: 16px; }
+    .leitungs-details > summary { grid-template-columns: minmax(0, 1fr) auto; }
+    .lf-summary-hint { grid-column: 1 / -1; grid-row: 2; justify-self: start; padding-left: 13px; }
+    .leitungs-details > summary::after { grid-column: 2; grid-row: 1; }
     .lf-intro, .lf-eintrag, .lf-zurueck, .arbeitsflaeche > .ruhig { padding-left: 16px; padding-right: 16px; }
   }
 
@@ -499,15 +505,18 @@
         <div class="folgt-kopf">
           <h2>Bevor ihr entscheidet</h2>
         </div>
-        <div class="zweispalt">
+        <div class="arbeitszone">
           <section class="spalte fragen-spalte" aria-labelledby="konflikteTitel">
             <h3 id="konflikteTitel"></h3>
             <div class="arbeitsflaeche" id="konflikte"></div>
           </section>
-          <aside class="spalte leitungs-spalte" aria-labelledby="leitungsfaelleTitel">
-            <h3 id="leitungsfaelleTitel"><i class="lf" aria-hidden="true"></i>Leitungsfälle<span id="leitungsfaelleZahl"></span></h3>
+          <details class="leitungs-details">
+            <summary>
+              <span class="lf-summary-title" id="leitungsfaelleTitel"><i class="lf" aria-hidden="true"></i>Leitungsfälle fürs Haus<span id="leitungsfaelleZahl"></span></span>
+              <span class="lf-summary-hint">Frage, Termin und Zuständigkeit ansehen</span>
+            </summary>
             <div class="arbeitsflaeche" id="leitungsfaelle"></div>
-          </aside>
+          </details>
         </div>
       </div>
     </div>
@@ -1790,7 +1799,7 @@
           ${v.lfFolge.trim() ? `<details class="lf-mehr"><summary>Was ohne Entscheidung passiert</summary><p>${esc(v.lfFolge)}</p></details>` : ''}
         </div>`).join('')
       : '<p class="ruhig">Kein Leitungsfall gemeldet. Die Abteilung steuert ihr Portfolio in diesem Halbjahr allein.</p>');
-    document.getElementById('leitungsfaelleZahl').textContent = faelle.length ? ' · ' + faelle.length : '';
+    document.getElementById('leitungsfaelleZahl').textContent = ' · ' + faelle.length;
 
     // Leitungsfälle, die nicht eingeplant sind, gehen nicht ans Haus. Sie
     // verschwinden aber auch nicht: hier steht, welche es sind und warum.
