@@ -236,6 +236,9 @@
   /* Matrix: zwei ehrliche Achsen, Felder als Fächer statt Punktwolke */
   .mx-scroll { overflow-x: auto; padding-bottom: 4px; }
   .mx-achse-x { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin: 2px 0 8px 158px; }
+  /* In der Portfolio-Sicht ist der Zeilenkopf breiter als in der Matrix.
+     Das Achsenwort beginnt deshalb exakt mit der ersten Entscheidungsspalte. */
+  .mx-achse-x.pf-achse-x { margin-left: 170px; }
   .matrix { display: grid; grid-template-columns: 150px repeat(4, minmax(198px, 1fr)); min-width: 940px; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
   .mx-kopf { font-family: var(--display); font-size: 12.5px; font-weight: 700; color: var(--fg-2); padding: 8px 10px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--blau-10); }
   .mx-kopf.leer { background: transparent; }
@@ -278,20 +281,16 @@
   .lane-name { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--fg); }
   .lane-meta { color: var(--fg-muted); font-size: 12.5px; }
   .lane-sub { color: var(--fg-muted); font-size: 12.5px; margin-bottom: 2px; }
-  /* Erste Stufe der Portfolio-Sicht: der Schnitt, der Kapazität kostet.
-     Das Eingeplante bekommt eine eigene Fläche, das Nicht-Eingeplante bleibt
-     auf dem weißen Grund. Figur gegen Grund statt noch einer Farbe oder Kante.
-     In der getönten Gruppe liegen ausschließlich gefüllte Kacheln, deshalb
-     gibt es dort keine Kontrastprobleme. */
   /* Portfolio als Raster (06.08.): dieselbe Grammatik wie die Matrix, nur die
-     Achsen wechseln. Die getönte Spalte trägt den Kapazitätsschnitt aus
-     Entscheidung 36 weiter: Figur gegen Grund statt einer weiteren Farbe. */
+     Achsen wechseln. Seit Entscheidung 55 tragen nur die Köpfe die
+     Lavendelfläche. Die Körperzellen bleiben weiß, damit Fläche nicht zugleich
+     Kopf und Portfolioart bedeutet. */
   .matrix.pf { grid-template-columns: 170px repeat(3, minmax(200px, 1fr)); min-width: 780px; }
   /* Das Achsenwort führt, die Zahl stützt (Kleinigkeiten-Notiz 06.08.:
      VZÄ war dominanter als die Entscheidungswörter) */
   .matrix.pf .mx-kopf .pf-vzae { font-weight: 400; color: var(--fg-muted); margin-left: 8px; }
   .matrix.pf .mx-kopf small { display: block; font-weight: 400; color: var(--fg-muted); font-size: 11.5px; margin-top: 2px; }
-  .matrix.pf .mx-zelle.pf-gebunden { background: var(--blau-10); }
+  .matrix.pf .mx-zelle.pf-gebunden { background: var(--weiss); }
   .matrix.pf .mx-zelle { min-height: 110px; }
   /* Ziehen: nur in der Portfolio-Sicht. Die Zielspalte markiert sich beim
      Ziehen über eine gestrichelte Innenkante, die gezogene Kachel tritt
@@ -1492,7 +1491,7 @@
 
     const offen = imKorb('offen');
     document.getElementById('bildKoerper').innerHTML = `
-      <p class="mx-achse-x">Entscheidung der Abteilung &rarr;</p>
+      <p class="mx-achse-x pf-achse-x">Entscheidung der Abteilung &rarr;</p>
       <div class="mx-scroll">
         <div class="matrix pf${sicht === 'portfolio' ? ' ziehbar' : ''}" role="table" aria-label="Vorhaben nach Entscheidung und Steuerung">
           <div class="mx-reihe" role="row">
