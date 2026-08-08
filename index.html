@@ -191,7 +191,11 @@
      Nebenbedingung ruft nicht lauter als das Portfolio, auf das sie sich
      bezieht. Der gedeckte Teil ist blau wie "eingeplant" auf den Kacheln,
      der Ueberhang kirsche. */
-  .budget-band { background: var(--blau-10); }
+  /* Die Leiste bleibt beim Arbeiten im Bild stehen (Entscheidung 60). Das geht
+     erst, seit sie ein helles Band ist: ein mitlaufender dunkler Kasten wäre
+     ein dauerhaft lauter Kasten gewesen. Weil die Zahlen jetzt immer sichtbar
+     sind, rechnet die Quittung nach dem Ablegen nicht mehr vor. */
+  .budget-band { background: var(--blau-10); position: sticky; top: 0; z-index: 5; border-radius: 8px 8px 0 0; }
   .budget { color: var(--fg); }
   .bd-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
   .bd-titel { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-2); }
@@ -738,6 +742,9 @@
   // Entscheidung sofort. Seit Entscheidung 59 werden sie zum sichtbaren Rest,
   // statt im Moment des Zugs abgefragt zu werden.
   function offenePflicht(v) {
+    // Der Leitungsfall gilt auch ohne getroffene Entscheidung: Wer ihn meldet,
+    // schuldet dem Haus die Frage (Entscheidung 18).
+    if (IST_LEITUNGSFALL(v.leitung) && !v.lfFrage.trim()) return 'leitungsfrage';
     if (v.entscheidung === 'offen') return null;
     if (gewaehlt(v) === 'wartet' && !v.bedingung.trim()) return 'bedingung';
     if (weichtAb(v) && !v.begruendung.trim()) return 'begruendung';
@@ -745,7 +752,8 @@
   }
   const OFFENE_PFLICHT = {
     bedingung: { kurz: 'Bedingung fehlt', frage: 'Was muss eintreten, damit es startet?' },
-    begruendung: { kurz: 'Begründung fehlt', frage: 'Warum weicht ihr von der Empfehlung ab?' }
+    begruendung: { kurz: 'Begründung fehlt', frage: 'Warum weicht ihr von der Empfehlung ab?' },
+    leitungsfrage: { kurz: 'Leitungsfrage fehlt', frage: 'Was soll die Leitung entscheiden?' }
   };
 
   // Steuerungsbedarf: drei Teilwerte, jeder direkt aus einer Antwort, nichts gewichtet.
@@ -888,16 +896,9 @@
       });
     }
 
-    const ohneFrage = liste.filter(v => IST_LEITUNGSFALL(v.leitung) && !v.lfFrage.trim());
-    if (ohneFrage.length) {
-      punkte.push({
-        typ: 'besprechen',
-        befund: `${ohneFrage.length === 1 ? 'Ein Leitungsfall hat' : ohneFrage.length + ' Leitungsfälle haben'} keine konkrete Frage: ${ohneFrage.map(v => v.name).join(', ')}.`,
-        frage: 'Was soll die Leitung entscheiden?',
-        namen: ohneFrage.map(v => v.name),
-        vId: ohneFrage.length === 1 ? ohneFrage[0].id : undefined
-      });
-    }
+    // Die fehlende Leitungsfrage ist wie die fehlende Bedingung ein loses Ende
+    // an einer schon getroffenen Meldung, keine Frage für die Runde. Sie steht
+    // deshalb in der Zeile "Noch offen" (Entscheidung 60).
 
     // Die frühere Parkplatz-Meldung ist raus (Entscheidung 59): Eine fehlende
     // Bedingung ist keine Frage für die Runde, sondern ein loses Ende an einer
@@ -1551,7 +1552,10 @@
       // data-wahl macht die Zelle zum Zieh-Ziel: die Spalte ist die
       // Entscheidung, die man treffen darf (Entscheidung 48).
       const wahl = korb === 'haus' || korb === 'fach' ? 'prio' : (korb === 'warte' ? 'wartet' : 'nicht');
-      return `<div class="mx-zelle ${spalte === 3 ? 'pf-gebunden' : ''}" role="cell" data-wahl="${wahl}"${spannt ? ' aria-rowspan="2"' : ''} style="grid-column:${spalte}; grid-row:${zeile}${spannt ? ' / span 2' : ''}">
+      // Die zwei Zonen der Eingeplant-Spalte sind eigene Ziele: Ablegen dort
+      // setzt zusätzlich den Leitungsbedarf (Entscheidung 60).
+      const zone = korb === 'haus' ? 'haus' : (korb === 'fach' ? 'fach' : '');
+      return `<div class="mx-zelle ${spalte === 3 ? 'pf-gebunden' : ''}" role="cell" data-wahl="${wahl}"${zone ? ` data-zone="${zone}"` : ''}${spannt ? ' aria-rowspan="2"' : ''} style="grid-column:${spalte}; grid-row:${zeile}${spannt ? ' / span 2' : ''}">
         ${label ? `<span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))}</span>` : '<span class="pf-korb-leer" aria-hidden="true"></span>'}
         ${drin.map(v => kachel(v, true)).join('')}</div>`;
     };
@@ -1678,7 +1682,7 @@
       });
       zelle.addEventListener('drop', e => {
         e.preventDefault();
-        ablegen(zelle.dataset.wahl);
+        ablegen(zelle.dataset.wahl, zelle.dataset.zone);
       });
     });
   }
@@ -1689,11 +1693,17 @@
   // gerade ausprobiert. Eine Begründung ist eine Aussage über eine fertige
   // Entscheidung, und fertig ist sie erst, wenn Leiste und Bild zeigen, was der
   // Zug gekostet hat. Die Pflicht bleibt, sie wird zum sichtbaren Rest.
-  function ablegen(wahl) {
+  function ablegen(wahl, zone) {
     const v = nachId(ziehId);
     ziehId = null;
     if (!v) return;
     v.entscheidung = wahl;
+    // Wer in die obere Zone zieht, meldet einen Leitungsfall. Ein schon
+    // gemeldeter hausweiter Konflikt bleibt, was er ist. Wer in die untere
+    // Zone zieht, nimmt die Meldung zurück; Frage, Termin und Folge bleiben
+    // gespeichert, ein Zug zurück stellt sie wieder her.
+    if (zone === 'haus' && !IST_LEITUNGSFALL(v.leitung)) v.leitung = 'entscheidung';
+    if (zone === 'fach' && IST_LEITUNGSFALL(v.leitung)) v.leitung = 'keine';
     speichern();
     quittungFuer(v.id);
     mitFlug(renderPriorisieren);
@@ -1901,11 +1911,11 @@
     if (!box) return;
     const v = quittung ? nachId(quittung) : null;
     if (!v || sicht !== 'portfolio') { box.innerHTML = ''; return; }
-    const kap = kapazitaet(S.vorhaben, verfuegbarWert());
     const pflicht = offenePflicht(v);
+    // Was der Zug kostet, steht in der Leiste, die jetzt stehen bleibt. Die
+    // Quittung sagt nur noch, was gilt und was daran fehlt.
     box.innerHTML = `<p class="quittung">
-      <span class="qt-satz"><strong>${esc(v.name)}</strong> steht jetzt auf ${esc(ENTSCHEIDUNG[gewaehlt(v)])}.</span>
-      <span class="qt-kap">Gebunden: ${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)}${kap.ueber > 0 ? ', ' + zahlText(kap.ueber) + ' über der Grenze' : ''}.</span>
+      <span class="qt-satz"><strong>${esc(v.name)}</strong> steht jetzt auf ${esc(ENTSCHEIDUNG[gewaehlt(v)])}${IST_LEITUNGSFALL(v.leitung) && gewaehlt(v) === 'prio' ? ' im Leitungsportfolio' : ''}.</span>
       ${pflicht ? `<button class="textbtn blau qt-tun" type="button" data-quittung="${v.id}">${esc(OFFENE_PFLICHT[pflicht].kurz.replace(' fehlt', ' ergänzen'))}</button>` : ''}
     </p>`;
     const knopf = box.querySelector('[data-quittung]');
