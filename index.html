@@ -186,31 +186,44 @@
   .sb-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
 
   /* Ansicht 2: Priorisieren. Zwei Flächen insgesamt: eine dunkle Leiste, eine weiße Arbeitsfläche. */
-  .budget { background: var(--dunkel); color: var(--weiss); border-radius: 8px; padding: clamp(18px, 2.4vw, 26px) clamp(18px, 2.6vw, 30px); margin-bottom: clamp(16px, 2vw, 22px); }
+  /* Die Leiste ist das oberste Band der Arbeitsflaeche, keine eigene dunkle
+     Buehne darueber (Entscheidung 57): eine Flaeche statt zweier, und die
+     Nebenbedingung ruft nicht lauter als das Portfolio, auf das sie sich
+     bezieht. Der gedeckte Teil ist blau wie "eingeplant" auf den Kacheln,
+     der Ueberhang kirsche. */
+  .budget-band { background: var(--blau-10); }
+  .budget { color: var(--fg); }
   .bd-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
-  .bd-titel { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--minze); }
-  .bd-eingabe { font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--blau-20); }
+  .bd-titel { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-2); }
+  .bd-eingabe { font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg-2); }
   /* Auch auf dunklem Grund ein Feld statt einer Linie: an dieser Zahl hängt
      der Live-Moment der Demo, sie muss als bedienbar zu erkennen sein. */
-  .bd-eingabe input { border: 1px solid rgba(255,255,255,.45); border-radius: 6px; background: rgba(255,255,255,.08); color: var(--weiss); font-family: var(--display); font-weight: 700; font-size: 15px; width: 62px; text-align: right; padding: 6px 10px; margin-left: 8px; }
-  .bd-eingabe input:hover { border-color: rgba(255,255,255,.7); }
+  .bd-eingabe input { border: 1px solid var(--feldkante); border-radius: 6px; background: var(--weiss); color: var(--fg); font-family: var(--display); font-weight: 700; font-size: 15px; width: 62px; text-align: right; padding: 6px 10px; margin-left: 8px; }
+  .bd-eingabe input:hover { border-color: var(--blau); }
   .bd-eingabe input:focus { outline: 2px solid var(--minze); outline-offset: 1px; border-color: var(--minze); }
   /* Zwei Segmente statt einem: was gedeckt ist, bleibt minze, nur der Überhang
      wird kirsche. Die Marke sitzt genau am Farbwechsel, damit die Überbuchung
      eine Form hat und nicht nur eine Farbe. */
-  .bd-skala { position: relative; height: 20px; border-radius: 4px; background: rgba(255,255,255,.1); margin: 24px 0 26px; }
-  .bd-gedeckt { position: absolute; left: 0; top: 0; bottom: 0; background: var(--minze); border-radius: 4px 0 0 4px; transition: width .4s var(--ease); }
-  .bd-ueberhang { position: absolute; top: 0; bottom: 0; background: var(--kirsche-60); border-radius: 0 4px 4px 0; transition: width .4s var(--ease), left .4s var(--ease); }
-  .bd-marke { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--weiss); transition: left .4s var(--ease); }
-  .bd-marke b { position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%); font-family: var(--display); font-size: 11.5px; font-weight: 800; color: var(--weiss); white-space: nowrap; }
+  .bd-skala { position: relative; height: 20px; border-radius: 4px; background: var(--lavendel); margin: 24px 0 26px; }
+  .bd-gedeckt { position: absolute; left: 0; top: 0; bottom: 0; background: var(--blau); border-radius: 4px 0 0 4px; transition: width .4s var(--ease); }
+  .bd-ueberhang { position: absolute; top: 0; bottom: 0; background: var(--kirsche-text); border-radius: 0 4px 4px 0; transition: width .4s var(--ease), left .4s var(--ease); }
+  .bd-marke { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--fg); transition: left .4s var(--ease); }
+  .bd-marke b { position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%); font-family: var(--display); font-size: 11.5px; font-weight: 800; color: var(--fg); white-space: nowrap; }
   .bd-marke.rechts b { left: auto; right: 0; transform: none; }
   /* Die Segmente beschriften sich selbst, in der Farbe ihres Segments
      (gleiches Muster wie beim Steuerungsbedarf). Der frühere Satz darunter
      rechnete vor, was die Grafik zeigt, und las sich belehrend. */
   .bd-wert { position: absolute; top: -22px; transform: translateX(-50%); font-family: var(--display); font-size: 12.5px; font-weight: 800; white-space: nowrap; }
-  .bd-wert.gedeckt { color: var(--minze); }
-  .bd-wert.ueber { color: var(--kirsche-60); }
-  .bd-neben { color: var(--blau-20); font-size: 14px; margin-top: 5px; }
+  .bd-wert.gedeckt { color: var(--blau); }
+  .bd-wert.ueber { color: var(--kirsche-text); }
+  /* Die zwei Zusatzzahlen standen als ganze Saetze da und mussten gelesen
+     werden, bevor klar war, wofuer die Zahl steht. Jetzt fuehrt die Zahl, das
+     Was steht daneben, das Warum leise darunter (Entscheidung 57). */
+  .bd-fakten { display: flex; flex-wrap: wrap; gap: 10px 36px; margin-top: 18px; }
+  .bd-fakt { max-width: 34ch; }
+  .bd-fakt b { font-family: var(--display); font-size: 17px; font-weight: 800; color: var(--fg); margin-right: 8px; font-variant-numeric: tabular-nums; }
+  .bd-fakt span { font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--fg); }
+  .bd-fakt small { display: block; color: var(--fg-muted); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }
 
   .flaeche { background: var(--weiss); border-radius: 8px; box-shadow: 0 18px 44px rgba(13,12,43,.06); }
   .fl-teil { padding: clamp(18px, 2.2vw, 24px) clamp(18px, 2.4vw, 26px); }
@@ -238,7 +251,7 @@
   .mx-achse-x { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin: 2px 0 8px 158px; }
   /* In der Portfolio-Sicht ist der Zeilenkopf breiter als in der Matrix.
      Das Achsenwort beginnt deshalb exakt mit der ersten Entscheidungsspalte. */
-  .mx-achse-x.pf-achse-x { margin-left: 170px; }
+  .mx-achse-x.pf-achse-x { margin-left: 0; }
   .matrix { display: grid; grid-template-columns: 150px repeat(4, minmax(198px, 1fr)); min-width: 940px; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
   .mx-kopf { font-family: var(--display); font-size: 12.5px; font-weight: 700; color: var(--fg-2); padding: 8px 10px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--blau-10); }
   .mx-kopf.leer { background: transparent; }
@@ -285,11 +298,24 @@
      Achsen wechseln. Seit Entscheidung 55 tragen nur die Köpfe die
      Lavendelfläche. Die Körperzellen bleiben weiß, damit Fläche nicht zugleich
      Kopf und Portfolioart bedeutet. */
-  .matrix.pf { grid-template-columns: 170px repeat(3, minmax(200px, 1fr)); min-width: 780px; }
+  /* Ohne Kopfspalte (Entscheidung 58): Die Zeilenachse unterschied nur in der
+     Eingeplant-Spalte etwas, "wartet" und "abgesagt" überspannen seit
+     Entscheidung 46 beide Zeilen. Die Kopfspalte beschriftete also über die
+     volle Höhe eine Unterscheidung, die es in zwei von drei Spalten nicht gibt,
+     und jede erste Kachel dort klebte optisch an der Zeile "Leitungsfall". */
+  .matrix.pf { grid-template-columns: repeat(3, minmax(200px, 1fr)); min-width: 660px; }
   /* Das Achsenwort führt, die Zahl stützt (Kleinigkeiten-Notiz 06.08.:
      VZÄ war dominanter als die Entscheidungswörter) */
-  .matrix.pf .mx-kopf .pf-vzae { font-weight: 400; color: var(--fg-muted); margin-left: 8px; }
-  .matrix.pf .mx-kopf small { display: block; font-weight: 400; color: var(--fg-muted); font-size: 11.5px; margin-top: 2px; }
+  /* Die drei getönten Flächen der Ansicht bilden eine Tonleiter: Kapazitätsband
+     am hellsten, Zonenbänder Lavendel, Spaltenköpfe am dunkelsten. Dunkler heißt
+     wichtiger. Blau-20 ist die neutrale Kartenkante und damit nicht belegt;
+     volles Blau schied aus, weil es auf den Kacheln "eingeplant" bedeutet und
+     über der Abgesagt-Spalte das Gegenteil behauptet hätte.
+     Auf Blau-20 hält --fg-muted die 4,5:1 nicht (3,9:1), deshalb tragen
+     Unterzeile und VZÄ dort --fg-2 (5,1:1) und das Achsenwort volles Dunkel. */
+  .matrix.pf .mx-kopf { background: var(--blau-20); color: var(--fg); }
+  .matrix.pf .mx-kopf .pf-vzae { font-weight: 400; color: var(--fg-2); margin-left: 8px; }
+  .matrix.pf .mx-kopf small { display: block; font-weight: 400; color: var(--fg-2); font-size: 11.5px; margin-top: 2px; }
   .matrix.pf .mx-zelle.pf-gebunden { background: var(--weiss); }
   .matrix.pf .mx-zelle { min-height: 110px; }
   /* Ziehen: nur in der Portfolio-Sicht. Die Zielspalte markiert sich beim
@@ -301,7 +327,18 @@
   .mx-zieh-hinweis { background: var(--blau-10); border-radius: 6px; color: var(--fg-2); font-size: 13px; padding: 8px 12px; margin-bottom: 10px; }
 
   .pf-korb, .pf-korb-leer { flex-basis: 100%; min-height: 13px; }
-  .pf-korb { font-family: var(--display); font-size: 10.5px; line-height: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); }
+  .pf-korb { font-family: var(--display); font-size: 10.5px; line-height: 15px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-2); }
+  /* Sie trägt jetzt, was vorher die Kopfspalte trug, also bekommt sie deren
+     Form: ein getöntes Band über die volle Zellbreite. Sichtbarkeit aus der
+     Fläche, nicht aus mehr Schriftgewicht: Versalien stehen bei 10,5px optisch
+     schon so hoch wie der Vorhaben-Name in 13,5px Gemischtschrift. */
+  .matrix.pf .pf-korb, .matrix.pf .pf-korb-leer { flex-basis: auto; width: calc(100% + 18px); margin: -9px -9px 8px; padding: 6px 10px; }
+  .matrix.pf .pf-korb { background: var(--lavendel); }
+  /* Der Platzhalter der überspannenden Zellen muss so hoch sein wie das Band,
+     sonst beginnt die erste Kachelzeile auf verschiedenen Höhen (Entscheidung
+     47). Box-sizing ist border-box, also 15px Zeilenhöhe plus zweimal 6px
+     Innenabstand. Ein Test hält die Invariante fest. */
+  .matrix.pf .pf-korb-leer { min-height: 27px; }
   .lane-body { display: flex; gap: 8px; flex-wrap: wrap; }
   .lane-leer { color: var(--fg-muted); font-size: 13px; padding: 6px 0; }
   @media (max-width: 720px) { .lane { grid-template-columns: 1fr; gap: 6px; } }
@@ -474,9 +511,10 @@
       <p>Alle Vorhaben liegen nebeneinander. Ihr entscheidet je Vorhaben: eingeplant, wartet oder abgesagt. Die Kapazitätslinie oben zeigt, was dabei nicht mehr hineinpasst.</p>
     </div>
 
-    <div class="budget" id="budget"></div>
-
     <div class="flaeche">
+      <div class="fl-teil budget-band">
+        <div class="budget" id="budget"></div>
+      </div>
       <div class="fl-teil">
         <div class="bild-kopf">
           <h2>Das Portfolio der Abteilung <span class="einheit">Zahlen in Vollzeitäquivalenten</span></h2>
@@ -1332,9 +1370,9 @@
     // Satz darunter ("Das ist eins zu viel"), und der las sich belehrend.
     const eins = zahl => runde1(zahl) === 1;
     const neben = [];
-    if (kap.gestoppt > 0) neben.push(`${zahlText(kap.gestoppt)} ${eins(kap.gestoppt) ? 'wird' : 'werden'} aus laufender Arbeit frei, weil ihr sie bewusst beendet.`);
-    if (kap.nichtGebunden > 0) neben.push(`${zahlText(kap.nichtGebunden)} ${eins(kap.nichtGebunden) ? 'wird' : 'werden'} gar nicht erst gebunden: noch nicht gestartet, und die Runde plant sie nicht ein.`);
-    if (kap.standOffen > 0) neben.push(`Bei ${zahlText(kap.standOffen)} ist der Stand nicht angegeben. Ob dabei etwas frei wird oder nur nichts gebunden, lässt sich deshalb nicht sagen.`);
+    if (kap.gestoppt > 0) neben.push({ zahl: kap.gestoppt, was: eins(kap.gestoppt) ? 'wird frei' : 'werden frei', warum: 'laufende Arbeit, bewusst beendet' });
+    if (kap.nichtGebunden > 0) neben.push({ zahl: kap.nichtGebunden, was: eins(kap.nichtGebunden) ? 'bleibt ungebunden' : 'bleiben ungebunden', warum: 'nicht gestartet und nicht eingeplant' });
+    if (kap.standOffen > 0) neben.push({ zahl: kap.standOffen, was: 'ohne Stand', warum: 'ob dabei etwas frei wird, ist offen' });
 
     document.getElementById('budget').innerHTML = `
       <div class="bd-kopf">
@@ -1348,7 +1386,7 @@
         ${kap.ueber > 0 ? `<span class="bd-wert ueber" style="left:${marke + breiteUeber / 2}%">+${zahlText(kap.ueber)}</span>` : ''}
         <div class="bd-marke ${marke > 88 ? 'rechts' : ''}" style="left:${marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>
       </div>
-      ${neben.map(zeile => `<p class="bd-neben">${esc(zeile)}</p>`).join('')}`;
+      ${neben.length ? `<div class="bd-fakten">${neben.map(f => `<p class="bd-fakt"><b>${zahlText(f.zahl)}</b><span>${esc(f.was)}</span><small>${esc(f.warum)}</small></p>`).join('')}</div>` : ''}`;
 
     const feld = document.getElementById('verfuegbar');
     feld.addEventListener('input', () => {
@@ -1477,14 +1515,14 @@
       // data-wahl macht die Zelle zum Zieh-Ziel: die Spalte ist die
       // Entscheidung, die man treffen darf (Entscheidung 48).
       const wahl = korb === 'haus' || korb === 'fach' ? 'prio' : (korb === 'warte' ? 'wartet' : 'nicht');
-      return `<div class="mx-zelle ${spalte === 4 ? 'pf-gebunden' : ''}" role="cell" data-wahl="${wahl}"${spannt ? ' aria-rowspan="2"' : ''} style="grid-column:${spalte}; grid-row:${zeile}${spannt ? ' / span 2' : ''}">
+      return `<div class="mx-zelle ${spalte === 3 ? 'pf-gebunden' : ''}" role="cell" data-wahl="${wahl}"${spannt ? ' aria-rowspan="2"' : ''} style="grid-column:${spalte}; grid-row:${zeile}${spannt ? ' / span 2' : ''}">
         ${label ? `<span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))}</span>` : '<span class="pf-korb-leer" aria-hidden="true"></span>'}
         ${drin.map(v => kachel(v, true)).join('')}</div>`;
     };
 
     const koepfe = PF_SPALTEN.map((spalte, si) => {
       const summe = vzaeSumme(S.vorhaben.filter(v => gewaehlt(v) === spalte.wahl));
-      return `<div class="mx-kopf ${spalte.gebunden ? 'pf-gebunden' : ''}" role="columnheader" style="grid-column:${si + 2}; grid-row:1">
+      return `<div class="mx-kopf ${spalte.gebunden ? 'pf-gebunden' : ''}" role="columnheader" style="grid-column:${si + 1}; grid-row:1">
         ${esc(ENTSCHEIDUNG[spalte.wahl])} <span class="pf-vzae">${zahlText(summe)} VZÄ</span>
         <small>${esc(spalte.sub)}</small></div>`;
     }).join('');
@@ -1493,24 +1531,19 @@
     document.getElementById('bildKoerper').innerHTML = `
       <p class="mx-achse-x pf-achse-x">Entscheidung der Abteilung &rarr;</p>
       <div class="mx-scroll">
-        <div class="matrix pf${sicht === 'portfolio' ? ' ziehbar' : ''}" role="table" aria-label="Vorhaben nach Entscheidung und Steuerung">
+        <div class="matrix pf${sicht === 'portfolio' ? ' ziehbar' : ''}" role="table" aria-label="Vorhaben nach Entscheidung der Abteilung">
+          <div class="mx-reihe" role="row">${koepfe}</div>
           <div class="mx-reihe" role="row">
-            <div class="mx-kopf leer" role="columnheader" style="grid-column:1; grid-row:1">Wer steuert?</div>
-            ${koepfe}
+            ${zelle('nicht', 1, 2, true)}
+            ${zelle('warte', 2, 2, true)}
+            ${zelle('haus', 3, 2, false, PORTFOLIO.haus)}
           </div>
           <div class="mx-reihe" role="row">
-            <div class="mx-zeile" role="rowheader" style="grid-column:1; grid-row:2">Leitungsfall</div>
-            ${zelle('nicht', 2, 2, true)}
-            ${zelle('warte', 3, 2, true)}
-            ${zelle('haus', 4, 2, false, PORTFOLIO.haus)}
-          </div>
-          <div class="mx-reihe" role="row">
-            <div class="mx-zeile" role="rowheader" style="grid-column:1; grid-row:3">Abteilung steuert selbst</div>
-            ${zelle('fach', 4, 3, false, PORTFOLIO.fach)}
+            ${zelle('fach', 3, 3, false, PORTFOLIO.fach)}
           </div>
         </div>
       </div>
-      <p class="mx-lese"><strong>So liest sich das Bild:</strong> Der Korb wird nicht gewählt, er fällt aus Spalte und Zeile heraus. Nur bei eingeplant entscheidet die Zeile: oben geht es als Leitungsfall ans Haus, unten steuert die Abteilung selbst.</p>
+      <p class="mx-lese"><strong>So liest sich das Bild:</strong> Der Korb wird nicht gewählt, er fällt aus der Entscheidung und dem Leitungsbedarf heraus. Nur die Eingeplant-Spalte teilt sich: oben das Leitungsportfolio, das ans Haus geht, unten das Abteilungsportfolio.</p>
       ${offen.length ? `<div class="mx-offen">
         <p class="mx-offen-kopf">${esc(PORTFOLIO.offen)} · ${offen.length}</p>
         <p class="lane-sub">Noch kein Korb, es fehlen Antworten im Steckbrief.</p>
