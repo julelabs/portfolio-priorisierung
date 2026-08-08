@@ -347,6 +347,21 @@
   .pt:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(13,12,43,.09); }
   .pt.aktiv { box-shadow: 0 0 0 2px var(--blau); border-color: var(--blau); }
   .pt-name { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg); line-height: 1.28; }
+  /* Der hohle Punkt an der Kachel: dasselbe Zeichen wie der Reife-Punkt in der
+     Namensliste von Schritt 1. Gefüllt heißt "die Runde kann damit arbeiten",
+     hohl heißt "da fehlt noch etwas". Er sitzt in der Namenszeile, also weder
+     als Fußnote am Rand noch als weitere Kante (Entscheidung 59). */
+  .pt-offen { display: inline-block; vertical-align: 1px; width: 8px; height: 8px; margin-left: 6px; border: 1.5px solid var(--blau-60); border-radius: 50%; }
+
+  /* Quittung nach dem Ablegen: steht am Raster, geht nach ein paar Sekunden
+     von selbst wieder weg. Der Rest bleibt in der Zeile "Noch offen". */
+  .quittung { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin: 0 0 12px; padding: 10px 14px; background: var(--blau-10); border-radius: 6px; font-size: 14px; color: var(--fg-2); }
+  .quittung strong { font-family: var(--display); color: var(--fg); }
+  .qt-kap { color: var(--fg-muted); font-size: 13px; }
+  .textbtn.qt-tun, .textbtn.of-tun { padding: 0; font-size: 13px; }
+  .of-zeile { padding: 14px 18px 15px; }
+  .of-name { font-family: var(--display); font-weight: 700; font-size: 14.5px; }
+  .of-frage { color: var(--fg-2); font-size: 14px; margin-top: 1px; }
   .pt-korb { font-size: 11.5px; color: var(--fg-muted); }
   .pt-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--fg-muted); }
   .pt-state { font-family: var(--display); font-weight: 800; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
@@ -534,6 +549,7 @@
             <span class="lg"><i class="lf"></i>Leitungsfall</span>
           </div>
         </div>
+        <div id="quittung" aria-live="polite"></div>
         <div id="bildKoerper"></div>
         <div id="entscheidPanel"></div>
       </div>
@@ -553,6 +569,13 @@
               <span class="lf-summary-hint">Frage, Termin und Zuständigkeit ansehen</span>
             </summary>
             <div class="arbeitsflaeche" id="leitungsfaelle"></div>
+          </details>
+          <details class="leitungs-details" id="offenBlock">
+            <summary>
+              <span class="lf-summary-title" id="offenTitel">Noch offen<span id="offenZahl"></span></span>
+              <span class="lf-summary-hint">Was an getroffenen Entscheidungen noch fehlt</span>
+            </summary>
+            <div class="arbeitsflaeche" id="offenListe"></div>
           </details>
         </div>
       </div>
@@ -710,6 +733,21 @@
   const gewaehlt = v => v.entscheidung === 'offen' ? empfehlung(v).wert : v.entscheidung;
   const weichtAb = v => v.entscheidung !== 'offen' && v.entscheidung !== empfehlung(v).wert;
 
+  // Pflichten, die an einer schon getroffenen Entscheidung hängen (Entscheidungen
+  // 3 und 8). Sie blockieren nichts und haben das nie getan: Ablegen setzt die
+  // Entscheidung sofort. Seit Entscheidung 59 werden sie zum sichtbaren Rest,
+  // statt im Moment des Zugs abgefragt zu werden.
+  function offenePflicht(v) {
+    if (v.entscheidung === 'offen') return null;
+    if (gewaehlt(v) === 'wartet' && !v.bedingung.trim()) return 'bedingung';
+    if (weichtAb(v) && !v.begruendung.trim()) return 'begruendung';
+    return null;
+  }
+  const OFFENE_PFLICHT = {
+    bedingung: { kurz: 'Bedingung fehlt', frage: 'Was muss eintreten, damit es startet?' },
+    begruendung: { kurz: 'Begründung fehlt', frage: 'Warum weicht ihr von der Empfehlung ab?' }
+  };
+
   // Steuerungsbedarf: drei Teilwerte, jeder direkt aus einer Antwort, nichts gewichtet.
   // Die Ressourcen fehlen hier bewusst: Kapazität ist ein Preis, kein Wert.
   // Der Wert entscheidet nichts, er fasst zusammen und wird nie ohne seine Teile gezeigt.
@@ -861,16 +899,10 @@
       });
     }
 
-    const parkplatz = liste.filter(v => gewaehlt(v) === 'wartet' && !v.bedingung.trim());
-    if (parkplatz.length) {
-      punkte.push({
-        typ: 'besprechen',
-        befund: `${parkplatz.length === 1 ? 'Ein Vorhaben wartet' : parkplatz.length + ' Vorhaben warten'} ohne benannte Bedingung: ${parkplatz.map(v => v.name).join(', ')}.`,
-        frage: 'Was muss eintreten, damit es startet?',
-        namen: parkplatz.map(v => v.name),
-        vId: parkplatz.length === 1 ? parkplatz[0].id : undefined
-      });
-    }
+    // Die frühere Parkplatz-Meldung ist raus (Entscheidung 59): Eine fehlende
+    // Bedingung ist keine Frage für die Runde, sondern ein loses Ende an einer
+    // schon getroffenen Entscheidung. Sie sammelt sich mit der fehlenden
+    // Begründung in der Zeile "Noch offen" unter dem Block.
 
     // Die frühere Ziellücken-Meldung ist raus (Entscheidung 50): Eine
     // Abteilung zahlt naturgemäß auf ein bis zwei Ziele ein, die Meldung
@@ -947,7 +979,7 @@
 
   // Portfolio ist die erste und die Standard-Sicht: der erste Tab muss dem
   // entsprechen, was man beim Einstieg sieht (Entscheidung 49)
-  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, ziehId = null, naechste = 1, naechsteExtern = 1;
+  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, ziehId = null, quittung = null, quittungUhr = null, naechste = 1, naechsteExtern = 1;
 
   function laden() {
     try {
@@ -1407,8 +1439,12 @@
     const vzae = vzaeWert(v);
     const lf = IST_LEITUNGSFALL(v.leitung) && wahl !== 'nicht';
     const korb = PORTFOLIO[portfolio(v).wert];
-    return `<button class="pt ${wahl} ${lf ? 'lf' : ''} ${v.id === aktivId ? 'aktiv' : ''}" type="button" data-kachel="${v.id}" title="${esc(korb)}">
-      <span class="pt-name">${esc(v.name)}</span>
+    // Der hohle Punkt ist dasselbe Zeichen wie in der Namensliste von Schritt 1:
+    // gefüllt heißt "die Runde kann damit arbeiten", hohl heißt "da fehlt noch
+    // etwas". Hier steht er für die offene Pflicht an einer Entscheidung.
+    const pflicht = offenePflicht(v);
+    return `<button class="pt ${wahl} ${lf ? 'lf' : ''} ${v.id === aktivId ? 'aktiv' : ''}" type="button" data-kachel="${v.id}" title="${esc(korb)}${pflicht ? ' · ' + OFFENE_PFLICHT[pflicht].kurz : ''}">
+      <span class="pt-name">${esc(v.name)}${pflicht ? `<i class="pt-offen" aria-hidden="true"></i><span class="nur-vorlesen">, ${esc(OFFENE_PFLICHT[pflicht].kurz)}</span>` : ''}</span>
       ${lf ? '<span class="nur-vorlesen">Leitungsfall</span>' : ''}
       ${ohneKorb ? '' : `<span class="pt-korb">${esc(korb)}</span>`}
       <span class="pt-foot">
@@ -1647,19 +1683,32 @@
     });
   }
 
+  // Ablegen quittiert, es fragt nicht ab (Entscheidung 59). Vorher sprang die
+  // Ansicht ins Panel, sobald eine Pflicht offen war. Das las sich wie ein
+  // Muss, obwohl nie etwas blockiert war, und es riss aus dem Bild, in dem man
+  // gerade ausprobiert. Eine Begründung ist eine Aussage über eine fertige
+  // Entscheidung, und fertig ist sie erst, wenn Leiste und Bild zeigen, was der
+  // Zug gekostet hat. Die Pflicht bleibt, sie wird zum sichtbaren Rest.
   function ablegen(wahl) {
     const v = nachId(ziehId);
     ziehId = null;
     if (!v) return;
     v.entscheidung = wahl;
     speichern();
-    // Wo das Panel eine Pflicht einfordert, öffnet es sich mit dem Feld:
-    // wartet braucht die Bedingung, Abweichen von der Empfehlung den Satz.
-    const brauchtPanel = (wahl === 'wartet' && !v.bedingung.trim())
-      || (weichtAb(v) && !v.begruendung.trim());
-    if (brauchtPanel) aktivId = v.id;
+    quittungFuer(v.id);
     mitFlug(renderPriorisieren);
-    if (brauchtPanel) document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // Die Quittung steht am Raster und geht von selbst wieder weg. Was offen
+  // bleibt, sammelt die Zeile "Noch offen", die verschwindet nicht.
+  function quittungFuer(id) {
+    quittung = id;
+    clearTimeout(quittungUhr);
+    quittungUhr = setTimeout(() => {
+      quittung = null;
+      const box = document.getElementById('quittung');
+      if (box) box.innerHTML = '';
+    }, 7000);
   }
 
   // In der Matrix kommt die Position aus zwei Sachantworten, dort wird nicht
@@ -1844,12 +1893,57 @@
       : '');
   }
 
+  // Die Quittung sagt, was der Zug bewirkt hat: was jetzt gilt, was es kostet
+  // und was daran noch offen ist. Sie steht am Raster, nicht unter der Seite,
+  // damit niemand aus dem Bild geworfen wird.
+  function renderQuittung() {
+    const box = document.getElementById('quittung');
+    if (!box) return;
+    const v = quittung ? nachId(quittung) : null;
+    if (!v || sicht !== 'portfolio') { box.innerHTML = ''; return; }
+    const kap = kapazitaet(S.vorhaben, verfuegbarWert());
+    const pflicht = offenePflicht(v);
+    box.innerHTML = `<p class="quittung">
+      <span class="qt-satz"><strong>${esc(v.name)}</strong> steht jetzt auf ${esc(ENTSCHEIDUNG[gewaehlt(v)])}.</span>
+      <span class="qt-kap">Gebunden: ${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)}${kap.ueber > 0 ? ', ' + zahlText(kap.ueber) + ' über der Grenze' : ''}.</span>
+      ${pflicht ? `<button class="textbtn blau qt-tun" type="button" data-quittung="${v.id}">${esc(OFFENE_PFLICHT[pflicht].kurz.replace(' fehlt', ' ergänzen'))}</button>` : ''}
+    </p>`;
+    const knopf = box.querySelector('[data-quittung]');
+    if (knopf) knopf.addEventListener('click', () => {
+      aktivId = knopf.dataset.quittung;
+      renderPriorisieren();
+      document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  }
+
+  // Der sichtbare Rest: alles, was an schon getroffenen Entscheidungen noch
+  // fehlt. Keine Frage für die Runde, deshalb steht es nicht bei den vier
+  // Fragen, sondern als eigene Zeile darunter (Entscheidung 59).
+  function renderOffenePflichten() {
+    const block = document.getElementById('offenBlock');
+    const liste = S.vorhaben.map(v => ({ v, pflicht: offenePflicht(v) })).filter(x => x.pflicht);
+    block.classList.toggle('verborgen', liste.length === 0);
+    document.getElementById('offenZahl').textContent = liste.length ? ' · ' + liste.length : '';
+    document.getElementById('offenListe').innerHTML = liste.map(({ v, pflicht }) => `<div class="of-zeile">
+      <p class="of-name">${esc(v.name)}</p>
+      <p class="of-frage">${esc(OFFENE_PFLICHT[pflicht].frage)}</p>
+      <button class="textbtn blau of-tun" type="button" data-offen="${v.id}">${esc(OFFENE_PFLICHT[pflicht].kurz.replace(' fehlt', ' ergänzen'))}</button>
+    </div>`).join('');
+    document.getElementById('offenListe').querySelectorAll('[data-offen]').forEach(el => el.addEventListener('click', () => {
+      aktivId = el.dataset.offen;
+      renderPriorisieren();
+      document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }));
+  }
+
   function renderPriorisieren() {
     renderBudget();
     renderBild();
     renderPanel();
     renderKonflikte();
     renderLeitungsfaelle();
+    renderOffenePflichten();
+    renderQuittung();
   }
 
   /* ---------- Rahmen ---------- */
