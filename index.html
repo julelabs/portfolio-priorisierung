@@ -236,7 +236,39 @@
      erst, seit sie ein helles Band ist: ein mitlaufender dunkler Kasten wäre
      ein dauerhaft lauter Kasten gewesen. Weil die Zahlen jetzt immer sichtbar
      sind, rechnet die Quittung nach dem Ablegen nicht mehr vor. */
-  .budget-band { background: var(--blau-10); position: sticky; top: 0; z-index: 5; border-radius: 8px 8px 0 0; }
+  /* Die Kapazität ist dauerhaft eine Zeile (Entscheidung 63). Vorher war sie ein
+     Block von etwa 190px, der beim Scrollen kleben blieb, während die Umschaltung
+     zwischen den Sichten darunter wegscrollte: es blieb das Große stehen, das man
+     selten braucht, und weg war das Kleine, das man dauernd braucht. Eine
+     konstante Höhe hat außerdem den Nebeneffekt, dass das Kleben nichts
+     verschiebt. Jede Fassung, die beim Scrollen umbaut, ruckelt genau deshalb. */
+  .budget-band { background: var(--blau-10); position: sticky; top: 0; z-index: 5; border-radius: 8px 8px 0 0;
+    display: flex; align-items: center; gap: 10px 18px; flex-wrap: wrap; padding-top: 12px; padding-bottom: 12px; }
+  .budget, .budget .bd-kopf { display: contents; }
+  /* Der Titel entfällt: die Einheit steht in der Kurzfassung und in der
+     Bildüberschrift darunter. Zweimal "Vollzeitäquivalente" braucht niemand. */
+  .bd-titel { display: none; }
+  .bd-kurz { order: 2; font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg-2); }
+  /* Reihenfolge in der Zeile: erst der Balken mit seiner Zahl, dann das Feld,
+     das sie verändert, dann rechts die Umschaltung. */
+  .bd-eingabe { order: 3; }
+  .bd-steuer { order: 4; margin-left: auto; }
+  /* Schmal bricht die Zeile um, statt die Umschaltung an den Rand zu quetschen */
+  @media (max-width: 1080px) { .bd-steuer { margin-left: 0; } }
+
+  /* Briefing vor der Werkbank. Zu heißt Werkbank, auf heißt Runde: der
+     Klappzustand ist der Moduswechsel, und er wird gespeichert. */
+  .briefing { background: var(--weiss); border-radius: 8px; box-shadow: 0 18px 44px rgba(13,12,43,.06); margin-bottom: clamp(14px, 1.8vw, 20px); }
+  .briefing > summary { cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    padding: clamp(14px, 1.6vw, 18px) clamp(18px, 2.4vw, 26px); border-radius: 8px; }
+  .briefing > summary::-webkit-details-marker { display: none; }
+  .briefing > summary::after { content: 'ansehen'; margin-left: auto; font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--blau); }
+  .briefing[open] > summary::after { content: 'einklappen'; }
+  .briefing > summary:hover { background: var(--blau-10); }
+  .bf-titel { font-family: var(--display); font-weight: 700; font-size: 17px; color: var(--fg); }
+  .bf-zahl { font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--kirsche-text); }
+  .bf-hinweis { color: var(--fg-muted); font-size: 13.5px; }
+  .bf-koerper { padding: 0 clamp(18px, 2.4vw, 26px) clamp(18px, 2.2vw, 24px); }
   .budget { color: var(--fg); }
   .bd-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
   .bd-titel { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-2); }
@@ -249,7 +281,12 @@
   /* Zwei Segmente statt einem: was gedeckt ist, bleibt minze, nur der Überhang
      wird kirsche. Die Marke sitzt genau am Farbwechsel, damit die Überbuchung
      eine Form hat und nicht nur eine Farbe. */
-  .bd-skala { position: relative; height: 20px; border-radius: 4px; background: var(--lavendel); margin: 24px 0 26px; }
+  /* Flacher als früher, weil die Leiste jetzt eine Zeile ist. Die Grenzmarke
+     bleibt, sie macht aus dem Balken einen Maßstab. Die Zahlen im Balken
+     entfallen, sie stehen als Satz daneben (Entscheidung 63). */
+  .bd-skala { position: relative; height: 12px; border-radius: 4px; background: var(--lavendel);
+    order: 1; margin: 0; flex: 0 1 200px; min-width: 140px; }
+  .bd-skala .bd-wert, .bd-marke b { display: none; }
   .bd-gedeckt { position: absolute; left: 0; top: 0; bottom: 0; background: var(--blau); border-radius: 4px 0 0 4px; transition: width .4s var(--ease); }
   .bd-ueberhang { position: absolute; top: 0; bottom: 0; background: var(--kirsche-text); border-radius: 0 4px 4px 0; transition: width .4s var(--ease), left .4s var(--ease); }
   .bd-marke { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--fg); transition: left .4s var(--ease); }
@@ -264,11 +301,9 @@
   /* Die zwei Zusatzzahlen standen als ganze Saetze da und mussten gelesen
      werden, bevor klar war, wofuer die Zahl steht. Jetzt fuehrt die Zahl, das
      Was steht daneben, das Warum leise darunter (Entscheidung 57). */
-  .bd-fakten { display: flex; flex-wrap: wrap; gap: 10px 36px; margin-top: 18px; }
-  .bd-fakt { max-width: 34ch; }
-  .bd-fakt b { font-family: var(--display); font-size: 17px; font-weight: 800; color: var(--fg); margin-right: 8px; font-variant-numeric: tabular-nums; }
-  .bd-fakt span { font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--fg); }
-  .bd-fakt small { display: block; color: var(--fg-muted); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }
+  /* Meldung, nicht Inventar: erscheint nur, wenn Stände fehlen */
+  .bd-stand { color: var(--fg-2); font-size: 13.5px; line-height: 1.5; max-width: 76ch; margin-bottom: 14px; }
+  .bd-stand b { font-family: var(--display); color: var(--fg); }
 
   .flaeche { background: var(--weiss); border-radius: 8px; box-shadow: 0 18px 44px rgba(13,12,43,.06); }
   .fl-teil { padding: clamp(18px, 2.2vw, 24px) clamp(18px, 2.4vw, 26px); }
@@ -586,19 +621,43 @@
       <p>Alle Vorhaben liegen nebeneinander. Ihr entscheidet je Vorhaben: eingeplant, wartet oder abgesagt. Die Kapazitätslinie oben zeigt, was dabei nicht mehr hineinpasst.</p>
     </div>
 
+    <!-- Das Briefing steht vor der Werkbank und ist einklappbar (Entscheidung 63).
+         Der Klappzustand ist der Moduswechsel: aufgeklappt für eine Runde, die
+         kalt ankommt, zugeklappt für alle, die im Vorgang schon drin sind. -->
+    <details class="briefing" id="briefing">
+      <summary>
+        <span class="bf-titel">Bevor ihr entscheidet</span>
+        <span class="bf-zahl" id="briefingZahl"></span>
+        <span class="bf-hinweis">Fragen, die vor der Entscheidung geklärt sein sollten</span>
+      </summary>
+      <div class="bf-koerper">
+        <section class="spalte fragen-spalte" aria-labelledby="konflikteTitel">
+          <h3 id="konflikteTitel"></h3>
+          <div class="arbeitsflaeche" id="konflikte"></div>
+        </section>
+      </div>
+    </details>
+
     <div class="flaeche">
+      <!-- Die Kapazität ist eine Zeile und bleibt eine (Entscheidung 63): Balken
+           mit Grenzmarke, Kurzfassung, Eingabefeld, dann die Umschaltung. Weil
+           die Höhe konstant ist, verschiebt das Kleben beim Scrollen nichts. -->
       <div class="fl-teil budget-band">
         <div class="budget" id="budget"></div>
-      </div>
-      <div class="fl-teil">
-        <div class="bild-kopf">
-          <h2>Das Portfolio der Abteilung <span class="einheit">Zahlen in Vollzeitäquivalenten</span></h2>
+        <span class="bd-kurz" id="bdKurz"></span>
+        <div class="bd-steuer">
           <div class="sichten">
             <button type="button" data-sicht="portfolio">Portfolio</button>
             <button type="button" data-sicht="matrix">Steuerungsbedarf</button>
             <button type="button" data-sicht="ziele">Ziele</button>
             <button type="button" data-sicht="abhaengig">Abhängigkeiten</button>
           </div>
+        </div>
+      </div>
+      <div class="fl-teil">
+        <div id="bdStand"></div>
+        <div class="bild-kopf">
+          <h2>Das Portfolio der Abteilung <span class="einheit">Zahlen in Vollzeitäquivalenten</span></h2>
         </div>
         <div class="bild-kopf">
           <div class="legende">
@@ -614,15 +673,11 @@
         <div id="entscheidPanel"></div>
       </div>
 
+      <!-- Was aus der Arbeit folgt, bleibt unter der Werkbank: das Ergebnis fürs
+           Haus und die losen Enden. Beide waren vorher Teil des Briefings, gehören
+           aber ans Ende, nicht davor (Entscheidung 63). -->
       <div class="fl-teil entscheid-hinweise">
-        <div class="folgt-kopf">
-          <h2>Bevor ihr entscheidet</h2>
-        </div>
         <div class="arbeitszone">
-          <section class="spalte fragen-spalte" aria-labelledby="konflikteTitel">
-            <h3 id="konflikteTitel"></h3>
-            <div class="arbeitsflaeche" id="konflikte"></div>
-          </section>
           <details class="leitungs-details">
             <summary>
               <span class="lf-summary-title" id="leitungsfaelleTitel"><i class="lf" aria-hidden="true"></i>Leitungsfälle fürs Haus<span id="leitungsfaelleZahl"></span></span>
@@ -1582,11 +1637,14 @@
     // Die Einheit steht einmal in der Überschrift, danach nur noch Zahlen.
     // Die Segmente tragen ihre Werte selbst: der Rechenweg stand vorher als
     // Satz darunter ("Das ist eins zu viel"), und der las sich belehrend.
-    const eins = zahl => runde1(zahl) === 1;
-    const neben = [];
-    if (kap.gestoppt > 0) neben.push({ zahl: kap.gestoppt, was: eins(kap.gestoppt) ? 'wird frei' : 'werden frei', warum: 'laufende Arbeit, bewusst beendet' });
-    if (kap.nichtGebunden > 0) neben.push({ zahl: kap.nichtGebunden, was: eins(kap.nichtGebunden) ? 'bleibt ungebunden' : 'bleiben ungebunden', warum: 'nicht gestartet und nicht eingeplant' });
-    if (kap.standOffen > 0) neben.push({ zahl: kap.standOffen, was: 'ohne Stand', warum: 'ob dabei etwas frei wird, ist offen' });
+    // "wird frei" und "bleiben ungebunden" sind gestrichen (Entscheidung 63):
+    // Dauerinventar, das bei jedem Blick mitgelesen werden musste und nichts
+    // entschied. Der fehlende Stand bleibt, aber als Mangelmeldung: er ist der
+    // einzige Hinweis darauf, dass die Rechnung an dieser Stelle unsicher ist,
+    // und er erscheint nur, wenn er zutrifft.
+    const standHinweis = kap.standOffen > 0
+      ? `<p class="bd-stand"><b>${zahlText(kap.standOffen)} VZÄ ohne Stand.</b> Ob dabei etwas frei wird, ist offen: bei diesen Vorhaben fehlt die Angabe, ob sie schon laufen.</p>`
+      : '';
 
     document.getElementById('budget').innerHTML = `
       <div class="bd-kopf">
@@ -1600,7 +1658,12 @@
         ${kap.ueber > 0 ? `<span class="bd-wert ueber" style="left:${marke + breiteUeber / 2}%">+${zahlText(kap.ueber)}</span>` : ''}
         <div class="bd-marke ${marke > 88 ? 'rechts' : ''}" style="left:${marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>
       </div>
-      ${neben.length ? `<div class="bd-fakten">${neben.map(f => `<p class="bd-fakt"><b>${zahlText(f.zahl)}</b><span>${esc(f.was)}</span><small>${esc(f.warum)}</small></p>`).join('')}</div>` : ''}`;
+      `;
+    document.getElementById('bdStand').innerHTML = standHinweis;
+    // Die Kurzfassung trägt die Zahlen, die vorher im Balken standen
+    document.getElementById('bdKurz').textContent = kap.ueber > 0
+      ? `${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} VZÄ, ${zahlText(kap.ueber)} zu viel`
+      : `${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} VZÄ gebunden`;
 
     const feld = document.getElementById('verfuegbar');
     feld.addEventListener('input', () => {
@@ -2026,6 +2089,11 @@
   function renderKonflikte() {
     const punkte = konflikte(S.vorhaben, verfuegbarWert());
     document.getElementById('konflikteTitel').textContent = FRAGEN_TITEL[punkte.length];
+    // Die Zahl steht in der zugeklappten Zeile, sonst wäre der Block wieder
+    // unsichtbar, nur an anderer Stelle (Entscheidung 63).
+    document.getElementById('briefingZahl').textContent = punkte.length
+      ? (punkte.length === 1 ? '1 Frage' : punkte.length + ' Fragen')
+      : 'nichts offen';
     // Der Befund zuerst, die Frage darunter (Entscheidung 50): das Vorhaben
     // ist die Information, die Frage ihre Deutung. Die Namen tragen Gewicht.
     const fett = p => {
@@ -2174,6 +2242,16 @@
     document.getElementById('neuName').addEventListener('keydown', event => {
       if (event.key === 'Enter') anlegen();
       if (event.key === 'Escape') neuSchliessen();
+    });
+    // Der Klappzustand des Briefings ist der Moduswechsel und überlebt das
+    // Neuladen: Wer einmal an der Werkbank arbeitet, bekommt sie wieder, wer für
+    // eine Runde aufklappt, findet sie beim nächsten Mal offen. Voreinstellung
+    // ist zu, damit das Portfoliobild sofort im Bild steht.
+    const briefing = document.getElementById('briefing');
+    briefing.open = S.briefingOffen === true;
+    briefing.addEventListener('toggle', () => {
+      S.briefingOffen = briefing.open;
+      speichern();
     });
     document.getElementById('copy').addEventListener('click', kopieren);
     document.getElementById('reset').addEventListener('click', () => {
