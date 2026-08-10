@@ -60,6 +60,50 @@
   .schritt[aria-current="true"] { background: var(--weiss); color: var(--dunkel); }
   .schritt[aria-current="true"] .nr { color: var(--blau); }
 
+  /* Auftakt zu Schritt 1 (Entscheidung 61): Die Kopfleiste wächst nach unten
+     weiter, damit die Ansicht nicht mit Liste und Formular beginnt. Bewusst
+     knapp gehalten, bei 1440x860 muss ein Teil der Arbeitsfläche sichtbar
+     bleiben: Wer das Werkzeug täglich benutzt, soll keinen Hero wegscrollen.
+     Minze trägt hier ausschließlich der Knopf. Er ist die eine Handlung, und
+     als einziger gesättigter Punkt im Bild braucht er keine Erklärung. */
+  .auftakt { background: var(--dunkel); color: var(--weiss); padding: clamp(24px, 3.2vw, 38px) clamp(16px, 4vw, 40px) clamp(24px, 3vw, 34px); position: relative; overflow: hidden; }
+  /* Ein einzelner sehr weicher Verlauf, sonst liest sich die Fläche als Balken.
+     Kein Raster: das versprach eine Strategieplattform, die das Werkzeug nicht
+     fortführt. Der Verlauf trägt keine Information und darf nichts verdecken. */
+  .auftakt::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(120% 145% at 88% 0%, rgba(89,87,180,.42) 0%, rgba(89,87,180,0) 62%); }
+  /* Gleiche Achse wie die Bühne, damit die Überschrift genau über der Liste sitzt */
+  .auf-innen { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 24px);
+    display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(22px, 4vw, 54px); align-items: start; }
+  .auftakt h1 { font-size: clamp(26px, 3.4vw, 40px); max-width: 20ch; }
+  .auf-sub { margin-top: 12px; max-width: 54ch; color: var(--blau-20); font-size: 15.5px; }
+  /* Zwei Wege, eine Hierarchie: eintragen ist die laute Geste, ansehen die
+     leise. Beide sind konstant beschriftet. */
+  .auf-ctas { margin-top: 22px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .leiselink { background: none; border: 0; cursor: pointer; font-family: var(--display); font-weight: 700; font-size: 14px;
+    color: var(--blau-20); border-bottom: 1px solid rgba(255,255,255,.3); padding: 0 0 3px; }
+  .leiselink:hover { color: var(--weiss); border-color: var(--weiss); }
+  .auftakt :focus-visible { outline: 3px solid var(--weiss); outline-offset: 3px; }
+  /* Der Stand verschwindet schmal nicht, er rutscht unter die Copy: das Wissen,
+     wo die Erfassung steht, ist der Grund für den Auftakt. */
+  @media (max-width: 979px) { .auf-innen { grid-template-columns: 1fr; gap: 20px; } }
+
+  /* Stand der Erfassung als Werkzettel: drei Zeilen, Zahlen rechts auf einer
+     Achse, Hairlines statt Kasten. Die Zahlen bleiben weiß, Minze gehört im
+     Auftakt allein dem Knopf. */
+  .auf-stand { padding-top: 3px; }
+  .z-kopf { font-family: var(--display); font-weight: 700; font-size: 11.5px; letter-spacing: .11em; text-transform: uppercase; color: var(--blau-40); margin-bottom: 14px; }
+  .z-reihe { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: baseline; padding: 11px 0; border-top: 1px solid rgba(255,255,255,.11); }
+  .z-reihe:first-of-type { border-top: none; padding-top: 0; }
+  .z-t { font-size: 14.5px; color: var(--blau-20); }
+  .z-w { font-family: var(--display); font-weight: 800; font-size: 21px; color: var(--weiss); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  /* Was fehlt, bleibt erreichbar, ohne den Auftakt zu bestimmen: eine leise
+     Fußnote unter dem Zettel, kein zweiter Aufruf zum Handeln. */
+  .z-fuss { display: block; width: 100%; text-align: left; background: none; border: 0; cursor: pointer;
+    margin-top: 16px; padding: 0; font: inherit; font-size: 13.5px; line-height: 1.5; color: var(--blau-40); }
+  .z-fuss:hover { color: var(--blau-20); text-decoration: underline; text-underline-offset: 3px; }
+  .z-leer { font-size: 14.5px; color: var(--blau-20); }
+
   .buehne { max-width: 1180px; margin: 0 auto; padding: clamp(22px, 3.4vw, 38px) clamp(16px, 4vw, 24px) 80px; }
   .anriss { max-width: 620px; margin-bottom: clamp(20px, 3vw, 30px); }
   .anriss h1 { font-size: clamp(24px, 3.6vw, 32px); margin-bottom: 8px; }
@@ -81,7 +125,9 @@
   /* Gestrichelt heißt unfertig (wie auf den Kacheln), aber kräftig genug,
      dass man den Unterschied nicht suchen muss */
   .reife.entwurf { border: 2px dashed var(--blau-60); }
-  /* Anlegen steht oben in der Liste: Position statt Gewicht. Die Zeile wird
+  /* Anlegen steht oben in der Liste: Position statt Gewicht. Sie heißt wie der
+     Knopf im Auftakt, damit dieselbe Handlung nicht zwei Namen hat
+     (Entscheidung 62). Die Zeile wird
      erst auf Klick zum Formular, ein dauerhaft leeres Eingabefeld sähe nach
      Formular aus. */
   .nav-neu { display: flex; align-items: center; gap: 9px; width: 100%; background: transparent; border: 0; border-radius: 6px; cursor: pointer; text-align: left; padding: 11px 10px; margin-bottom: 8px; font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--blau); }
@@ -89,19 +135,14 @@
   .nav-neu .plus { font-size: 16px; font-weight: 800; line-height: 1; }
   .navfoot { margin: 0 0 10px; display: flex; flex-direction: column; gap: 8px; }
   .reife-legende { color: var(--fg-muted); font-size: 12.5px; margin-top: 12px; }
-  /* Freie Fläche in Schritt 1, solange kein Steckbrief offen ist */
-  .leer-kopf { font-family: var(--display); font-size: 19px; font-weight: 700; color: var(--fg); margin-bottom: 7px; }
-  .leer-text { color: var(--fg-2); font-size: 14.5px; line-height: 1.5; max-width: 58ch; }
-  .leer-aktion { margin-top: 20px; }
-  .leer-liste { border-top: 1px solid var(--line); }
-  .leer-zeile { display: flex; align-items: baseline; gap: 12px; width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 12px 2px; cursor: pointer; font: inherit; }
-  .leer-zeile:hover { background: var(--blau-10); }
-  .leer-name { font-family: var(--display); font-weight: 700; font-size: 14.5px; color: var(--fg); }
-  .leer-fehlt { color: var(--fg-muted); font-size: 13px; margin-left: auto; }
-  .leer-kicker { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--fg); margin: 26px 0 10px; }
-  .leer-schritte { counter-reset: leerschritt; }
-  .leer-schritt { counter-increment: leerschritt; position: relative; padding: 9px 0 9px 34px; border-top: 1px solid var(--line); color: var(--fg-2); font-size: 14.5px; }
-  .leer-schritt::before { content: counter(leerschritt); position: absolute; left: 4px; top: 9px; font-family: var(--display); font-size: 12.5px; font-weight: 800; color: var(--blau-40); font-variant-numeric: tabular-nums; }
+  /* Freie Fläche in Schritt 1, solange kein Steckbrief offen ist. Seit
+     Entscheidung 61 trägt sie keinen Stand und keine Aktion mehr, beides steht
+     im Auftakt. Sie bleibt leise: eine Fläche, die ihren Zweck nennt. */
+  .frei-kopf { font-family: var(--display); font-size: 17px; font-weight: 700; color: var(--fg-2); margin-bottom: 7px; }
+  .frei-text { color: var(--fg-muted); font-size: 14.5px; line-height: 1.5; max-width: 54ch; }
+  /* Die Fläche behält ihre Höhe, auch wenn sie leer ist: sonst liest sie sich
+     als abgerissener Zettel, und das Öffnen eines Steckbriefs wäre ein Sprung. */
+  .sb-frei { min-height: clamp(240px, 34vh, 360px); }
 
   .steckbrief { background: var(--weiss); border-radius: 8px; box-shadow: 0 18px 44px rgba(13,12,43,.06); padding: clamp(20px, 2.6vw, 30px); }
   .sb-kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 4px; }
@@ -500,18 +541,33 @@
   <div class="mock-badge">Prototyp v3</div>
 </header>
 
+<!-- Auftakt zu Schritt 1: liegt außerhalb der Bühne, damit die dunkle Fläche
+     randlos an die Kopfleiste anschließt. Überschrift und Stand kommen aus
+     einstieg(), die zwei Wege sind konstant (siehe renderAuftakt). -->
+<div class="auftakt" id="auftakt">
+  <div class="auf-innen">
+    <div>
+      <h1 id="auftaktKopf">Was liegt für das nächste Halbjahr auf dem Tisch?</h1>
+      <p class="auf-sub">Erst beschreiben, dann entscheiden. Ein kurzer Steckbrief pro Vorhaben, unter fünf Minuten. Danach liegen alle nebeneinander.</p>
+      <!-- Die zwei Wege des Werkzeugs, in denselben Worten wie überall sonst
+           (Entscheidung 62): eintragen oder ansehen. -->
+      <div class="auf-ctas">
+        <button class="btn minze" type="button" id="auftaktNeu">Vorhaben eintragen</button>
+        <button class="leiselink" type="button" id="auftaktPortfolio">Portfolio ansehen &#8594;</button>
+      </div>
+    </div>
+    <div class="auf-stand" id="auftaktStand"></div>
+  </div>
+</div>
+
 <div class="buehne">
 
   <!-- Ansicht 1 -->
   <section id="ansicht-erfassen">
-    <div class="anriss">
-      <h1>Erst beschreiben, dann entscheiden</h1>
-      <p>Pro Vorhaben ein kurzer Steckbrief, unter fünf Minuten. Hier wird noch nichts priorisiert und nichts sortiert sich um. Die Entscheidung fällt in Schritt 2, wenn alle Vorhaben nebeneinander liegen.</p>
-    </div>
     <div class="erfassen">
       <div class="nav-sp">
         <p class="nav-kopf">Vorhaben der Abteilung</p>
-        <button class="nav-neu" type="button" id="neuZeigen"><span class="plus">+</span>Neues Vorhaben</button>
+        <button class="nav-neu" type="button" id="neuZeigen"><span class="plus">+</span>Vorhaben eintragen</button>
         <div class="navfoot verborgen" id="neuForm">
           <input type="text" id="neuName" placeholder="Name des Vorhabens ..." autocomplete="off" aria-label="Name des neuen Vorhabens">
           <button class="btn minze" type="button" id="addBtn">Hinzufügen</button>
@@ -832,6 +888,75 @@
     };
   }
 
+  // Der Einstieg in Schritt 1 darf nur behaupten, was aus den Daten folgt
+  // (Entscheidung 61). Er rechnet die Kapazität nicht neu, er stellt zwei
+  // Größen gegenüber:
+  //   verfuegbar  das gesetzte Budget. Ohne Budget ist über Kapazität nichts zu sagen.
+  //   bedarf      was die noch nicht abgesagten Vorhaben zusammen kosten würden.
+  // Warum nicht kapazitaet().gebunden: das zählt nur Eingeplantes, und in
+  // Schritt 1 hat noch nichts eine Entscheidung. Die Leiste in Schritt 2 würde
+  // hier also immer "es passt" sagen, egal wie viel auf dem Tisch liegt.
+  // Fehlende VZÄ machen den Bedarf nur kleiner. Deshalb ist "mehr Vorhaben als
+  // Kapazität" auch mit Lücken wahr (der Bedarf ist eine untere Schranke),
+  // "die Kapazität reicht" dagegen nur, wenn jedes Vorhaben eine Zahl hat.
+  // Diese Asymmetrie ist der ganze Grund für die Reihenfolge der Fälle.
+  // Bewusst nicht: eine Aussage aus der Anzahl der Vorhaben. Acht Vorhaben sind
+  // weder viel noch wenig, solange niemand Kapazität dagegen gestellt hat.
+  const EINSTIEG = {
+    leer: 'Was steht im nächsten Halbjahr an?',
+    unklar: 'Was liegt für das nächste Halbjahr auf dem Tisch?',
+    knapp: 'Mehr Vorhaben als Kapazität.',
+    passt: 'Die Kapazität reicht. Passt auch das Portfolio?'
+  };
+  function einstieg(liste, verfuegbar) {
+    const offene = liste.filter(v => !istReif(v));
+    let bedarf = 0, ohneZahl = 0;
+    liste.forEach(v => {
+      // Abgesagtes kostet nichts mehr und darf den Bedarf nicht aufblähen
+      if (gewaehlt(v) === 'nicht') return;
+      const wert = vzaeWert(v);
+      if (wert > 0) bedarf += wert; else ohneZahl += 1;
+    });
+    bedarf = runde1(bedarf);
+
+    let zustand;
+    if (!liste.length) zustand = 'leer';
+    else if (verfuegbar <= 0) zustand = 'unklar';
+    else if (bedarf > verfuegbar) zustand = 'knapp';
+    else if (ohneZahl > 0) zustand = 'unklar';
+    else zustand = 'passt';
+
+    // Bewusst keine wechselnde Primärhandlung (Revision in Entscheidung 62):
+    // Die zwei Wege des Werkzeugs sind konstant, ein Knopf, der je nach
+    // Datenlage etwas anderes anbietet, macht das Ergänzen von Lücken zum
+    // Zweck der Ansicht. Was fehlt, steht im Stand und bleibt dort erreichbar.
+    return {
+      zustand, kopf: EINSTIEG[zustand],
+      gesamt: liste.length, reif: liste.length - offene.length,
+      offene, bedarf, ohneZahl
+    };
+  }
+
+  // Die Marken aus luecken() sind Spaltenkürzel für die Tabelle. In einem Satz,
+  // der zur Arbeit hinführt, müssen sie ausgeschrieben stehen.
+  // Mit Artikel und im Nominativ, damit der Satz "Bei X fehlen ..." trägt.
+  const LUECKE_LANG = {
+    'Ziel': 'das Portfolioziel',
+    'Veränderung': 'die angestrebte Veränderung',
+    'Folgen': 'die Folgen des Ruhenlassens',
+    'Chance': 'die konkrete Chance',
+    'Frist': 'die betroffene Frist',
+    'Leitungsbedarf': 'der Leitungsbedarf',
+    'Leitungsfrage': 'die Frage an die Leitung'
+  };
+  function lueckenText(v) {
+    const teile = luecken(v).map(marke => LUECKE_LANG[marke] || marke);
+    if (teile.length <= 1) return teile.join('');
+    return teile.slice(0, -1).join(', ') + ' und ' + teile[teile.length - 1];
+  }
+  // Eine Lücke fehlt, mehrere fehlen. Ohne das liest der Satz falsch.
+  const lueckenVerb = v => luecken(v).length === 1 ? 'fehlt' : 'fehlen';
+
   // Gemeldet wird, was auch eingeplant ist. Vorher meldete diese Liste auch
   // wartende Leitungsfälle, während portfolio() sie ausdrücklich nicht ins
   // Leitungsportfolio nahm. Dasselbe Vorhaben war je nach Blickwinkel drin oder
@@ -1038,6 +1163,9 @@
     document.getElementById('nav').querySelectorAll('[data-nav]').forEach(el => el.addEventListener('click', () => {
       offenId = el.dataset.nav;
       renderErfassen();
+      // Der Auftakt tritt beim Öffnen zurück. Ohne diesen Sprung nach oben wäre
+      // das ein Ruck mitten im Bild, mit ihm liest es sich als Ansichtswechsel.
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }));
     // Der Zähler steht seit Entscheidung 53 auf der freien Fläche, hier bliebe
     // er doppelt. Was der Punkt bedeutet, sagt die Legende weiter.
@@ -1128,23 +1256,75 @@
   // Die freie Fläche in Schritt 1, solange kein Steckbrief offen ist. Sie liegt
   // auf derselben weißen Fläche wie der Steckbrief, damit die Ansicht beim
   // Öffnen nicht springt und kein zweites Kartenmuster entsteht.
-  // Sie beantwortet die Frage, die beim Ankommen wirklich ansteht: Wo stehen
-  // wir mit dem Ausfüllen? Und sie führt in genau das Vorhaben, dem noch
-  // Antworten fehlen. Dieselbe Logik wie die Arbeitszone in Schritt 2:
-  // sichtbar machen, dann hinführen (Entscheidung 53).
+  // Stand der Erfassung und die nächste Handlung stehen seit Entscheidung 61
+  // im Auftakt, hier stünden sie ein zweites Mal. Diese Fläche sagt jetzt nur,
+  // was sie ist. Der Weg zu einem einzelnen Vorhaben bleibt die Liste links.
   function steckbriefLeer() {
-    const offen = S.vorhaben.filter(x => !istReif(x));
-    const reif = S.vorhaben.length - offen.length;
-    return `<div class="steckbrief">
-      <p class="leer-kopf">Womit fangt ihr an?</p>
-      <p class="leer-text">${reif} von ${S.vorhaben.length} Steckbriefen sind vollständig. Mit den anderen kann die Runde noch nicht arbeiten.</p>
-      <button class="btn primary leer-aktion" type="button" id="leerNeu">Vorhaben eintragen</button>
-      ${offen.length ? `<p class="leer-kicker">Hier fehlen noch Antworten</p>
-      <div class="leer-liste">${offen.map(x => `<button class="leer-zeile" type="button" data-oeffne="${x.id}">
-        <span class="leer-name">${esc(x.name)}</span>
-        <span class="leer-fehlt">${esc(luecken(x).join(', '))}</span>
-      </button>`).join('')}</div>` : ''}
+    // Ohne Vorhaben gibt es links nichts zu wählen, dann darf die Fläche nicht
+    // darauf verweisen
+    const text = S.vorhaben.length
+      ? 'Wählt links ein Vorhaben, oder tragt über "Vorhaben eintragen" eines ein. Sechs kurze Blöcke pro Vorhaben, und nichts davon entscheidet schon etwas.'
+      : 'Sobald das erste Vorhaben angelegt ist, führt diese Fläche durch sechs kurze Blöcke. Nichts davon entscheidet schon etwas.';
+    return `<div class="steckbrief sb-frei">
+      <p class="frei-kopf">Hier öffnet sich der Steckbrief</p>
+      <p class="frei-text">${text}</p>
     </div>`;
+  }
+
+  // Der Stand der Erfassung als Werkzettel (Entscheidung 62): drei Zeilen, die
+  // sagen, wo die Abteilung mit dem Ausfüllen steht. Die konkrete Lücke steht
+  // darunter als leise Fußnote und führt weiter, bestimmt den Auftakt aber nicht:
+  // Zweck der Ansicht ist das Beschreiben, nicht das Abarbeiten von Lücken.
+  function standHtml(e) {
+    if (!e.gesamt) return '<p class="z-leer">Noch kein Vorhaben erfasst.</p>';
+    const offen = e.offene.length;
+    const erstes = e.offene[0];
+    const rest = offen - 1;
+    const fuss = offen
+      ? `<button class="z-fuss" type="button" data-oeffne="${erstes.id}">Bei "${esc(erstes.name)}" ${lueckenVerb(erstes)} ${esc(lueckenText(erstes))}.${rest ? ` Und bei ${rest === 1 ? 'einem weiteren Vorhaben' : rest + ' weiteren Vorhaben'} noch etwas.` : ''}</button>`
+      : '<p class="z-fuss" style="cursor:default">Die Runde kann mit jedem Steckbrief arbeiten.</p>';
+    return `<p class="z-kopf">Stand der Erfassung</p>
+      <div class="z-reihe"><span class="z-t">Vorhaben in der Abteilung</span><span class="z-w">${e.gesamt}</span></div>
+      <div class="z-reihe"><span class="z-t">einsatzbereit für die Runde</span><span class="z-w">${e.reif}</span></div>
+      <div class="z-reihe"><span class="z-t">noch unvollständig</span><span class="z-w">${offen}</span></div>
+      ${fuss}`;
+  }
+
+  // Welches Feld die erste Lücke ist. Hinführen heißt: nicht suchen lassen.
+  const LUECKE_FELD = {
+    'Ziel': 'ziel', 'Veränderung': 'veraenderung', 'Folgen': 'ruhen',
+    'Leitungsbedarf': 'leitung', 'Leitungsfrage': 'lfFrage'
+  };
+  function zumSteckbrief(id) {
+    offenId = id;
+    renderErfassen();
+    const v = nachId(id);
+    if (!v) return;
+    const erste = luecken(v)[0];
+    // Chance und Frist sind Folgefelder, ihre IDs tragen die Vorhaben-ID (feldFolge)
+    let feld = LUECKE_FELD[erste] ? document.getElementById(LUECKE_FELD[erste]) : null;
+    if (!feld && erste === 'Chance') feld = document.getElementById('chanceKonkret-' + id);
+    if (!feld && erste === 'Frist') feld = document.getElementById('pflichtKonkret-' + id);
+    (feld || document.getElementById('steckbrief')).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (feld) feld.focus({ preventScroll: true });
+  }
+
+  // Der Auftakt wird als Ganzes neu gesetzt, aber nur bei einer abgeschlossenen
+  // Eingabe, nicht bei jedem Tastendruck: eine Überschrift, die unter den
+  // Fingern wechselt, liest niemand, und sie behauptete zwischenzeitlich Dinge,
+  // die nach dem nächsten Zeichen nicht mehr stimmen.
+  function renderAuftakt() {
+    const e = einstieg(S.vorhaben, verfuegbarWert());
+    document.getElementById('auftaktKopf').textContent = e.kopf;
+    const stand = document.getElementById('auftaktStand');
+    stand.innerHTML = standHtml(e);
+    stand.querySelectorAll('[data-oeffne]').forEach(el =>
+      el.addEventListener('click', () => zumSteckbrief(el.dataset.oeffne)));
+    // Beim Ankommen und in der Übersicht steht der Auftakt, beim Arbeiten am
+    // Steckbrief tritt er zurück (Entscheidung 62). Sonst wäre er bei jedem
+    // Besuch eine Fläche, die man wegscrollt. Zurück führt der Schriftzug oder
+    // der Schritt-1-Reiter.
+    document.getElementById('auftakt').classList.toggle('verborgen', !!offenId);
   }
 
   function renderSteckbrief() {
@@ -1152,12 +1332,6 @@
     const v = nachId(offenId);
     if (!v) {
       wurzel.innerHTML = steckbriefLeer();
-      const knopf = document.getElementById('leerNeu');
-      if (knopf) knopf.addEventListener('click', () => document.getElementById('neuZeigen').click());
-      wurzel.querySelectorAll('[data-oeffne]').forEach(el => el.addEventListener('click', () => {
-        offenId = el.dataset.oeffne;
-        renderErfassen();
-      }));
       return;
     }
     const lf = IST_LEITUNGSFALL(v.leitung);
@@ -1316,6 +1490,9 @@
         if (event.target.tagName === 'SELECT') renderErfassen();
         else renderNachTippen();
       });
+      // Beim Tippen bleibt der Auftakt stehen, beim Verlassen des Feldes zieht
+      // er nach: das ist die abgeschlossene Eingabe, ab der eine neue Aussage hält.
+      if (el.tagName !== 'SELECT') el.addEventListener('change', renderAuftakt);
     });
     const titel = document.getElementById('titel');
     titel.addEventListener('input', () => {
@@ -1323,6 +1500,9 @@
       speichern();
       renderNav();
     });
+    // Der Name steht im Auftakt (Knopf und Standzeile), aber erst wenn er fertig
+    // getippt ist
+    titel.addEventListener('change', renderAuftakt);
     // Bewusst ohne Vorauswahl: Schritt 2 verspricht den Blick auf alle
     // Vorhaben nebeneinander. Ein schon offenes Entscheidungspanel wäre das
     // v1-Muster (einzeln klassifizieren) durch die Hintertür.
@@ -1381,6 +1561,7 @@
   }
 
   function renderErfassen() {
+    renderAuftakt();
     renderNav();
     renderSteckbrief();
   }
@@ -1962,6 +2143,10 @@
     ansicht = neu;
     document.querySelectorAll('.schritt').forEach(el => el.setAttribute('aria-current', String(el.dataset.ansicht === ansicht)));
     document.getElementById('ansicht-erfassen').classList.toggle('verborgen', ansicht !== 'erfassen');
+    // Der Auftakt gehört zu Schritt 1 und liegt außerhalb der Bühne, also muss
+    // er hier mitgeschaltet werden. In Schritt 1 entscheidet renderAuftakt
+    // zusätzlich, ob gerade an einem Steckbrief gearbeitet wird.
+    document.getElementById('auftakt').classList.toggle('verborgen', ansicht !== 'erfassen' || !!offenId);
     document.getElementById('ansicht-priorisieren').classList.toggle('verborgen', ansicht !== 'priorisieren');
     if (ansicht === 'erfassen') renderErfassen(); else renderPriorisieren();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1970,8 +2155,15 @@
   function start() {
     laden();
     document.getElementById('brandAbt').textContent = ' · ' + (S.abteilung || 'Abteilung');
-    document.getElementById('brandHome').addEventListener('click', () => wechsle('erfassen'));
-    document.querySelectorAll('.schritt').forEach(el => el.addEventListener('click', () => wechsle(el.dataset.ansicht)));
+    // Beides führt zurück in die Übersicht von Schritt 1, also auch aus einem
+    // offenen Steckbrief heraus: dort steht der Auftakt wieder (Entscheidung 62).
+    const zurUebersicht = () => { offenId = null; wechsle('erfassen'); };
+    document.getElementById('brandHome').addEventListener('click', zurUebersicht);
+    document.querySelectorAll('.schritt').forEach(el => el.addEventListener('click', () => {
+      if (el.dataset.ansicht === 'erfassen') zurUebersicht(); else wechsle(el.dataset.ansicht);
+    }));
+    document.getElementById('auftaktNeu').addEventListener('click', () => document.getElementById('neuZeigen').click());
+    document.getElementById('auftaktPortfolio').addEventListener('click', () => wechsle('priorisieren'));
     document.querySelectorAll('.sichten button').forEach(el => el.addEventListener('click', () => sichtWechseln(el.dataset.sicht)));
     document.getElementById('neuZeigen').addEventListener('click', () => {
       document.getElementById('neuZeigen').classList.add('verborgen');
