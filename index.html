@@ -38,27 +38,31 @@
   /* Ein sichtbarer Fokus für alles Bedienbare. Auf der dunklen Leiste minze,
      sonst blau. Einzelne Felder überschreiben das weiter unten. */
   :focus-visible { outline: 2px solid var(--blau); outline-offset: 2px; }
-  header.top :focus-visible, .schritte :focus-visible, .budget :focus-visible { outline-color: var(--minze); }
+  header.top :focus-visible, .budget :focus-visible { outline-color: var(--minze); }
   html { -webkit-font-smoothing: antialiased; }
   body { font-family: var(--body); color: var(--fg); background: var(--blau-10); line-height: 1.55; font-size: 15px; }
   ::selection { background: var(--minze); color: var(--dunkel); }
   h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.14; }
 
-  /* Kopf: eine Zeile. Die Schritte stehen als Pillen in der Mitte, als
-     Unterstrich-Tabs unter dem Schriftzug gingen sie unter. Der Schriftzug
-     ist der Rückweg zu Schritt 1, einen eigenen Start gibt es nicht. */
-  header.top { background: var(--dunkel); color: var(--weiss); padding: 12px clamp(16px, 4vw, 40px); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  /* Der Schriftzug ist der Rückweg zu Schritt 1, einen eigenen Start gibt es
+     nicht. Die Schritt-Navigation ist im Einstieg redundant und dort verborgen.
+     In Schritt 2 bleibt sie als Rückweg, geometrisch in der Kopfzeile zentriert. */
+  header.top { position: relative; background: var(--dunkel); color: var(--weiss); padding: 12px clamp(16px, 4vw, 40px); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
   .brand { background: none; border: 0; cursor: pointer; padding: 0; text-align: left; color: var(--weiss); font-family: var(--display); font-weight: 800; font-size: 16px; }
   .brand .pg { color: var(--blau-20); font-weight: 600; }
   /* Leise Pille statt Minze-Fläche: das Abzeichen ist eine Fußnote, kein
      Feature, und Minze verliert damit eine ihrer zu vielen Bedeutungen. */
   .mock-badge { font-family: var(--display); font-size: 12px; font-weight: 700; letter-spacing: .03em; color: var(--blau-20); background: transparent; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: 4px 10px; }
-  .schritte { display: flex; gap: 3px; background: rgba(255,255,255,.09); border-radius: 999px; padding: 3px; }
-  .schritt { background: transparent; border: 0; border-radius: 999px; cursor: pointer; font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--blau-20); padding: 8px 16px; display: flex; gap: 8px; align-items: baseline; }
-  .schritt .nr { font-size: 11.5px; font-weight: 800; color: var(--blau-40); }
-  .schritt:hover { color: var(--weiss); }
-  .schritt[aria-current="true"] { background: var(--weiss); color: var(--dunkel); }
-  .schritt[aria-current="true"] .nr { color: var(--blau); }
+  /* Gleiche Hierarchie wie im Auftakt: der aktuelle Schritt ist eine klare
+     Fläche, der Rückweg ein leiser Textknopf. Keine zweite Pillen-Navigation. */
+  .schritte { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 20px; }
+  .schritt { background: transparent; border: 0; border-bottom: 1px solid rgba(255,255,255,.3); border-radius: 0; cursor: pointer; font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--blau-20); padding: 0 0 3px; }
+  .schritt:hover { color: var(--weiss); border-color: var(--weiss); }
+  .schritt[aria-current="true"] { background: var(--minze); border: 0; border-radius: 6px; color: var(--dunkel); font-weight: 800; padding: 9px 16px; }
+  .schritt[aria-current="true"]:hover { background: var(--minze-40); }
+  @media (max-width: 820px) {
+    .schritte { position: static; transform: none; flex-basis: 100%; justify-content: center; order: 3; }
+  }
 
   /* Auftakt zu Schritt 1 (Entscheidung 61): Die Kopfleiste wächst nach unten
      weiter, damit die Ansicht nicht mit Liste und Formular beginnt. Bewusst
@@ -358,12 +362,22 @@
   .mx-offen-kopf { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 8px; }
   .mx-offen-body { display: flex; flex-wrap: wrap; gap: 7px; }
 
-  /* Abhängigkeiten-Sicht: verbundene Kacheln kommen nach vorn, der Rest tritt
-     zurück. Bewusst ohne Linien, die Positionen sind nicht stabil genug dafür. */
-  .abh-hinweis { color: var(--fg-muted); font-size: 13.5px; margin-bottom: 12px; }
-  #bildKoerper .abh-zurueck { opacity: .25; }
+  /* Abhängigkeiten sind eine Linse in der Portfolio-Sicht. Der Hinweis belegt
+     immer denselben Raum, damit das Bild beim Auswählen nicht nach unten rückt. */
+  .abh-info { display: flex; align-items: baseline; justify-content: space-between; gap: 10px 24px; min-height: 46px; padding: 8px 0 10px; color: var(--fg-2); font-size: 13.5px; }
+  .abh-info strong { font-family: var(--display); color: var(--fg); }
+  .abh-info-meta { flex: 0 0 auto; color: var(--fg-muted); font-size: 12.5px; }
+  #bildKoerper .abh-zurueck { opacity: .16; }
+  #bildKoerper .abh-zurueck:hover { opacity: .48; }
   @keyframes abh-heben { from { transform: translateY(0); } }
-  #bildKoerper .abh-vorn { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(13,12,43,.16); animation: abh-heben .3s var(--ease); }
+  #bildKoerper .abh-vorn { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(13,12,43,.14); animation: abh-heben .3s var(--ease); }
+  #bildKoerper .abh-auswahl { box-shadow: 0 0 0 3px var(--blau-20), 0 12px 26px rgba(13,12,43,.16); }
+  .abh-rolle { font-family: var(--display); font-size: 11px; font-weight: 700; color: var(--blau-60); }
+  .abh-netz { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
+  .abh-linie-halo, .abh-linie { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .abh-linie-halo { stroke: var(--weiss); stroke-width: 7px; opacity: .94; }
+  .abh-linie { stroke: var(--blau-60); stroke-width: 2.5px; }
+  .abh-pfeil { fill: var(--blau-60); }
 
   /* Abhängigkeiten im Steckbrief: Chips sind Verweise, das Feld darunter
      schlägt Bestehendes vor, bevor etwas Neues entsteht */
@@ -389,7 +403,8 @@
      Entscheidung 46 beide Zeilen. Die Kopfspalte beschriftete also über die
      volle Höhe eine Unterscheidung, die es in zwei von drei Spalten nicht gibt,
      und jede erste Kachel dort klebte optisch an der Zeile "Leitungsfall". */
-  .matrix.pf { grid-template-columns: repeat(3, minmax(200px, 1fr)); min-width: 660px; }
+  .matrix.pf { position: relative; grid-template-columns: repeat(3, minmax(200px, 1fr)); min-width: 660px; }
+  .matrix.pf .pt { z-index: 3; }
   /* Das Achsenwort führt, die Zahl stützt (Kleinigkeiten-Notiz 06.08.:
      VZÄ war dominanter als die Entscheidungswörter) */
   /* Die drei getönten Flächen der Ansicht bilden eine Tonleiter: Kapazitätsband
@@ -575,9 +590,9 @@
 <body>
 <header class="top">
   <button class="brand" type="button" id="brandHome" title="Zurück zu Schritt 1">Portfolio-Priorisierung<span class="pg" id="brandAbt"> · Abteilung</span></button>
-  <nav class="schritte">
-    <button class="schritt" type="button" data-ansicht="erfassen"><span class="nr">1</span>Vorhaben erfassen</button>
-    <button class="schritt" type="button" data-ansicht="priorisieren"><span class="nr">2</span>Portfolio entscheiden</button>
+  <nav class="schritte" id="schrittNav" aria-label="Schritte">
+    <button class="schritt" type="button" data-ansicht="erfassen">Vorhaben erfassen</button>
+    <button class="schritt" type="button" data-ansicht="priorisieren">Portfolio entscheiden</button>
   </nav>
   <div class="mock-badge">Prototyp v3</div>
 </header>
@@ -656,7 +671,6 @@
             <button type="button" data-sicht="portfolio">Portfolio</button>
             <button type="button" data-sicht="matrix">Steuerung prüfen</button>
             <button type="button" data-sicht="ziele">Ziele</button>
-            <button type="button" data-sicht="abhaengig">Abhängigkeiten</button>
           </div>
         </div>
       </div>
@@ -1158,7 +1172,8 @@
       { name: 'Ausstellungsfläche Digitalprojekte im Foyer', ziel: OHNE_ZIEL, veraenderung: 'Besuchergruppen sehen im Foyer laufende Digitalprojekte des Hauses.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[4], vzae: '1', laeuft: LAEUFT[1], leitung: 'keine' },
       { name: 'Cloud-Pilot Fachverfahren', ziel: 'Einfach Digital', veraenderung: 'Ein Fachverfahren läuft produktiv in der Verwaltungscloud, Betriebserfahrung liegt vor.', ruhen: RUHEN[5], vzae: '1', laeuft: LAEUFT[2], leitung: 'offen' },
       { name: 'Servicestandard für Förderanträge', ziel: 'Die große Entlastung', veraenderung: 'Antragstellende erhalten in allen Förderprogrammen dieselbe Rückmeldefrist und denselben Statusverlauf.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], chanceKonkret: 'Die Zahl der Nachfragen zum Bearbeitungsstand sinkt messbar, weil der Status sichtbar ist.', vzae: '1,5', laeuft: LAEUFT[2], leitung: 'keine', haengtAn: [{ typ: 'v', id: 'v4' }] },
-      { name: 'Evaluierung Beteiligungsplattform', ziel: 'Schlanker, bürgernaher Staat', veraenderung: 'Das Haus weiß belastbar, ob die Plattform genutzt wird und ob sich der Betrieb lohnt.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], chanceKonkret: 'Die Entscheidung über Weiterbetrieb oder Abschaltung wird belegbar statt Bauchgefühl.', vzae: '0,5', laeuft: LAEUFT[2], leitung: 'keine' }
+      { name: 'Evaluierung Beteiligungsplattform', ziel: 'Schlanker, bürgernaher Staat', veraenderung: 'Das Haus weiß belastbar, ob die Plattform genutzt wird und ob sich der Betrieb lohnt.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], chanceKonkret: 'Die Entscheidung über Weiterbetrieb oder Abschaltung wird belegbar statt Bauchgefühl.', vzae: '0,5', laeuft: LAEUFT[2], leitung: 'keine' },
+      { name: 'Bundesweites Förderportal', ziel: 'Einfach Digital', veraenderung: 'Antragstellende finden Förderprogramme, reichen Unterlagen ein und sehen den Bearbeitungsstand an einer Stelle.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[3], chanceKonkret: 'Förderanträge kommen vollständiger an, und Antragstellende fragen seltener nach dem Bearbeitungsstand.', vzae: '1', laeuft: LAEUFT[2], leitung: 'keine', haengtAn: [{ typ: 'v', id: 'v2' }, { typ: 'v', id: 'v4' }] }
     ];
     return {
       v: 3,
@@ -1171,8 +1186,10 @@
   }
 
   // Portfolio ist die erste und die Standard-Sicht: der erste Tab muss dem
-  // entsprechen, was man beim Einstieg sieht (Entscheidung 49)
-  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, ziehId = null, quittung = null, quittungUhr = null, naechste = 1, naechsteExtern = 1;
+  // entsprechen, was man beim Einstieg sieht. abhAktivId ist bewusst vom
+  // Entscheidungspanel getrennt: eine Kachel im Portfolio zeigt Beziehungen,
+  // sie fordert keine Eingabe an und verändert die Scrollposition nicht.
+  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, abhAktivId = null, ziehId = null, klickNachZugId = null, quittung = null, quittungUhr = null, naechste = 1, naechsteExtern = 1;
 
   function laden() {
     try {
@@ -1699,7 +1716,7 @@
 
   // Die Kachel nennt Zustand und Korb. In der Portfolio-Sicht bleibt der Korb
   // weg, dort steht er schon als Name der Bahn und wäre reine Wiederholung.
-  function kachel(v, ohneKorb) {
+  function kachel(v, ohneKorb, abhRolle) {
     const wahl = gewaehlt(v);
     const vzae = vzaeWert(v);
     const lf = IST_LEITUNGSFALL(v.leitung) && wahl !== 'nicht';
@@ -1710,6 +1727,7 @@
     const pflicht = offenePflicht(v);
     return `<button class="pt ${wahl} ${lf ? 'lf' : ''} ${v.id === aktivId ? 'aktiv' : ''}" type="button" data-kachel="${v.id}" title="${esc(korb)}${pflicht ? ' · ' + OFFENE_PFLICHT[pflicht].kurz : ''}">
       <span class="pt-name">${esc(v.name)}${pflicht ? `<i class="pt-offen" aria-hidden="true"></i><span class="nur-vorlesen">, ${esc(OFFENE_PFLICHT[pflicht].kurz)}</span>` : ''}</span>
+      ${abhRolle ? `<span class="abh-rolle">${esc(abhRolle)}</span>` : ''}
       ${lf ? '<span class="nur-vorlesen">Leitungsfall</span>' : ''}
       ${ohneKorb ? '' : `<span class="pt-korb">${esc(korb)}</span>`}
       <span class="pt-foot">
@@ -1806,7 +1824,130 @@
     { wahl: 'prio', sub: 'bindet Kapazität im nächsten Halbjahr', gebunden: true }
   ];
 
+  function namensListe(namen) {
+    const zitiert = namen.map(name => `„${name}“`);
+    if (zitiert.length < 2) return zitiert[0] || '';
+    return zitiert.slice(0, -1).join(', ') + ' und ' + zitiert[zitiert.length - 1];
+  }
+
+  // Direkte Kanten in beide Richtungen. Der Pfeil zeigt immer vom abhängigen
+  // Vorhaben auf seine Voraussetzung. Externe Voraussetzungen bleiben im Text,
+  // weil es für sie im Portfolio keine Kachel und damit keinen Linienanker gibt.
+  function abhaengigkeitsFokus(id) {
+    const auswahl = id ? nachId(id) : null;
+    if (!auswahl) return null;
+    const ausgehend = [];
+    const externe = [];
+    (auswahl.haengtAn || []).forEach(ref => {
+      if (ref.typ === 'v') {
+        const ziel = nachId(ref.id);
+        if (ziel) ausgehend.push(ziel);
+      } else {
+        const ziel = (S.externe || []).find(e => e.id === ref.id);
+        if (ziel) externe.push(ziel);
+      }
+    });
+    const eingehend = S.vorhaben.filter(v => v.id !== auswahl.id
+      && (v.haengtAn || []).some(ref => ref.typ === 'v' && ref.id === auswahl.id));
+    const verbunden = new Set([auswahl.id]);
+    const rollen = new Map([[auswahl.id, 'Auswahl']]);
+    ausgehend.forEach(v => {
+      verbunden.add(v.id);
+      rollen.set(v.id, 'Voraussetzung');
+    });
+    eingehend.forEach(v => {
+      verbunden.add(v.id);
+      rollen.set(v.id, rollen.has(v.id) ? 'beidseitig verbunden' : 'hängt daran');
+    });
+    const kanten = [];
+    const gesehen = new Set();
+    const merke = (von, zu) => {
+      const schluessel = `${von}>${zu}`;
+      if (gesehen.has(schluessel)) return;
+      gesehen.add(schluessel);
+      kanten.push({ von, zu });
+    };
+    ausgehend.forEach(v => merke(auswahl.id, v.id));
+    eingehend.forEach(v => merke(v.id, auswahl.id));
+    return { auswahl, ausgehend, eingehend, externe, verbunden, rollen, kanten };
+  }
+
+  function abhaengigkeitsSatz(fokus) {
+    const teile = [];
+    if (fokus.ausgehend.length) teile.push(`${fokus.auswahl.name} hängt an ${namensListe(fokus.ausgehend.map(v => v.name))}.`);
+    if (fokus.externe.length) teile.push(`${fokus.auswahl.name} hat die externe Voraussetzung ${namensListe(fokus.externe.map(v => v.name))}.`);
+    if (fokus.eingehend.length) {
+      const namen = namensListe(fokus.eingehend.map(v => v.name));
+      teile.push(`${namen} ${fokus.eingehend.length === 1 ? 'hängt' : 'hängen'} an ${fokus.auswahl.name}.`);
+    }
+    return teile.join(' ') || 'Keine Abhängigkeit zu einem anderen Vorhaben erfasst.';
+  }
+
+  function kartenRand(von, zu, bezug) {
+    const a = von.getBoundingClientRect();
+    const b = zu.getBoundingClientRect();
+    const ax = a.left - bezug.left + a.width / 2;
+    const ay = a.top - bezug.top + a.height / 2;
+    const bx = b.left - bezug.left + b.width / 2;
+    const by = b.top - bezug.top + b.height / 2;
+    const dx = bx - ax;
+    const dy = by - ay;
+    const faktor = (breite, hoehe) => Math.min(
+      Math.abs(dx) > .01 ? (breite / 2) / Math.abs(dx) : Infinity,
+      Math.abs(dy) > .01 ? (hoehe / 2) / Math.abs(dy) : Infinity
+    );
+    const startFaktor = faktor(a.width, a.height);
+    const zielFaktor = faktor(b.width, b.height);
+    return {
+      sx: ax + dx * startFaktor,
+      sy: ay + dy * startFaktor,
+      tx: bx - dx * zielFaktor,
+      ty: by - dy * zielFaktor
+    };
+  }
+
+  function zeichneAbhaengigkeitsLinien(fokus) {
+    const matrix = document.querySelector('.matrix.pf');
+    if (!matrix) return;
+    const alt = matrix.querySelector('.abh-netz');
+    if (alt) alt.remove();
+    if (!fokus || !fokus.kanten.length) return;
+    const bezug = matrix.getBoundingClientRect();
+    const pfade = fokus.kanten.map(kante => {
+      const von = matrix.querySelector(`[data-kachel="${kante.von}"]`);
+      const zu = matrix.querySelector(`[data-kachel="${kante.zu}"]`);
+      if (!von || !zu) return '';
+      const p = kartenRand(von, zu, bezug);
+      const dx = p.tx - p.sx;
+      const dy = p.ty - p.sy;
+      const waagerecht = Math.abs(dx) >= Math.abs(dy);
+      const d = waagerecht
+        ? `M ${p.sx} ${p.sy} C ${p.sx + dx * .46} ${p.sy}, ${p.tx - dx * .46} ${p.ty}, ${p.tx} ${p.ty}`
+        : `M ${p.sx} ${p.sy} C ${p.sx} ${p.sy + dy * .46}, ${p.tx} ${p.ty - dy * .46}, ${p.tx} ${p.ty}`;
+      return `<path class="abh-linie-halo" d="${d}"></path><path class="abh-linie" d="${d}" marker-end="url(#abhPfeil)"></path>`;
+    }).join('');
+    if (!pfade) return;
+    matrix.insertAdjacentHTML('beforeend', `<svg class="abh-netz" viewBox="0 0 ${Math.ceil(bezug.width)} ${Math.ceil(bezug.height)}" aria-hidden="true">
+      <defs><marker id="abhPfeil" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path class="abh-pfeil" d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>
+      ${pfade}
+    </svg>`);
+  }
+
+  function markiereAbhaengigkeiten(fokus) {
+    const wurzel = document.getElementById('bildKoerper');
+    wurzel.querySelectorAll('[data-kachel]').forEach(el => {
+      const verbunden = !!fokus && fokus.verbunden.has(el.dataset.kachel);
+      el.classList.toggle('abh-vorn', verbunden);
+      el.classList.toggle('abh-zurueck', !!fokus && !verbunden);
+      el.classList.toggle('abh-auswahl', !!fokus && fokus.auswahl.id === el.dataset.kachel);
+      el.setAttribute('aria-pressed', String(!!fokus && fokus.auswahl.id === el.dataset.kachel));
+    });
+    zeichneAbhaengigkeitsLinien(fokus);
+  }
+
   function renderPortfolio() {
+    let fokus = abhaengigkeitsFokus(abhAktivId);
+    if (abhAktivId && !fokus) abhAktivId = null;
     const imKorb = korb => sortiert(S.vorhaben.filter(v => portfolio(v).wert === korb));
     const vzaeSumme = liste => liste.reduce((wert, v) => wert + vzaeWert(v), 0);
     const zelle = (korb, spalte, zeile, spannt, label) => {
@@ -1821,7 +1962,7 @@
       const zone = korb === 'haus' ? 'haus' : (korb === 'fach' ? 'fach' : '');
       return `<div class="mx-zelle ${spalte === 3 ? 'pf-gebunden' : ''}" role="cell" data-wahl="${wahl}"${zone ? ` data-zone="${zone}"` : ''}${spannt ? ' aria-rowspan="2"' : ''} style="grid-column:${spalte}; grid-row:${zeile}${spannt ? ' / span 2' : ''}">
         ${label ? `<span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))}</span>` : '<span class="pf-korb-leer" aria-hidden="true"></span>'}
-        ${drin.map(v => kachel(v, true)).join('')}</div>`;
+        ${drin.map(v => kachel(v, true, fokus ? fokus.rollen.get(v.id) : '')).join('')}</div>`;
     };
 
     const koepfe = PF_SPALTEN.map((spalte, si) => {
@@ -1834,6 +1975,10 @@
     const offen = imKorb('offen');
     document.getElementById('bildKoerper').innerHTML = `
       <p class="mx-achse-x pf-achse-x">Entscheidung der Abteilung &rarr;</p>
+      <p class="abh-info" aria-live="polite">
+        <span>${fokus ? esc(abhaengigkeitsSatz(fokus)) : '<strong>Abhängigkeiten:</strong> Ein Vorhaben anklicken, um seine direkten Verbindungen zu sehen.'}</span>
+        <span class="abh-info-meta">${fokus ? 'Erneut anklicken setzt die Auswahl zurück.' : 'Pfeile zeigen auf die Voraussetzung.'}</span>
+      </p>
       <div class="mx-scroll">
         <div class="matrix pf${sicht === 'portfolio' ? ' ziehbar' : ''}" role="table" aria-label="Vorhaben nach Entscheidung der Abteilung">
           <div class="mx-reihe" role="row">${koepfe}</div>
@@ -1851,47 +1996,9 @@
       ${offen.length ? `<div class="mx-offen">
         <p class="mx-offen-kopf">${esc(PORTFOLIO.offen)} · ${offen.length}</p>
         <p class="lane-sub">Noch kein Korb, es fehlen Antworten im Steckbrief.</p>
-        <div class="mx-offen-body">${offen.map(v => kachel(v, true)).join('')}</div>
+        <div class="mx-offen-body">${offen.map(v => kachel(v, true, fokus ? fokus.rollen.get(v.id) : '')).join('')}</div>
       </div>` : ''}`;
-  }
-
-  // Vierte Sicht: Abhängigkeiten als Linse auf dem Portfolio-Raster
-  // (Entscheidung 49). Gleiche Positionen wie die Portfolio-Sicht, ein Klick
-  // holt das Vorhaben und seine Nachbarn in beide Richtungen nach vorn, der
-  // Rest tritt zurück. So steht der Widerspruch am Ort seiner Entscheidung,
-  // etwa ein wartender Leitungsfall, an dem Eingeplantes hängt. Linien gäbe
-  // es nur als Spaghetti. Gezogen wird hier nicht, das kann nur die
-  // Portfolio-Sicht selbst.
-  function renderAbhaengig() {
-    renderPortfolio();
-    const wurzel = document.getElementById('bildKoerper');
-    // Die Portfolio-Lesehilfe weicht der Linsen-Lese
-    wurzel.querySelector('.mx-lese').remove();
-    wurzel.insertAdjacentHTML('afterbegin',
-      '<p class="abh-hinweis">Ein Vorhaben anklicken: Wovon es abhängt und was daran hängt, kommt nach vorn, der Rest tritt zurück. Die Plätze bleiben die der Portfolio-Sicht. Erfasst werden Abhängigkeiten im Steckbrief ("Hängt ab von").</p>');
-    const v = aktivId ? nachId(aktivId) : null;
-    if (!v) return;
-    const verbunden = new Set([v.id]);
-    const hin = [], extern = [];
-    (v.haengtAn || []).forEach(a => {
-      if (a.typ === 'v') {
-        verbunden.add(a.id);
-        const d = nachId(a.id);
-        if (d) hin.push(`"${d.name}" (${ENTSCHEIDUNG[gewaehlt(d)]})`);
-      } else {
-        const x = (S.externe || []).find(e => e.id === a.id);
-        if (x) extern.push(`"${x.name}" (extern)`);
-      }
-    });
-    const her = S.vorhaben.filter(x => (x.haengtAn || []).some(a => a.typ === 'v' && a.id === v.id));
-    her.forEach(x => verbunden.add(x.id));
-    const anListe = hin.concat(extern);
-    const teile = [anListe.length ? `Hängt an: ${anListe.join(', ')}.` : 'Hängt an nichts Erfasstem.'];
-    if (her.length) teile.push(`Daran ${her.length === 1 ? 'hängt' : 'hängen'}: ${her.map(x => `"${x.name}"`).join(', ')}.`);
-    wurzel.insertAdjacentHTML('beforeend', `<p class="mx-lese"><strong>${esc(v.name)}.</strong> ${esc(teile.join(' '))}</p>`);
-    wurzel.querySelectorAll('[data-kachel]').forEach(el => {
-      el.classList.add(verbunden.has(el.dataset.kachel) ? 'abh-vorn' : 'abh-zurueck');
-    });
+    markiereAbhaengigkeiten(fokus);
   }
 
   // Drei Sichten zeigen dasselbe Portfolio anders angeordnet, deshalb tragen sie
@@ -1906,13 +2013,20 @@
     document.getElementById('bildTitel').innerHTML = SICHT_TITEL[sicht] || TITEL_STANDARD;
     if (sicht === 'matrix') renderMatrix();
     else if (sicht === 'portfolio') renderPortfolio();
-    else if (sicht === 'abhaengig') renderAbhaengig();
     else renderLanes();
     document.querySelectorAll('.sichten button').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.sicht === sicht)));
     document.getElementById('bildKoerper').querySelectorAll('[data-kachel]').forEach(el => el.addEventListener('click', () => {
+      if (klickNachZugId === el.dataset.kachel) return;
+      if (sicht === 'portfolio') {
+        aktivId = null;
+        abhAktivId = abhAktivId === el.dataset.kachel ? null : el.dataset.kachel;
+        renderPanel();
+        renderBild();
+        return;
+      }
+      abhAktivId = null;
       aktivId = aktivId === el.dataset.kachel ? null : el.dataset.kachel;
       renderPriorisieren();
-      if (aktivId) document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }));
     if (sicht === 'portfolio') verdrahteZiehen();
     if (sicht === 'matrix') verdrahteZiehVersuch();
@@ -1934,6 +2048,7 @@
       el.setAttribute('draggable', 'true');
       el.addEventListener('dragstart', e => {
         ziehId = el.dataset.kachel;
+        klickNachZugId = el.dataset.kachel;
         el.classList.add('zieht');
         if (e.dataTransfer) {
           e.dataTransfer.effectAllowed = 'move';
@@ -1944,6 +2059,7 @@
         ziehId = null;
         el.classList.remove('zieht');
         markiere(null);
+        setTimeout(() => { klickNachZugId = null; }, 0);
       });
     });
     koerper.querySelectorAll('.mx-zelle').forEach(zelle => {
@@ -1980,6 +2096,7 @@
     speichern();
     quittungFuer(v.id);
     mitFlug(renderPriorisieren);
+    setTimeout(() => { if (klickNachZugId === v.id) klickNachZugId = null; }, 0);
   }
 
   // Die Quittung steht am Raster und geht von selbst wieder weg. Was offen
@@ -2043,6 +2160,7 @@
   function sichtWechseln(neu) {
     if (neu === sicht) return;
     mitFlug(() => {
+      abhAktivId = null;
       sicht = neu;
       renderBild();
     });
@@ -2141,6 +2259,7 @@
         </article>`).join('')
       : '<p class="ruhig">Das Gesamtbild passt zu dem, was ihr eingetragen habt.</p>';
     document.getElementById('konflikte').querySelectorAll('[data-zum]').forEach(el => el.addEventListener('click', () => {
+      abhAktivId = null;
       aktivId = el.dataset.zum;
       renderPriorisieren();
       document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -2198,6 +2317,7 @@
     </p>`;
     const knopf = box.querySelector('[data-quittung]');
     if (knopf) knopf.addEventListener('click', () => {
+      abhAktivId = null;
       aktivId = knopf.dataset.quittung;
       renderPriorisieren();
       document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -2218,6 +2338,7 @@
       <button class="textbtn blau of-tun" type="button" data-offen="${v.id}">${esc(OFFENE_PFLICHT[pflicht].kurz.replace(' fehlt', ' ergänzen'))}</button>
     </div>`).join('');
     document.getElementById('offenListe').querySelectorAll('[data-offen]').forEach(el => el.addEventListener('click', () => {
+      abhAktivId = null;
       aktivId = el.dataset.offen;
       renderPriorisieren();
       document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -2238,7 +2359,11 @@
 
   function wechsle(neu) {
     ansicht = neu;
+    if (neu !== 'priorisieren') abhAktivId = null;
     document.querySelectorAll('.schritt').forEach(el => el.setAttribute('aria-current', String(el.dataset.ansicht === ansicht)));
+    // Im Einstieg stehen dieselben zwei Wege bereits groß und mit Kontext.
+    // Erst in Schritt 2 braucht der Kopf den Rückweg zu "Vorhaben erfassen".
+    document.getElementById('schrittNav').classList.toggle('verborgen', ansicht === 'erfassen');
     document.getElementById('ansicht-erfassen').classList.toggle('verborgen', ansicht !== 'erfassen');
     // Der Auftakt gehört zu Schritt 1 und liegt außerhalb der Bühne, also muss
     // er hier mitgeschaltet werden. In Schritt 1 entscheidet renderAuftakt
@@ -2288,11 +2413,18 @@
       S = beispieldaten();
       offenId = null;
       aktivId = null;
+      abhAktivId = null;
       speichern();
       wechsle(ansicht);
     });
-    // Direktlinks fürs Vorführen: springen gleich in Ansicht 2, teils in eine Sicht
-    const sprung = { '#entscheiden': null, '#portfolio': 'portfolio', '#matrix': 'matrix', '#abhaengig': 'abhaengig' };
+    window.addEventListener('resize', () => {
+      if (ansicht === 'priorisieren' && sicht === 'portfolio' && abhAktivId) {
+        zeichneAbhaengigkeitsLinien(abhaengigkeitsFokus(abhAktivId));
+      }
+    });
+    // Der alte Abhängigkeiten-Direktlink bleibt als Weiterleitung erhalten.
+    // Die Funktion lebt jetzt in der Portfolio-Sicht und hat keinen eigenen Tab.
+    const sprung = { '#entscheiden': null, '#portfolio': 'portfolio', '#matrix': 'matrix', '#abhaengig': 'portfolio' };
     if (location.hash in sprung) {
       if (sprung[location.hash]) sicht = sprung[location.hash];
       wechsle('priorisieren');
