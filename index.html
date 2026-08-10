@@ -70,8 +70,14 @@
   /* Ein einzelner sehr weicher Verlauf, sonst liest sich die Fläche als Balken.
      Kein Raster: das versprach eine Strategieplattform, die das Werkzeug nicht
      fortführt. Der Verlauf trägt keine Information und darf nichts verdecken. */
+  /* Der Verlauf saß mit seinem Mittelpunkt genau auf der Oberkante, dadurch war
+     die Aufhellung an der Naht zur Kopfleiste am stärksten und die Kante wurde
+     sichtbar. Jetzt sitzt er in der Mitte rechts, und die oberen Pixel werden
+     zusätzlich auf die Farbe der Leiste zurückgezogen: die Fläche schließt an. */
   .auftakt::before { content: ''; position: absolute; inset: 0; pointer-events: none;
-    background: radial-gradient(120% 145% at 88% 0%, rgba(89,87,180,.42) 0%, rgba(89,87,180,0) 62%); }
+    background:
+      linear-gradient(180deg, var(--dunkel) 0%, rgba(13,12,43,0) 86px),
+      radial-gradient(85% 115% at 92% 52%, rgba(89,87,180,.40) 0%, rgba(89,87,180,0) 70%); }
   /* Gleiche Achse wie die Bühne, damit die Überschrift genau über der Liste sitzt */
   .auf-innen { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 24px);
     display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(22px, 4vw, 54px); align-items: start; }
@@ -194,7 +200,7 @@
   /* Ablesung: drei Felder in einer Zeile, alle in Worten. Kein Buchstabencode. */
   /* Bündig mit den Feldern: die Blöcke rücken um die 34px-Nummernspalte ein,
      die Ablesung liegt außerhalb des Rasters und muss mitziehen */
-  .ablesung { background: var(--blau-10); border-radius: 6px; padding: 16px 18px; margin-top: 22px; margin-left: 34px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+  .ablesung { background: var(--blau-10); border-radius: 6px; padding: 16px 18px; margin-top: 22px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
   @media (max-width: 780px) { .ablesung { grid-template-columns: 1fr; gap: 16px; } }
   .ab-feld + .ab-feld { border-left: 1px solid var(--line); padding-left: 20px; }
   @media (max-width: 780px) { .ab-feld + .ab-feld { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; padding-top: 14px; } }
@@ -648,7 +654,7 @@
         <div class="bd-steuer">
           <div class="sichten">
             <button type="button" data-sicht="portfolio">Portfolio</button>
-            <button type="button" data-sicht="matrix">Steuerungsbedarf</button>
+            <button type="button" data-sicht="matrix">Steuerung prüfen</button>
             <button type="button" data-sicht="ziele">Ziele</button>
             <button type="button" data-sicht="abhaengig">Abhängigkeiten</button>
           </div>
@@ -657,7 +663,7 @@
       <div class="fl-teil">
         <div id="bdStand"></div>
         <div class="bild-kopf">
-          <h2>Das Portfolio der Abteilung <span class="einheit">Zahlen in Vollzeitäquivalenten</span></h2>
+          <h2 id="bildTitel">Das Portfolio der Abteilung <span class="einheit">Zahlen in Vollzeitäquivalenten</span></h2>
         </div>
         <div class="bild-kopf">
           <div class="legende">
@@ -766,7 +772,7 @@
       id, name,
       ziel: WAEHLEN, veraenderung: '',
       reichweite: WAEHLEN, wirkungAb: WAEHLEN,
-      ruhen: WAEHLEN, chanceKonkret: '', pflichtKonkret: '',
+      ruhen: WAEHLEN, chanceKonkret: '', pflichtKonkret: '', schadenKonkret: '',
       vzae: '', laeuft: WAEHLEN,
       leitung: 'offen', lfFrage: '', lfTermin: '', lfFolge: '', lfWer: '',
       // Abhängigkeiten sind Verweise, kein Freitext: {typ:'v', id} zeigt auf
@@ -811,6 +817,11 @@
     if (v.ruhen === WAEHLEN || v.ruhen === RUHEN[5]) fehlt.push('Folgen');
     if (v.ruhen === RUHEN[3] && !v.chanceKonkret.trim()) fehlt.push('Chance');
     if (v.ruhen === RUHEN[1] && !v.pflichtKonkret.trim()) fehlt.push('Frist');
+    // "Spürbarer Schaden" war bis 10.08. die einzige Antwort ohne Beleg, und
+    // gerade sie führt direkt zu "eingeplant" (siehe empfehlung). Es gab also
+    // genau ein Schlupfloch: ankreuzen und nie gefragt werden, welcher Schaden.
+    // Jeder andere Weg verlangt einen falsifizierbaren Satz (Entscheidung 64).
+    if (v.ruhen === RUHEN[2] && !v.schadenKonkret.trim()) fehlt.push('Schaden');
     // Der Stand fehlt hier bewusst: er beeinflusst weder Empfehlung noch
     // Steuerungsbedarf, Portfolio oder Matrix. Er ist reine Kapazitätsbuchhaltung.
     // Ein Feld, das keine Priorisierungsaussage bewegt, darf keinen Steckbrief
@@ -1000,6 +1011,7 @@
     'Veränderung': 'die angestrebte Veränderung',
     'Folgen': 'die Folgen des Ruhenlassens',
     'Chance': 'die konkrete Chance',
+    'Schaden': 'der konkrete Schaden',
     'Frist': 'die betroffene Frist',
     'Leitungsbedarf': 'der Leitungsbedarf',
     'Leitungsfrage': 'die Frage an die Leitung'
@@ -1117,7 +1129,7 @@
       const e = empfehlung(v);
       const s = steuerungsbedarf(v);
       const punkt = i => s.teile[i].wert === undefined ? '' : s.teile[i].wert;
-      const konkret = v.ruhen === RUHEN[3] ? v.chanceKonkret : v.ruhen === RUHEN[1] ? v.pflichtKonkret : '';
+      const konkret = v.ruhen === RUHEN[3] ? v.chanceKonkret : v.ruhen === RUHEN[1] ? v.pflichtKonkret : v.ruhen === RUHEN[2] ? v.schadenKonkret : '';
       const lb = (LEITUNG.find(o => o.wert === v.leitung) || {}).text;
       const haengt = (v.haengtAn || []).map(a => abhName(a, liste, externe)).filter(Boolean).join('; ');
       return [abteilung, v.name, v.ziel === WAEHLEN ? '' : v.ziel, v.veraenderung,
@@ -1139,10 +1151,10 @@
 
   function beispieldaten() {
     const roh = [
-      { name: 'Digitale Antragsstrecke Wohngeld', ziel: 'Einfach Digital', veraenderung: 'Die häufigsten Wohngeld-Fälle kommen vollständig digital an, die Sachbearbeitung entscheidet ohne Rückfragen.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[2], vzae: '2', laeuft: LAEUFT[1], leitung: 'entscheidung', lfFrage: 'Geht die Strecke vor der Registeranbindung live oder danach?', lfTermin: 'Oktober 2026', lfFolge: 'Ohne Entscheidung steht die Entwicklung ab November still.', lfWer: 'AL Z', haengtAn: [{ typ: 'v', id: 'v2' }] },
+      { name: 'Digitale Antragsstrecke Wohngeld', ziel: 'Einfach Digital', veraenderung: 'Die häufigsten Wohngeld-Fälle kommen vollständig digital an, die Sachbearbeitung entscheidet ohne Rückfragen.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[2], schadenKonkret: 'Antragstellende warten weiter sechs Wochen auf ihren Bescheid, ein Drittel der Fälle braucht eine Rückfrage.', vzae: '2', laeuft: LAEUFT[1], leitung: 'entscheidung', lfFrage: 'Geht die Strecke vor der Registeranbindung live oder danach?', lfTermin: 'Oktober 2026', lfFolge: 'Ohne Entscheidung steht die Entwicklung ab November still.', lfWer: 'AL Z', haengtAn: [{ typ: 'v', id: 'v2' }] },
       { name: 'Registeranbindung Meldewesen', ziel: 'Der neue Standard', veraenderung: 'Die Fachverfahren beziehen Meldedaten automatisch, niemand reicht mehr Meldebescheinigungen ein.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[1], pflichtKonkret: 'Gesetzliche Anbindungsfrist Ende März 2027.', vzae: '1,5', laeuft: LAEUFT[1], leitung: 'keine', haengtAn: [{ typ: 'x', id: 'x1' }] },
       { name: 'Interner KI-Leitfaden', ziel: 'Besser KI', veraenderung: 'Referate nutzen die freigegebenen KI-Werkzeuge für Entwürfe, ohne die Zulässigkeit jedes Mal neu zu prüfen.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[3], chanceKonkret: 'Weniger Schatten-KI: die Freigabe-Anfragen an den Datenschutz sinken, weil der Leitfaden die Standardfälle klärt.', vzae: '0,5', laeuft: LAEUFT[1], leitung: 'keine' },
-      { name: 'Datenkooperation mit den Ländern', ziel: 'Der neue Standard', veraenderung: 'Bund und Länder tauschen Verfahrensdaten über eine gemeinsame Schnittstelle statt über Listen per Mail.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[2], vzae: '2', laeuft: LAEUFT[2], leitung: 'konflikt', lfFrage: 'Wer trägt den Betrieb der Schnittstelle, Bund oder die Länder gemeinsam?', lfTermin: 'Klausur Ende September', lfFolge: 'Ohne Klärung startet das Vorhaben nicht, die Länder warten seit Mai.', lfWer: 'St', entscheidung: 'wartet', bedingung: 'Wird aktiv, sobald die Schnittstellen-Stelle nachbesetzt ist.' },
+      { name: 'Datenkooperation mit den Ländern', ziel: 'Der neue Standard', veraenderung: 'Bund und Länder tauschen Verfahrensdaten über eine gemeinsame Schnittstelle statt über Listen per Mail.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[2], schadenKonkret: 'Die Länder schicken Verfahrensdaten weiter als Listen per Mail, jede Auswertung kostet Wochen.', vzae: '2', laeuft: LAEUFT[2], leitung: 'konflikt', lfFrage: 'Wer trägt den Betrieb der Schnittstelle, Bund oder die Länder gemeinsam?', lfTermin: 'Klausur Ende September', lfFolge: 'Ohne Klärung startet das Vorhaben nicht, die Länder warten seit Mai.', lfWer: 'St', entscheidung: 'wartet', bedingung: 'Wird aktiv, sobald die Schnittstellen-Stelle nachbesetzt ist.' },
       { name: 'Ausstellungsfläche Digitalprojekte im Foyer', ziel: OHNE_ZIEL, veraenderung: 'Besuchergruppen sehen im Foyer laufende Digitalprojekte des Hauses.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[4], vzae: '1', laeuft: LAEUFT[1], leitung: 'keine' },
       { name: 'Cloud-Pilot Fachverfahren', ziel: 'Einfach Digital', veraenderung: 'Ein Fachverfahren läuft produktiv in der Verwaltungscloud, Betriebserfahrung liegt vor.', ruhen: RUHEN[5], vzae: '1', laeuft: LAEUFT[2], leitung: 'offen' },
       { name: 'Servicestandard für Förderanträge', ziel: 'Die große Entlastung', veraenderung: 'Antragstellende erhalten in allen Förderprogrammen dieselbe Rückmeldefrist und denselben Statusverlauf.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], chanceKonkret: 'Die Zahl der Nachfragen zum Bearbeitungsstand sinkt messbar, weil der Status sichtbar ist.', vzae: '1,5', laeuft: LAEUFT[2], leitung: 'keine', haengtAn: [{ typ: 'v', id: 'v4' }] },
@@ -1278,9 +1290,16 @@
         ${offen
           ? `<p class="ab-wort offen">noch nicht entschieden</p>
              <p class="empf-regel">Fällt in Schritt 2, wenn alle Vorhaben nebeneinander liegen.</p>`
-          : `<p class="ab-wort">${esc(ENTSCHEIDUNG[v.entscheidung])}, also ${esc(PORTFOLIO[portfolio(v).wert])}</p>
-             <p class="empf-regel">${esc(portfolio(v).satz)}</p>
-             ${weichtAb(v) ? `<p class="ab-abweichung">Weicht von der Empfehlung ab${v.begruendung.trim() ? ': ' + esc(v.begruendung) : '.'}</p>` : ''}`}
+          : (() => {
+              // "abgesagt, also Abgesagt" stand dreimal fast dasselbe da. Der Korb
+              // wird nur genannt, wenn er mehr sagt als die Entscheidung selbst,
+              // und der Erklärsatz entfällt: das Wort trägt sich (Entscheidung 66).
+              const wort = ENTSCHEIDUNG[v.entscheidung];
+              const korb = PORTFOLIO[portfolio(v).wert];
+              const neuerName = korb.toLowerCase() !== wort.toLowerCase();
+              return `<p class="ab-wort">${esc(neuerName ? wort + ', also ' + korb : wort)}</p>
+             ${weichtAb(v) ? `<p class="ab-abweichung">Weicht von der Empfehlung ab${v.begruendung.trim() ? ': ' + esc(v.begruendung) : '.'}</p>` : ''}`;
+            })()}
       </div>`;
   }
 
@@ -1360,6 +1379,7 @@
     let feld = LUECKE_FELD[erste] ? document.getElementById(LUECKE_FELD[erste]) : null;
     if (!feld && erste === 'Chance') feld = document.getElementById('chanceKonkret-' + id);
     if (!feld && erste === 'Frist') feld = document.getElementById('pflichtKonkret-' + id);
+    if (!feld && erste === 'Schaden') feld = document.getElementById('schadenKonkret-' + id);
     (feld || document.getElementById('steckbrief')).scrollIntoView({ behavior: 'smooth', block: 'center' });
     if (feld) feld.focus({ preventScroll: true });
   }
@@ -1446,6 +1466,7 @@
           </div>
           ${v.ruhen === RUHEN[3] ? feldFolge(v, 'chanceKonkret', 'Welche Chance, und woran würde man in einem Jahr merken, dass sie genutzt ist?', 'Chance ist noch nicht benannt.') : ''}
           ${v.ruhen === RUHEN[1] ? feldFolge(v, 'pflichtKonkret', 'Welche Frist oder Vorgabe?', 'Frist oder Vorgabe ist noch nicht benannt.') : ''}
+          ${v.ruhen === RUHEN[2] ? feldFolge(v, 'schadenKonkret', 'Welcher Schaden, und wen trifft er?', 'Schaden ist noch nicht benannt.') : ''}
         </div>
       </div>
 
@@ -1507,11 +1528,10 @@
       <div class="block">
         <span class="block-nr">6</span>
         <div>
-          <span class="frage">Muss die Runde sonst etwas wissen? (optional)</span>
-          <p class="hilfe">Leer lassen ist eine vollwertige Antwort.</p>
+          <span class="frage">Was muss die Runde noch wissen?</span>
           <div class="feld">
             <label for="abhNeu">Hängt ab von</label>
-            <p class="feld-hilfe">Beim Tippen erscheinen bestehende Einträge. Neues wird einmal angelegt und künftig ebenfalls vorgeschlagen.</p>
+            <p class="feld-hilfe">Beim Tippen erscheinen die Vorhaben der Abteilung. Ein unbekannter Name wird als externe Voraussetzung gemerkt, nicht als neues Vorhaben.</p>
             ${abhChips(v)}
             <div class="abh-zeile">
               <input type="text" id="abhNeu" list="abhListe" maxlength="90" placeholder="Vorhaben oder externe Voraussetzung ..." autocomplete="off">
@@ -1750,7 +1770,7 @@
           <div class="mx-zone" aria-hidden="true"><span>Kandidaten fürs Leitungsportfolio</span></div>
         </div>
       </div>
-      <p class="mx-lese"><strong>So liest sich das Bild:</strong> Im minze umrandeten Feld oben rechts steht, was die Leitung wirklich steuern muss und wo Liegenlassen etwas kostet. Das sind die Kandidaten fürs Leitungsportfolio. ${esc(zonenSatz)} Unten links steht, was niemand entscheiden muss und was auch dauerhaft kaum fehlen würde. Das sind die Kandidaten für "Abgesagt".</p>
+      <p class="mx-lese"><strong>So liest sich das Bild:</strong> Auf der Diagonale von oben rechts nach unten links passt beides zusammen. Im umrandeten Feld muss die Leitung steuern und Liegenlassen kostet etwas, das sind die Kandidaten fürs Leitungsportfolio. ${esc(zonenSatz)} Unten links muss niemand entscheiden, und es würde auch dauerhaft kaum fehlen. Die Fragen stecken in den anderen zwei Ecken: Oben links ist etwas als Leitungsfall gemeldet, obwohl Ruhenlassen kaum auffallen würde. Unten rechts trägt die Abteilung eine Frist oder einen Schaden allein.</p>
       ${offen.length ? `<div class="mx-offen">
         <p class="mx-offen-kopf">Noch nicht einsortierbar · ${offen.length}</p>
         <div class="mx-offen-body">${sortiert(offen).map(v => kachel(v)).join('')}</div>
@@ -1874,7 +1894,16 @@
     });
   }
 
+  // Drei Sichten zeigen dasselbe Portfolio anders angeordnet, deshalb tragen sie
+  // denselben Titel. "Steuerung prüfen" ist keine vierte Anordnung, sondern eine
+  // Frage an die Daten, also stellt die Überschrift sie (Entscheidung 65).
+  const SICHT_TITEL = {
+    matrix: 'Passen Leitungsbedarf und Folgen zusammen?'
+  };
+  const TITEL_STANDARD = 'Das Portfolio der Abteilung <span class="einheit">Zahlen in Vollzeitäquivalenten</span>';
+
   function renderBild() {
+    document.getElementById('bildTitel').innerHTML = SICHT_TITEL[sicht] || TITEL_STANDARD;
     if (sicht === 'matrix') renderMatrix();
     else if (sicht === 'portfolio') renderPortfolio();
     else if (sicht === 'abhaengig') renderAbhaengig();
