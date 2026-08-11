@@ -7,6 +7,11 @@
 <meta name="description" content="Ein Werkzeug für Abteilungen mit mehr Vorhaben als Kapazität: erfassen, aktualisieren, Steuerungsrunde vorbereiten, entscheiden. Transparente Wenn-dann-Regeln statt Punktzahlen.">
 <style>
   @font-face {
+    font-family: 'Open Sans';
+    src: url('assets/fonts/OpenSans-Variable.ttf') format('truetype');
+    font-weight: 300 800; font-style: normal; font-display: swap;
+  }
+  @font-face {
     font-family: 'BundesSans';
     src: url('assets/fonts/BundesSans-Web-Regular.woff2') format('woff2');
     font-weight: 400; font-style: normal; font-display: swap;
@@ -39,15 +44,39 @@
   nav.top .links a.tool:hover { color: var(--dunkel); filter: brightness(1.06); }
 
   /* ---------- Hero ---------- */
-  /* Das Motiv rechts ist keine Deko-Illustration, sondern das Produkt selbst
-     in abstrakt: Laufzeiten-Balken über einer Kapazitätslinie. Kein Foto,
-     kein Kreisdiagramm. */
-  header.hero { position: relative; isolation: isolate; background: var(--dunkel); color: var(--weiss); overflow: hidden; padding: clamp(64px,9vw,120px) clamp(18px,4vw,48px) clamp(72px,10vw,130px); }
-  .hero-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(24px,4vw,60px); align-items: center; }
+  /* Das Entscheidungsboard zeigt das Produkt als bearbeitetes Portfolio,
+     nicht als Screenshot. Es bleibt rechts verankert. Der dunkle Verlauf
+     schützt nur die Lesefläche der Copy und vermeidet den harten 50/50-Schnitt. */
+  header.hero {
+    position: relative; isolation: isolate; overflow: hidden;
+    min-height: min(680px, calc(100dvh - 56px));
+    display: grid; align-items: center;
+    background: var(--dunkel); color: var(--weiss);
+    padding: clamp(64px,8vw,104px) clamp(18px,4vw,48px) clamp(72px,9vw,116px);
+  }
+  header.hero::before {
+    content: ''; position: absolute; inset: 0; z-index: -2;
+    background-image: url('assets/hero-portfolio-entscheidungsboard.jpg');
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: max(1280px, 94vw) auto;
+  }
+  header.hero::after {
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(90deg,
+      var(--dunkel) 0%,
+      rgba(13,12,43,.99) 28%,
+      rgba(13,12,43,.90) 41%,
+      rgba(13,12,43,.48) 52%,
+      rgba(13,12,43,.10) 63%,
+      rgba(13,12,43,0) 72%);
+  }
+  .hero .wrap { width: min(1180px, 92vw); }
+  .hero-copy { position: relative; z-index: 1; width: min(580px, 48vw); }
   .hero .kicker { font-family: var(--display); font-weight: 700; font-size: 13.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--minze); margin-bottom: 18px; }
-  .hero h1 { font-size: clamp(36px,5.4vw,66px); max-width: 15ch; letter-spacing: -0.035em; }
+  .hero h1 { font-size: clamp(40px,5.2vw,66px); max-width: 13ch; letter-spacing: -0.04em; line-height: 1.04; text-wrap: balance; }
   .hero h1 .hl { color: var(--minze); }
-  .hero p.sub { margin-top: 22px; max-width: 50ch; font-size: clamp(16px,1.9vw,19.5px); color: var(--blau-20); }
+  .hero p.sub { margin-top: 24px; max-width: 48ch; font-size: clamp(16px,1.8vw,19.5px); color: var(--blau-20); text-wrap: pretty; }
   .hero .ctas { margin-top: 36px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
   .btn { display: inline-block; font-family: var(--display); font-weight: 800; font-size: 15.5px; text-decoration: none; border-radius: 999px; padding: 13px 26px; }
   .btn.minze { background: var(--minze); color: var(--dunkel); }
@@ -57,12 +86,45 @@
   a:focus-visible { outline: 3px solid var(--minze); outline-offset: 3px; border-radius: 4px; }
   header.hero a:focus-visible { outline-color: var(--weiss); }
 
-  .hero-motiv { min-width: 0; }
-  .hero-motiv svg { width: 100%; height: auto; display: block; }
-  .hero-fuss { margin-top: 14px; font-size: 12.5px; color: var(--blau-40); font-family: var(--display); }
-  @media (max-width: 880px) {
-    .hero-grid { grid-template-columns: 1fr; }
-    .hero-motiv { max-width: 460px; }
+  @media (max-width: 1020px) {
+    .hero-copy { width: min(540px, 58vw); }
+    header.hero::after {
+      background: linear-gradient(90deg,
+        var(--dunkel) 0%,
+        rgba(13,12,43,.99) 38%,
+        rgba(13,12,43,.88) 53%,
+        rgba(13,12,43,.35) 68%,
+        rgba(13,12,43,0) 82%);
+    }
+  }
+  @media (max-width: 760px) {
+    header.hero {
+      min-height: 720px;
+      align-items: end;
+      padding-top: 300px;
+      padding-bottom: 54px;
+    }
+    header.hero::before {
+      background-position: 68% top;
+      background-size: auto 64%;
+      opacity: .76;
+    }
+    header.hero::after {
+      background: linear-gradient(0deg,
+        var(--dunkel) 0%,
+        rgba(13,12,43,.99) 43%,
+        rgba(13,12,43,.82) 62%,
+        rgba(13,12,43,.28) 82%,
+        rgba(13,12,43,.06) 100%);
+    }
+    .hero-copy { width: 100%; max-width: 600px; }
+    .hero h1 { font-size: clamp(38px,11vw,54px); max-width: 12ch; }
+    .hero p.sub { max-width: 44ch; font-size: 16.5px; }
+  }
+  @media (max-width: 480px) {
+    header.hero { min-height: 700px; padding-top: 270px; }
+    header.hero::before { background-position: 72% top; background-size: auto 58%; }
+    .hero .ctas { align-items: flex-start; flex-direction: column; gap: 16px; }
   }
 
   /* ---------- Abschnitte ---------- */
@@ -134,8 +196,8 @@
 </nav>
 
 <header class="hero">
-  <div class="wrap hero-grid">
-    <div>
+  <div class="wrap">
+    <div class="hero-copy">
       <div class="kicker">Für Abteilungen mit mehr Ideen als Leuten</div>
       <h1>Was tragen wir <span class="hl">wirklich?</span></h1>
       <p class="sub">Die Portfolio-Priorisierung führt eure Abteilung von der Idee zur ehrlichen Entscheidung: ein Steckbrief pro Vorhaben, transparente Wenn-dann-Regeln und eine Kapazitätslinie, die den Schnitt erzwingt, den keine Rangliste schafft.</p>
@@ -143,34 +205,6 @@
         <a class="btn minze" href="index.html#portfolio">Das Portfolio ansehen</a>
         <a class="quiet-link" href="index.html">Direkt ein Vorhaben eintragen →</a>
       </div>
-    </div>
-    <div class="hero-motiv" aria-hidden="true">
-      <!-- Laufzeiten-Balken über der Kapazitätslinie, das Produkt in abstrakt -->
-      <svg viewBox="0 0 440 300" role="presentation">
-        <g font-family="system-ui, sans-serif">
-          <rect x="0" y="0" width="316" height="14" rx="7" fill="#36349D"/>
-          <rect x="316" y="0" width="90" height="14" rx="7" fill="#DB0045"/>
-          <rect x="313" y="-6" width="3" height="26" fill="#FFFFFF"/>
-          <text x="0" y="40" fill="#8886CC" font-size="12" font-weight="700" letter-spacing="1.5">7 VON 5 VZÄ, 2 ZU VIEL</text>
-        </g>
-        <g>
-          <rect x="0"   y="70"  width="150" height="22" rx="6" fill="#4DFFB0" opacity="0.92"/>
-          <rect x="0"   y="102" width="210" height="22" rx="6" fill="#FFFFFF" opacity="0.92"/>
-          <rect x="60"  y="134" width="230" height="22" rx="6" fill="#FFFFFF" opacity="0.75"/>
-          <rect x="90"  y="166" width="190" height="22" rx="6" fill="none" stroke="#8886CC" stroke-width="2"/>
-          <rect x="140" y="198" width="260" height="22" rx="6" fill="#FFFFFF" opacity="0.55"/>
-          <rect x="0"   y="230" width="96"  height="22" rx="6" fill="#E3E6F2" opacity="0.5"/>
-          <rect x="180" y="262" width="180" height="22" rx="6" fill="none" stroke="#8886CC" stroke-width="2" stroke-dasharray="5 5"/>
-          <rect x="400" y="198" width="40" height="22" fill="url(#fade)"/>
-        </g>
-        <defs>
-          <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.55"/>
-            <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-      </svg>
-      <p class="hero-fuss">Kein Score. Jede Empfehlung nennt ihre Regel.</p>
     </div>
   </div>
 </header>
