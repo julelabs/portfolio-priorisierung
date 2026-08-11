@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio-Priorisierung · Steuern in vier Situationen</title>
+<meta name="description" content="Ein Werkzeug für Abteilungen mit mehr Vorhaben als Kapazität: erfassen, aktualisieren, Steuerungsrunde vorbereiten, entscheiden. Transparente Wenn-dann-Regeln statt Punktzahlen.">
+<style>
+  @font-face {
+    font-family: 'BundesSans';
+    src: url('assets/fonts/BundesSans-Web-Regular.woff2') format('woff2');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  :root {
+    --blau: #36349D; --minze: #4DFFB0; --kirsche: #DB0045;
+    --lavendel: #E3E6F2; --weiss: #FFFFFF; --dunkel: #0D0C2B;
+    --blau-10: #EEEEF9; --blau-20: #C5C4EA; --blau-40: #8886CC; --blau-60: #5957B4;
+    --fg: var(--dunkel); --fg-2: #4A4869; --fg-muted: #6E6C99;
+    --line: rgba(54,52,157,0.15);
+    --display: 'Open Sans', system-ui, sans-serif;
+    --body: 'BundesSans', 'Open Sans', system-ui, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+  body { font-family: var(--body); color: var(--fg); background: var(--weiss); line-height: 1.55; }
+  ::selection { background: var(--minze); color: var(--dunkel); }
+  h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
+  a { color: inherit; }
+
+  .wrap { width: min(1120px, 92vw); margin: 0 auto; }
+
+  /* ---------- Kopfleiste ---------- */
+  nav.top { background: var(--dunkel); color: var(--weiss); padding: 15px clamp(16px,4vw,40px); display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  nav.top .brand { font-family: var(--display); font-weight: 800; font-size: 16px; text-decoration: none; }
+  nav.top .links { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+  nav.top .links a { font-family: var(--display); font-size: 13.5px; font-weight: 600; color: var(--blau-20); text-decoration: none; }
+  nav.top .links a:hover { color: var(--weiss); }
+  nav.top .links a.tool { background: var(--minze); color: var(--dunkel); font-weight: 800; padding: 8px 16px; border-radius: 999px; }
+  nav.top .links a.tool:hover { color: var(--dunkel); filter: brightness(1.06); }
+
+  /* ---------- Hero ---------- */
+  /* Das Motiv rechts ist keine Deko-Illustration, sondern das Produkt selbst
+     in abstrakt: Laufzeiten-Balken über einer Kapazitätslinie. Kein Foto,
+     kein Kreisdiagramm. */
+  header.hero { position: relative; isolation: isolate; background: var(--dunkel); color: var(--weiss); overflow: hidden; padding: clamp(64px,9vw,120px) clamp(18px,4vw,48px) clamp(72px,10vw,130px); }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(24px,4vw,60px); align-items: center; }
+  .hero .kicker { font-family: var(--display); font-weight: 700; font-size: 13.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--minze); margin-bottom: 18px; }
+  .hero h1 { font-size: clamp(36px,5.4vw,66px); max-width: 15ch; letter-spacing: -0.035em; }
+  .hero h1 .hl { color: var(--minze); }
+  .hero p.sub { margin-top: 22px; max-width: 50ch; font-size: clamp(16px,1.9vw,19.5px); color: var(--blau-20); }
+  .hero .ctas { margin-top: 36px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .btn { display: inline-block; font-family: var(--display); font-weight: 800; font-size: 15.5px; text-decoration: none; border-radius: 999px; padding: 13px 26px; }
+  .btn.minze { background: var(--minze); color: var(--dunkel); }
+  .btn.minze:hover { filter: brightness(1.06); }
+  .quiet-link { font-family: var(--display); font-weight: 700; font-size: 14.5px; color: var(--blau-20); text-decoration: none; border-bottom: 1px solid rgba(197,196,234,0.4); padding-bottom: 3px; }
+  .quiet-link:hover { color: var(--minze); border-color: var(--minze); }
+  a:focus-visible { outline: 3px solid var(--minze); outline-offset: 3px; border-radius: 4px; }
+  header.hero a:focus-visible { outline-color: var(--weiss); }
+
+  .hero-motiv { min-width: 0; }
+  .hero-motiv svg { width: 100%; height: auto; display: block; }
+  .hero-fuss { margin-top: 14px; font-size: 12.5px; color: var(--blau-40); font-family: var(--display); }
+  @media (max-width: 880px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-motiv { max-width: 460px; }
+  }
+
+  /* ---------- Abschnitte ---------- */
+  main section { padding: clamp(56px,7vw,92px) clamp(18px,4vw,48px); }
+  section.tint { background: var(--blau-10); }
+  .sec-kicker { font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blau); margin-bottom: 12px; }
+  section h2 { font-size: clamp(26px,3.4vw,38px); max-width: 24ch; }
+  p.lead { margin-top: 16px; max-width: 66ch; font-size: clamp(15.5px,1.7vw,17.5px); color: var(--fg-2); }
+
+  /* ---------- Der Weg: vier Situationen ---------- */
+  /* Ein Zyklus, gelesen als Weg von links nach rechts. Die Linie verbindet
+     die Nummern, sie dreht sich nicht im Kreis. */
+  .weg { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 44px; }
+  .weg::before { content: ''; position: absolute; top: 17px; left: calc(12.5% ); right: calc(12.5%); height: 2px; background: var(--blau-20); }
+  .schritt { display: flex; flex-direction: column; }
+  .schritt .nr { position: relative; z-index: 1; width: 36px; height: 36px; border-radius: 50%; background: var(--minze); color: var(--dunkel); font-family: var(--display); font-weight: 800; font-size: 15px; display: grid; place-items: center; margin: 0 auto 16px; box-shadow: 0 0 0 6px var(--weiss); }
+  .schritt .karte { flex: 1; display: flex; flex-direction: column; gap: 10px; background: var(--weiss); border: 1px solid var(--line); border-radius: 14px; padding: 22px 20px; text-decoration: none; transition: border-color .2s, transform .2s; }
+  .schritt .karte:hover { border-color: var(--blau); transform: translateY(-2px); }
+  .schritt .wer { align-self: flex-start; font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; background: var(--lavendel); color: var(--fg-2); }
+  .schritt h3 { font-size: 18.5px; }
+  .schritt .lage { font-size: 14px; color: var(--fg-muted); font-style: normal; }
+  .schritt p { font-size: 14.5px; color: var(--fg-2); }
+  .schritt .go { margin-top: auto; padding-top: 8px; font-family: var(--display); font-weight: 800; font-size: 14px; color: var(--blau); }
+  .weg-fuss { margin-top: 26px; font-size: 15px; color: var(--fg-2); max-width: 70ch; }
+  @media (max-width: 940px) {
+    .weg { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .weg::before { display: none; }
+    .schritt .nr { margin: 0 0 12px; box-shadow: none; }
+  }
+  @media (max-width: 560px) { .weg { grid-template-columns: 1fr; } }
+
+  /* ---------- Danach: der Stab ---------- */
+  .staffel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 34px; }
+  .staffel .stufe { background: var(--weiss); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+  .staffel .stufe b { display: block; font-family: var(--display); font-size: 15.5px; margin-bottom: 6px; }
+  .staffel .stufe p { font-size: 14.5px; color: var(--fg-2); }
+  .pill { display: inline-block; font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; background: var(--lavendel); color: var(--fg-2); margin-left: 8px; vertical-align: 2px; }
+  .hint { background: var(--weiss); border-left: 4px solid var(--minze); border-radius: 0 10px 10px 0; padding: 14px 18px; font-size: 15px; color: var(--fg-2); margin-top: 30px; max-width: 72ch; }
+  @media (max-width: 800px) { .staffel { grid-template-columns: 1fr; } }
+
+  /* ---------- Prinzipien ---------- */
+  .prinzipien { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 34px; }
+  .prinzipien .p { border-top: 3px solid var(--blau); padding-top: 16px; }
+  .prinzipien h3 { font-size: 17.5px; margin-bottom: 8px; }
+  .prinzipien p { font-size: 14.5px; color: var(--fg-2); }
+  @media (max-width: 800px) { .prinzipien { grid-template-columns: 1fr; } }
+
+  /* ---------- Familie ---------- */
+  .familie { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; margin-top: 22px; font-size: 15px; color: var(--fg-2); }
+  .familie a { font-family: var(--display); font-weight: 700; color: var(--blau); }
+
+  /* ---------- Fuß ---------- */
+  footer.site { background: var(--dunkel); color: var(--blau-20); padding: 26px clamp(18px,4vw,48px); font-size: 13.5px; }
+  footer.site .inner { width: min(1120px, 92vw); margin: 0 auto; display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  footer.site a { color: var(--blau-20); }
+  footer.site a:hover { color: var(--weiss); }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a class="brand" href="landing.html">Portfolio-Priorisierung</a>
+  <div class="links">
+    <a href="#situationen">Vier Situationen</a>
+    <a href="#danach">Und danach?</a>
+    <a href="#prinzipien">Wie es rechnet</a>
+    <a class="tool" href="index.html">Zum Werkzeug</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="kicker">Für Abteilungen mit mehr Ideen als Leuten</div>
+      <h1>Was tragen wir <span class="hl">wirklich?</span></h1>
+      <p class="sub">Die Portfolio-Priorisierung führt eure Abteilung von der Idee zur ehrlichen Entscheidung: ein Steckbrief pro Vorhaben, transparente Wenn-dann-Regeln und eine Kapazitätslinie, die den Schnitt erzwingt, den keine Rangliste schafft.</p>
+      <div class="ctas">
+        <a class="btn minze" href="index.html#portfolio">Das Portfolio ansehen</a>
+        <a class="quiet-link" href="index.html">Direkt ein Vorhaben eintragen →</a>
+      </div>
+    </div>
+    <div class="hero-motiv" aria-hidden="true">
+      <!-- Laufzeiten-Balken über der Kapazitätslinie, das Produkt in abstrakt -->
+      <svg viewBox="0 0 440 300" role="presentation">
+        <g font-family="system-ui, sans-serif">
+          <rect x="0" y="0" width="316" height="14" rx="7" fill="#36349D"/>
+          <rect x="316" y="0" width="90" height="14" rx="7" fill="#DB0045"/>
+          <rect x="313" y="-6" width="3" height="26" fill="#FFFFFF"/>
+          <text x="0" y="40" fill="#8886CC" font-size="12" font-weight="700" letter-spacing="1.5">7 VON 5 VZÄ, 2 ZU VIEL</text>
+        </g>
+        <g>
+          <rect x="0"   y="70"  width="150" height="22" rx="6" fill="#4DFFB0" opacity="0.92"/>
+          <rect x="0"   y="102" width="210" height="22" rx="6" fill="#FFFFFF" opacity="0.92"/>
+          <rect x="60"  y="134" width="230" height="22" rx="6" fill="#FFFFFF" opacity="0.75"/>
+          <rect x="90"  y="166" width="190" height="22" rx="6" fill="none" stroke="#8886CC" stroke-width="2"/>
+          <rect x="140" y="198" width="260" height="22" rx="6" fill="#FFFFFF" opacity="0.55"/>
+          <rect x="0"   y="230" width="96"  height="22" rx="6" fill="#E3E6F2" opacity="0.5"/>
+          <rect x="180" y="262" width="180" height="22" rx="6" fill="none" stroke="#8886CC" stroke-width="2" stroke-dasharray="5 5"/>
+          <rect x="400" y="198" width="40" height="22" fill="url(#fade)"/>
+        </g>
+        <defs>
+          <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.55"/>
+            <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <p class="hero-fuss">Kein Score. Jede Empfehlung nennt ihre Regel.</p>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section id="situationen">
+  <div class="wrap">
+    <div class="sec-kicker">Einstieg nach Situation, nicht nach Ansicht</div>
+    <h2>Wo steht ihr gerade?</h2>
+    <p class="lead">Steuerung ist ein Zyklus, aber niemand arbeitet in einem Kreisdiagramm. Es gibt vier Situationen, in denen ihr dieses Werkzeug aufmacht, und jede führt an die richtige Stelle.</p>
+
+    <div class="weg">
+      <div class="schritt">
+        <span class="nr">1</span>
+        <a class="karte" href="index.html">
+          <span class="wer">Referate</span>
+          <h3>Vorhaben erfassen</h3>
+          <span class="lage">Ein Vorhaben ist neu oder noch nirgends beschrieben.</span>
+          <p>Ein Steckbrief, sechs Blöcke: Worum geht es, was passiert beim Ruhenlassen, welche Kapazität bindet es, wie ist BM eingebunden. Leer lassen ist erlaubt, das Werkzeug zeigt, was noch fehlt.</p>
+          <span class="go">Vorhaben eintragen</span>
+        </a>
+      </div>
+      <div class="schritt">
+        <span class="nr">2</span>
+        <a class="karte" href="index.html">
+          <span class="wer">Referate</span>
+          <h3>Vorhaben aktualisieren</h3>
+          <span class="lage">Der Stand hat sich geändert: neue Zahlen, neues Ende, neue Abhängigkeit.</span>
+          <p>Steckbrief öffnen, nachziehen, fertig. Portfolio und Laufzeiten lesen jede Änderung sofort mit, es gibt keinen zweiten Datenbestand.</p>
+          <span class="go">Zur Vorhabenliste</span>
+        </a>
+      </div>
+      <div class="schritt">
+        <span class="nr">3</span>
+        <a class="karte" href="index.html#entscheiden">
+          <span class="wer">Abteilung</span>
+          <h3>Steuerungsrunde vorbereiten</h3>
+          <span class="lage">Die Runde steht an. Was ist reif, was fehlt, was ist überbucht?</span>
+          <p>Stand der Erfassung, offene Lücken, Kapazitätslage und die Fragen, die vor der Entscheidung geklärt sein sollten, auf einen Blick statt in fünf Mails.</p>
+          <span class="go">Runde vorbereiten</span>
+        </a>
+      </div>
+      <div class="schritt">
+        <span class="nr">4</span>
+        <a class="karte" href="index.html#portfolio">
+          <span class="wer">Abteilungsleitung</span>
+          <h3>Portfolio entscheiden</h3>
+          <span class="lage">Alle Vorhaben liegen nebeneinander, die Runde sitzt.</span>
+          <p>Je Vorhaben: eingeplant, wartet oder eingestellt. Die Kapazitätslinie zeigt, was nicht mehr hineinpasst, und jede Abweichung von der Empfehlung braucht einen Satz Begründung.</p>
+          <span class="go">Portfolio entscheiden</span>
+        </a>
+      </div>
+    </div>
+    <p class="weg-fuss">Nach der Entscheidung beginnt die Pflege, nicht die Ablage: Situation 2 ist der Normalfall zwischen zwei Runden. So schließt sich der Zyklus, ohne dass ihn jemand malen muss.</p>
+  </div>
+</section>
+
+<section id="danach" class="tint">
+  <div class="wrap">
+    <div class="sec-kicker">Die zugesagte Konsequenz</div>
+    <h2>Und was passiert mit eurer Entscheidung?</h2>
+    <p class="lead">Das entschiedene Portfolio bleibt nicht in der Abteilung liegen. Es geht an den Stab, und der bereitet damit die Entscheidung der Hausleitung vor. Ehrliches Ausfüllen hat einen Adressaten.</p>
+    <div class="staffel">
+      <div class="stufe">
+        <b>Einsammeln</b>
+        <p>Der Stab nimmt die entschiedenen Portfolios aller Abteilungen entgegen: dieselbe Struktur, dieselben Begriffe, vergleichbar ohne Nacharbeit.</p>
+      </div>
+      <div class="stufe">
+        <b>Einschätzen</b>
+        <p>Die Kandidaten fürs Leitungsportfolio werden einzeln geprüft, vor allem ihr Wirkungsversprechen. Von Menschen, nicht von einer Punktzahl: Wirkung lässt sich nicht seriös scoren, wohl aber prüfen, wo es darauf ankommt.</p>
+      </div>
+      <div class="stufe">
+        <b>Vorschlagen</b>
+        <p>Aus den Einschätzungen entsteht der Vorschlag für das Hausportfolio. Die Hausleitung entscheidet, der Stab dokumentiert, die Abteilungen sehen, was aus ihren Vorschlägen geworden ist.</p>
+      </div>
+    </div>
+    <div class="hint">Die Gesamtsicht über alle Abteilungsportfolios ist ein eigenes Arbeitswerkzeug des Stabs und Teil des Ausbaus.<span class="pill">folgt</span></div>
+  </div>
+</section>
+
+<section id="prinzipien">
+  <div class="wrap">
+    <div class="sec-kicker">Wie es rechnet</div>
+    <h2>Drei Regeln, die das Werkzeug ehrlich halten</h2>
+    <div class="prinzipien">
+      <div class="p">
+        <h3>Kein Score</h3>
+        <p>Keine Punktzahl mit verborgenen Gewichten entscheidet über ein Vorhaben. Der Steuerungsbedarf tritt nur zerlegt in seine drei Bestandteile auf und entscheidet nichts.</p>
+      </div>
+      <div class="p">
+        <h3>Sichtbare Regeln</h3>
+        <p>Jede Empfehlung nennt die Wenn-dann-Regel, aus der sie entsteht, und jede Antwort, die zu "eingeplant" führt, verlangt einen Beleg. Die Runde kann überstimmen, mit einem Satz Begründung.</p>
+      </div>
+      <div class="p">
+        <h3>Kapazität ist ein Preis</h3>
+        <p>Kapazität ist kein Wert und fließt in keine Bewertung ein. Die Kapazitätslinie zeigt, was hineinpasst, und erzwingt den Schnitt, statt Ränge auszuhandeln.</p>
+      </div>
+    </div>
+    <p class="familie">Aus derselben Werkstatt: das Denkwerkzeug <a href="https://julelabs.github.io/wirkungswerkstatt/wirkungsversprechen.html" target="_blank" rel="noopener">Wirkungsversprechen</a> hilft beim Formulieren der angestrebten Veränderung (ungetesteter Prototyp, keine abgestimmte Vorgabe).</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="inner">
+    <div>Interner Prototyp mit fiktiven Beispieldaten. Speichert nur lokal im Browser, keine Übertragung.</div>
+    <div>Portfolio-Priorisierung · Arbeitsstand</div>
+  </div>
+</footer>
+
+</body>
+</html>
