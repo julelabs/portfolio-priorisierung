@@ -87,6 +87,15 @@
     display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(22px, 4vw, 54px); align-items: start; }
   .auftakt h1 { font-size: clamp(26px, 3.4vw, 40px); max-width: 20ch; }
   .auf-sub { margin-top: 12px; max-width: 54ch; color: var(--blau-20); font-size: 15.5px; }
+  /* Schritt 1 trägt seit dem Sparring 11.08. keinen Werkzettel mehr, der steht
+     jetzt in der Vorbereiten-Sicht. Die rechte Spalte fällt damit weg statt
+     leer zu bleiben, und die Textspalte darf breiter atmen. Begrenzt bleibt sie
+     trotzdem: über etwa 26 Zeichen Überschrift und 64 Zeichen Fließtext wird
+     die Zeile zu lang, um sie noch am Stück zu lesen. Die Achse zur Bühne
+     bleibt unverändert, die Überschrift sitzt weiter über der Liste. */
+  .auf-innen.auf-solo { grid-template-columns: minmax(0, 1fr); }
+  .auf-solo h1 { max-width: 26ch; }
+  .auf-solo .auf-sub { max-width: 64ch; }
   /* Zwei Wege, eine Hierarchie: eintragen ist die laute Geste, ansehen die
      leise. Beide sind konstant beschriftet. */
   .auf-ctas { margin-top: 22px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
@@ -113,6 +122,23 @@
     margin-top: 16px; padding: 0; font: inherit; font-size: 13.5px; line-height: 1.5; color: var(--blau-40); }
   .z-fuss:hover { color: var(--blau-20); text-decoration: underline; text-underline-offset: 3px; }
   .z-leer { font-size: 14.5px; color: var(--blau-20); }
+
+  /* Ansicht "Steuerungsrunde vorbereiten" (Sparring 11.08.): Der Kopf ist
+     derselbe dunkle Auftakt wie in Schritt 1, nur mit anderer Leitfrage und mit
+     dem Werkzettel rechts. Deshalb trägt er die Auftakt-Klassen und nicht ein
+     zweites Farb- und Typosystem. Die Kicker-Zeile ist die Zeile, die im
+     Werkzettel schon "Stand der Erfassung" beschriftet (.z-kopf), also bleibt
+     es bei einer Form für "kleine Aufschrift auf dunklem Grund". */
+  .vb-kopf h1 { max-width: 26ch; }
+  /* Der Rumpf besteht aus vier Abschnitten, alle aus vorhandenen Bausteinen:
+     Überschrift, Arbeitsfläche mit Zeilen, leise Zeile für den leeren Fall.
+     Offen statt eingeklappt, denn diese Ansicht ist die Vorbereitung selbst. */
+  .vb-block { margin-bottom: clamp(20px, 3vw, 30px); }
+  .vb-titel { font-size: 20px; margin-bottom: 4px; }
+  .vb-zaehler { font-family: var(--display); font-size: 12.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-2); margin-bottom: 12px; }
+  /* Am Fuß stehen die zwei Wege weiter, in derselben Hierarchie wie im Auftakt:
+     entscheiden ist die laute Geste, zurück zu den Steckbriefen die leise. */
+  .vb-fuss { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: clamp(22px, 3vw, 32px); padding-top: 18px; border-top: 1px solid var(--line); }
 
   .buehne { max-width: 1180px; margin: 0 auto; padding: clamp(22px, 3.4vw, 38px) clamp(16px, 4vw, 24px) 80px; }
   .anriss { max-width: 620px; margin-bottom: clamp(20px, 3vw, 30px); }
@@ -544,7 +570,7 @@
   .fragen-spalte h3 { min-height: 20px; font-family: var(--display); font-size: 12.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-2); margin: 0 0 12px; }
   .arbeitsflaeche { background: var(--weiss); border: 1px solid var(--line); border-radius: 9px; }
   .arbeitsflaeche > * + * { border-top: 1px solid var(--line); }
-  #konflikte { counter-reset: arbeitsfrage; }
+  #konflikte, #vbKonflikte { counter-reset: arbeitsfrage; }
   /* Jede Zeile ist ein Arbeitsauftrag und führt mit einer sichtbaren Aktion
      zurück ins Portfolio oder zum Vorhaben. Die Ziffer steht in einer eigenen
      Spalte, damit alle Texte auf einer Kante beginnen. */
@@ -618,16 +644,21 @@
   <button class="brand" type="button" id="brandHome" title="Zurück zu Schritt 1">Portfolio-Priorisierung<span class="pg" id="brandAbt"> · Abteilung</span></button>
   <nav class="schritte" id="schrittNav" aria-label="Schritte">
     <button class="schritt" type="button" data-ansicht="erfassen">Vorhaben erfassen</button>
+    <!-- Die Vorbereitung ist seit dem Sparring 11.08. ein eigener Schritt und
+         steht zwischen Erfassen und Entscheiden, weil sie genau dort passiert. -->
+    <button class="schritt" type="button" data-ansicht="vorbereiten">Steuerungsrunde vorbereiten</button>
     <button class="schritt" type="button" data-ansicht="priorisieren">Portfolio entscheiden</button>
   </nav>
   <div class="mock-badge">Prototyp v3</div>
 </header>
 
 <!-- Auftakt zu Schritt 1: liegt außerhalb der Bühne, damit die dunkle Fläche
-     randlos an die Kopfleiste anschließt. Überschrift und Stand kommen aus
-     einstieg(), die zwei Wege sind konstant (siehe renderAuftakt). -->
+     randlos an die Kopfleiste anschließt. Die Überschrift kommt aus einstieg(),
+     die zwei Wege sind konstant (siehe renderAuftakt). Der Werkzettel stand
+     hier bis zum Sparring 11.08. und wohnt jetzt in der Vorbereiten-Sicht:
+     hier ging es ums Beschreiben, dort ums Vorbereiten der Runde. -->
 <div class="auftakt" id="auftakt">
-  <div class="auf-innen">
+  <div class="auf-innen auf-solo">
     <div>
       <h1 id="auftaktKopf">Was liegt für das nächste Halbjahr auf dem Tisch?</h1>
       <p class="auf-sub">Erst beschreiben, dann entscheiden. Ein kurzer Steckbrief pro Vorhaben, unter fünf Minuten. Danach liegen alle nebeneinander.</p>
@@ -637,6 +668,20 @@
         <button class="btn minze" type="button" id="auftaktNeu">Vorhaben eintragen</button>
         <button class="leiselink" type="button" id="auftaktPortfolio">Portfolio ansehen &#8594;</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Kopf der Vorbereiten-Sicht (Sparring 11.08.): dieselbe dunkle Fläche wie der
+     Auftakt, deshalb dieselben Klassen und dieselbe Achse. Links die Leitfrage
+     der Runde und die Kapazitätslage aus einstieg(), rechts der Werkzettel. -->
+<div class="auftakt vb-kopf verborgen" id="vorbereitenKopf">
+  <div class="auf-innen">
+    <div>
+      <!-- Kein Kicker: der minzefarbene Navigationseintrag direkt darüber
+           benennt den Ort schon, zweimal dasselbe Wort wäre Rauschen. -->
+      <h1>Was ist reif, was fehlt, was ist überbucht?</h1>
+      <p class="auf-sub" id="vorbereitenLage"></p>
     </div>
     <div class="auf-stand" id="auftaktStand"></div>
   </div>
@@ -749,6 +794,37 @@
         <button class="btn leise" type="button" id="copy">Als Tabelle kopieren</button>
         <button class="textbtn" type="button" id="reset">Beispieldaten wiederherstellen</button>
       </span>
+    </div>
+  </section>
+
+  <!-- Ansicht "Steuerungsrunde vorbereiten" (Sparring 11.08.). Sie steht im
+       Markup hinter Schritt 2, obwohl sie davor bedient wird: sichtbar ist immer
+       nur eine Ansicht, und so bleibt die erste Fundstelle jeder gemeinsam
+       genutzten Klasse (.konflikt, .of-zeile) die der Werkbank.
+       Alle vier Abschnitte lesen dieselben Funktionen wie Schritt 2, hier nur
+       offen dargestellt: nichts an Text wird doppelt gepflegt. -->
+  <section id="ansicht-vorbereiten" class="verborgen">
+    <section class="vb-block" aria-labelledby="vbFragenTitel">
+      <h2 class="vb-titel" id="vbFragenTitel">Bevor ihr entscheidet</h2>
+      <p class="vb-zaehler" id="vbKonflikteTitel"></p>
+      <div class="arbeitsflaeche" id="vbKonflikte"></div>
+    </section>
+
+    <section class="vb-block" aria-labelledby="vbLeitungTitel">
+      <h2 class="vb-titel" id="vbLeitungTitel">Leitungsfälle fürs Haus</h2>
+      <p class="vb-zaehler">Was die Abteilung ans Haus meldet</p>
+      <div class="arbeitsflaeche" id="vbLeitungsfaelle"></div>
+    </section>
+
+    <section class="vb-block" aria-labelledby="vbOffenTitel">
+      <h2 class="vb-titel" id="vbOffenTitel">Lose Enden</h2>
+      <p class="vb-zaehler">Was an getroffenen Entscheidungen noch fehlt</p>
+      <div class="arbeitsflaeche" id="vbOffenListe"></div>
+    </section>
+
+    <div class="vb-fuss">
+      <button class="textbtn blau" type="button" id="vbZuSteckbriefen">Zu den Steckbriefen</button>
+      <button class="btn primary" type="button" id="vbZuEntscheiden">Portfolio entscheiden</button>
     </div>
   </section>
 
@@ -1479,7 +1555,10 @@
   };
   function zumSteckbrief(id) {
     offenId = id;
-    renderErfassen();
+    // Die Lücke lässt sich nur im Steckbrief schließen. Seit der Werkzettel in
+    // der Vorbereiten-Sicht steht (Sparring 11.08.), führt der Weg deshalb auch
+    // über den Ansichtswechsel zurück nach Schritt 1.
+    if (ansicht !== 'erfassen') wechsle('erfassen'); else renderErfassen();
     const v = nachId(id);
     if (!v) return;
     const erste = luecken(v)[0];
@@ -1497,17 +1576,50 @@
   // Fingern wechselt, liest niemand, und sie behauptete zwischenzeitlich Dinge,
   // die nach dem nächsten Zeichen nicht mehr stimmen.
   function renderAuftakt() {
-    const e = einstieg(S.vorhaben, verfuegbarWert());
-    document.getElementById('auftaktKopf').textContent = e.kopf;
-    const stand = document.getElementById('auftaktStand');
-    stand.innerHTML = standHtml(e);
-    stand.querySelectorAll('[data-oeffne]').forEach(el =>
-      el.addEventListener('click', () => zumSteckbrief(el.dataset.oeffne)));
+    document.getElementById('auftaktKopf').textContent = einstieg(S.vorhaben, verfuegbarWert()).kopf;
     // Beim Ankommen und in der Übersicht steht der Auftakt, beim Arbeiten am
     // Steckbrief tritt er zurück (Entscheidung 62). Sonst wäre er bei jedem
     // Besuch eine Fläche, die man wegscrollt. Zurück führt der Schriftzug oder
     // der Schritt-1-Reiter.
     document.getElementById('auftakt').classList.toggle('verborgen', !!offenId);
+  }
+
+  // Die Lage in einem Satz (Sparring 11.08.). Quelle ist dieselbe wie beim
+  // Auftakt in Schritt 1: einstieg() sagt den Kopfsatz, daneben stehen die zwei
+  // Größen, aus denen er folgt. Neu behauptet wird hier nichts, insbesondere
+  // nichts aus der Anzahl der Vorhaben.
+  function lageSatz(e, verfuegbar) {
+    if (!e.gesamt) return e.kopf;
+    const zahlen = verfuegbar > 0
+      ? `Was nicht eingestellt ist, kostet zusammen ${zahlText(e.bedarf)} Vollzeitäquivalente, verfügbar sind ${zahlText(verfuegbar)}.`
+      : 'Eine Kapazität ist noch nicht gesetzt, ohne sie ist über Überbuchung nichts zu sagen.';
+    // Fehlende Zahlen machen den Bedarf kleiner, nie größer. Das gehört dazu,
+    // sonst liest sich die Summe genauer, als sie ist.
+    const luecke = e.ohneZahl
+      ? ` Bei ${e.ohneZahl === 1 ? 'einem Vorhaben' : e.ohneZahl + ' Vorhaben'} fehlt die Zahl, der Bedarf liegt also höher.`
+      : '';
+    return `${e.kopf} ${zahlen}${luecke}`;
+  }
+
+  // Kopf der Vorbereiten-Sicht: links die Lage, rechts der Werkzettel, der bis
+  // zum Sparring 11.08. im Auftakt von Schritt 1 stand. Die Lücken-Fußnote
+  // behält ihre Mechanik und führt in den Steckbrief.
+  function renderVorbereitenKopf() {
+    const e = einstieg(S.vorhaben, verfuegbarWert());
+    document.getElementById('vorbereitenLage').textContent = lageSatz(e, verfuegbarWert());
+    const stand = document.getElementById('auftaktStand');
+    stand.innerHTML = standHtml(e);
+    stand.querySelectorAll('[data-oeffne]').forEach(el =>
+      el.addEventListener('click', () => zumSteckbrief(el.dataset.oeffne)));
+  }
+
+  // Headline und Werkzettel lesen denselben Zustand und stehen seit dem Sparring
+  // 11.08. nur in zwei Ansichten. Sie ziehen deshalb gemeinsam nach, und beide
+  // erst bei abgeschlossener Eingabe: der Werkzettel bleibt beim Tippen stehen,
+  // weil an dieser Stelle "change" hängt und nicht "input".
+  function renderStand() {
+    renderAuftakt();
+    renderVorbereitenKopf();
   }
 
   function renderSteckbrief() {
@@ -1690,7 +1802,7 @@
       });
       // Beim Tippen bleibt der Auftakt stehen, beim Verlassen des Feldes zieht
       // er nach: das ist die abgeschlossene Eingabe, ab der eine neue Aussage hält.
-      if (el.tagName !== 'SELECT') el.addEventListener('change', renderAuftakt);
+      if (el.tagName !== 'SELECT') el.addEventListener('change', renderStand);
     });
     const titel = document.getElementById('titel');
     titel.addEventListener('input', () => {
@@ -1700,7 +1812,7 @@
     });
     // Der Name steht im Auftakt (Knopf und Standzeile), aber erst wenn er fertig
     // getippt ist
-    titel.addEventListener('change', renderAuftakt);
+    titel.addEventListener('change', renderStand);
     // Bewusst ohne Vorauswahl: Schritt 2 verspricht den Blick auf alle
     // Vorhaben nebeneinander. Ein schon offenes Entscheidungspanel wäre das
     // v1-Muster (einzeln klassifizieren) durch die Hintertür.
@@ -1759,7 +1871,7 @@
   }
 
   function renderErfassen() {
-    renderAuftakt();
+    renderStand();
     renderNav();
     renderSteckbrief();
   }
@@ -2430,9 +2542,22 @@
   const K_TYP = { besprechen: 'Besprechen', ausprobieren: 'Ausprobieren' };
   const FRAGEN_TITEL = ['Keine offenen Fragen', 'Eine Frage für die Runde', 'Zwei Fragen für die Runde', 'Drei Fragen für die Runde', 'Vier Fragen für die Runde'];
 
+  // Ein Vorhaben im Bild aufschlagen: das passiert immer in Schritt 2, weil dort
+  // das Entscheidungspanel hängt. Aus der Vorbereiten-Sicht heraus gehört der
+  // Ansichtswechsel dazu (Sparring 11.08.), sonst führte der Knopf ins Leere.
+  function zumVorhabenImBild(id) {
+    abhAktivId = null;
+    aktivId = id;
+    if (ansicht === 'priorisieren') renderPriorisieren(); else wechsle('priorisieren');
+    document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
   function renderKonflikte() {
     const punkte = konflikte(S.vorhaben, verfuegbarWert());
+    // Derselbe Titel an beiden Orten: in Schritt 2 unter der Klappzeile, in der
+    // Vorbereiten-Sicht offen unter der Überschrift (Sparring 11.08.).
     document.getElementById('konflikteTitel').textContent = FRAGEN_TITEL[punkte.length];
+    document.getElementById('vbKonflikteTitel').textContent = FRAGEN_TITEL[punkte.length];
     // Die Zahl steht in der zugeklappten Zeile, sonst wäre der Block wieder
     // unsichtbar, nur an anderer Stelle (Entscheidung 63).
     document.getElementById('briefingZahl').textContent = punkte.length
@@ -2445,7 +2570,7 @@
       (p.namen || []).forEach(name => { html = html.split(esc(name)).join(`<strong>${esc(name)}</strong>`); });
       return html;
     };
-    document.getElementById('konflikte').innerHTML = punkte.length
+    const html = punkte.length
       ? punkte.map(p => `<article class="konflikt">
           <p class="k-typ">${K_TYP[p.typ]}</p>
           <p class="k-befund">${fett(p)}</p>
@@ -2455,16 +2580,19 @@
             : `<button class="textbtn k-zum" type="button" data-portfolio>${p.typ === 'ausprobieren' ? 'Im Portfolio ausprobieren' : 'Im Portfolio prüfen'}</button>`}
         </article>`).join('')
       : '<p class="ruhig">Das Gesamtbild passt zu dem, was ihr eingetragen habt.</p>';
-    document.getElementById('konflikte').querySelectorAll('[data-zum]').forEach(el => el.addEventListener('click', () => {
-      abhAktivId = null;
-      aktivId = el.dataset.zum;
-      renderPriorisieren();
-      document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }));
-    document.getElementById('konflikte').querySelectorAll('[data-portfolio]').forEach(el => el.addEventListener('click', () => {
-      sichtWechseln('portfolio');
-      document.getElementById('bildKoerper').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }));
+    // Dieselben Fragen in beiden Ansichten, aus einer Quelle gebaut und in
+    // beiden gleich bedienbar (Sparring 11.08.).
+    ['konflikte', 'vbKonflikte'].forEach(id => {
+      const wurzel = document.getElementById(id);
+      wurzel.innerHTML = html;
+      wurzel.querySelectorAll('[data-zum]').forEach(el =>
+        el.addEventListener('click', () => zumVorhabenImBild(el.dataset.zum)));
+      wurzel.querySelectorAll('[data-portfolio]').forEach(el => el.addEventListener('click', () => {
+        if (ansicht !== 'priorisieren') wechsle('priorisieren');
+        sichtWechseln('portfolio');
+        document.getElementById('bildKoerper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }));
+    });
   }
 
   function renderLeitungsfaelle() {
@@ -2475,23 +2603,26 @@
     // Der einordnende Satz ist die erste Zeile der Arbeitsfläche, nicht ein
     // Vorspann darüber: sonst begänne die rechte Fläche tiefer als die linke.
     const intro = '<p class="lf-intro">Aus den Leitungsfällen aller Abteilungen wählt das Haus sein Portfolio.</p>';
-    document.getElementById('leitungsfaelle').innerHTML = intro + (faelle.length
+    // Leitungsfälle, die nicht eingeplant sind, gehen nicht ans Haus. Sie
+    // verschwinden aber auch nicht: hier steht, welche es sind und warum.
+    const zurueck = leitungsfaelleZurueck(S.vorhaben);
+    const html = intro + (faelle.length
       ? faelle.map(v => `<div class="lf-eintrag">
           <p class="lf-name">${esc(v.name)}</p>
           <p class="lf-frage">${v.bmWarum.trim() ? esc(v.bmWarum) : '<span style="color:var(--kirsche-text)">Begründung fehlt noch.</span>'}</p>
         </div>`).join('')
-      : '<p class="ruhig">Kein Leitungsfall gemeldet. Die Abteilung steuert ihr Portfolio in diesem Halbjahr allein.</p>');
+      : '<p class="ruhig">Kein Leitungsfall gemeldet. Die Abteilung steuert ihr Portfolio in diesem Halbjahr allein.</p>')
+      + (zurueck.length
+        ? `<div class="lf-zurueck">
+            <p class="lf-zurueck-kopf">Nicht gemeldet · ${zurueck.length}</p>
+            ${zurueck.map(v => `<p class="lf-meta">${esc(v.name)}: ${esc(ENTSCHEIDUNG[gewaehlt(v)])}, geht damit nicht ins Leitungsportfolio.</p>`).join('')}
+          </div>`
+        : '');
+    // Dieselbe Meldeliste in beiden Ansichten (Sparring 11.08.): in Schritt 2
+    // als Kontext hinter dem Aufklapper, in der Vorbereiten-Sicht offen.
+    document.getElementById('leitungsfaelle').innerHTML = html;
+    document.getElementById('vbLeitungsfaelle').innerHTML = html;
     document.getElementById('leitungsfaelleZahl').textContent = ' · ' + faelle.length;
-
-    // Leitungsfälle, die nicht eingeplant sind, gehen nicht ans Haus. Sie
-    // verschwinden aber auch nicht: hier steht, welche es sind und warum.
-    const zurueck = leitungsfaelleZurueck(S.vorhaben);
-    document.getElementById('leitungsfaelle').insertAdjacentHTML('beforeend', zurueck.length
-      ? `<div class="lf-zurueck">
-          <p class="lf-zurueck-kopf">Nicht gemeldet · ${zurueck.length}</p>
-          ${zurueck.map(v => `<p class="lf-meta">${esc(v.name)}: ${esc(ENTSCHEIDUNG[gewaehlt(v)])}, geht damit nicht ins Leitungsportfolio.</p>`).join('')}
-        </div>`
-      : '');
   }
 
   // Die Quittung sagt, was der Zug bewirkt hat: was jetzt gilt, was es kostet
@@ -2526,17 +2657,20 @@
     const liste = S.vorhaben.map(v => ({ v, pflicht: offenePflicht(v) })).filter(x => x.pflicht);
     block.classList.toggle('verborgen', liste.length === 0);
     document.getElementById('offenZahl').textContent = liste.length ? ' · ' + liste.length : '';
-    document.getElementById('offenListe').innerHTML = liste.map(({ v, pflicht }) => `<div class="of-zeile">
+    const html = liste.map(({ v, pflicht }) => `<div class="of-zeile">
       <p class="of-name">${esc(v.name)}</p>
       <p class="of-frage">${esc(OFFENE_PFLICHT[pflicht].frage)}</p>
       <button class="textbtn blau of-tun" type="button" data-offen="${v.id}">${esc(OFFENE_PFLICHT[pflicht].kurz.replace(' fehlt', ' ergänzen'))}</button>
     </div>`).join('');
-    document.getElementById('offenListe').querySelectorAll('[data-offen]').forEach(el => el.addEventListener('click', () => {
-      abhAktivId = null;
-      aktivId = el.dataset.offen;
-      renderPriorisieren();
-      document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }));
+    // In Schritt 2 verschwindet der Aufklapper, wenn nichts offen ist. In der
+    // Vorbereiten-Sicht bleibt der Abschnitt stehen und sagt das (Sparring
+    // 11.08.): dort ist die Abwesenheit loser Enden die eigentliche Auskunft.
+    document.getElementById('offenListe').innerHTML = html;
+    document.getElementById('vbOffenListe').innerHTML = html
+      || '<p class="ruhig">Nichts offen, die Runde kann entscheiden.</p>';
+    ['offenListe', 'vbOffenListe'].forEach(id =>
+      document.getElementById(id).querySelectorAll('[data-offen]').forEach(el =>
+        el.addEventListener('click', () => zumVorhabenImBild(el.dataset.offen))));
   }
 
   function renderPriorisieren() {
@@ -2549,6 +2683,18 @@
     renderQuittung();
   }
 
+  /* ---------- Ansicht "Steuerungsrunde vorbereiten" (Sparring 11.08.) ---------- */
+
+  // Die Ansicht baut sich bei jedem Aufruf frisch aus dem Zustand auf, wie die
+  // anderen render-Funktionen auch. Eigene Inhalte hat sie keine: Kopf, Fragen,
+  // Leitungsfälle und lose Enden lesen dieselben Funktionen wie Schritt 2.
+  function renderVorbereiten() {
+    renderVorbereitenKopf();
+    renderKonflikte();
+    renderLeitungsfaelle();
+    renderOffenePflichten();
+  }
+
   /* ---------- Rahmen ---------- */
 
   function wechsle(neu) {
@@ -2556,15 +2702,22 @@
     if (neu !== 'priorisieren') abhAktivId = null;
     document.querySelectorAll('.schritt').forEach(el => el.setAttribute('aria-current', String(el.dataset.ansicht === ansicht)));
     // Im Einstieg stehen dieselben zwei Wege bereits groß und mit Kontext.
-    // Erst in Schritt 2 braucht der Kopf den Rückweg zu "Vorhaben erfassen".
+    // Erst danach braucht der Kopf die Navigation als Rückweg.
     document.getElementById('schrittNav').classList.toggle('verborgen', ansicht === 'erfassen');
     document.getElementById('ansicht-erfassen').classList.toggle('verborgen', ansicht !== 'erfassen');
     // Der Auftakt gehört zu Schritt 1 und liegt außerhalb der Bühne, also muss
     // er hier mitgeschaltet werden. In Schritt 1 entscheidet renderAuftakt
     // zusätzlich, ob gerade an einem Steckbrief gearbeitet wird.
     document.getElementById('auftakt').classList.toggle('verborgen', ansicht !== 'erfassen' || !!offenId);
+    // Der Kopf der Vorbereiten-Sicht liegt aus demselben Grund außerhalb der
+    // Bühne wie der Auftakt: die dunkle Fläche schließt randlos an die
+    // Kopfleiste an (Sparring 11.08.).
+    document.getElementById('vorbereitenKopf').classList.toggle('verborgen', ansicht !== 'vorbereiten');
+    document.getElementById('ansicht-vorbereiten').classList.toggle('verborgen', ansicht !== 'vorbereiten');
     document.getElementById('ansicht-priorisieren').classList.toggle('verborgen', ansicht !== 'priorisieren');
-    if (ansicht === 'erfassen') renderErfassen(); else renderPriorisieren();
+    if (ansicht === 'erfassen') renderErfassen();
+    else if (ansicht === 'vorbereiten') renderVorbereiten();
+    else renderPriorisieren();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -2580,6 +2733,11 @@
     }));
     document.getElementById('auftaktNeu').addEventListener('click', () => document.getElementById('neuZeigen').click());
     document.getElementById('auftaktPortfolio').addEventListener('click', () => wechsle('priorisieren'));
+    // Die zwei Wege am Fuß der Vorbereiten-Sicht (Sparring 11.08.): weiter in
+    // die Runde oder zurück an die Steckbriefe, dort ohne vorausgewähltes
+    // Vorhaben wie über den Schriftzug.
+    document.getElementById('vbZuEntscheiden').addEventListener('click', () => wechsle('priorisieren'));
+    document.getElementById('vbZuSteckbriefen').addEventListener('click', zurUebersicht);
     document.querySelectorAll('.sichten button').forEach(el => el.addEventListener('click', () => sichtWechseln(el.dataset.sicht)));
     document.getElementById('neuZeigen').addEventListener('click', () => {
       document.getElementById('neuZeigen').classList.add('verborgen');
@@ -2619,7 +2777,11 @@
     // Der alte Abhängigkeiten-Direktlink bleibt als Weiterleitung erhalten.
     // Die Funktion lebt jetzt in der Portfolio-Sicht und hat keinen eigenen Tab.
     const sprung = { '#entscheiden': null, '#portfolio': 'portfolio', '#matrix': 'matrix', '#abhaengig': 'portfolio', '#laufzeiten': 'laufzeiten' };
-    if (location.hash in sprung) {
+    // Die Vorbereiten-Sicht ist kein Bild von Schritt 2, sondern eine eigene
+    // Ansicht. Deshalb steht sie neben der Tabelle, nicht darin (Sparring 11.08.).
+    if (location.hash === '#vorbereiten') {
+      wechsle('vorbereiten');
+    } else if (location.hash in sprung) {
       if (sprung[location.hash]) sicht = sprung[location.hash];
       wechsle('priorisieren');
     } else {
