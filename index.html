@@ -176,43 +176,44 @@
      als ihr eigenes Label. */
   .feld > label { display: block; font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg); margin-bottom: 2px; }
   .feld-hilfe { color: var(--fg-muted); font-size: 13px; margin-bottom: 6px; }
+  /* Der Wirkungsversprechen-Verweis steht unter dem Feld, nicht darüber */
+  .wv-hinweis { margin: 5px 0 0; }
+  .wv-hinweis a { color: var(--blau); font-weight: 600; }
   /* Ein Eingabefeld ist eine Fläche, kein Text. Immer weiß mit sichtbarer
      Kante, damit es sich auf beiden Untergründen abhebt: auf der weißen Karte
      über die Kante, im blau-10-Kasten zusätzlich über die Füllung.
      Das Titelfeld ist ausgenommen, es ist die Überschrift der Karte. */
-  .steckbrief input[type="text"]:not(.sb-titel), .steckbrief select, .steckbrief textarea,
+  .steckbrief input[type="text"]:not(.sb-titel), .steckbrief input[type="month"], .steckbrief select, .steckbrief textarea,
   .pn-feld input, .navfoot input {
     width: 100%; background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 6px;
     color: var(--fg); font-family: var(--body); font-size: 15px; padding: 9px 12px;
   }
-  .steckbrief input[type="text"]:not(.sb-titel):hover, .steckbrief select:hover, .steckbrief textarea:hover,
+  .steckbrief input[type="text"]:not(.sb-titel):hover, .steckbrief input[type="month"]:hover, .steckbrief select:hover, .steckbrief textarea:hover,
   .pn-feld input:hover, .navfoot input:hover { border-color: var(--blau-60); }
-  .steckbrief input[type="text"]:not(.sb-titel):focus, .steckbrief select:focus, .steckbrief textarea:focus,
+  .steckbrief input[type="text"]:not(.sb-titel):focus, .steckbrief input[type="month"]:focus, .steckbrief select:focus, .steckbrief textarea:focus,
   .pn-feld input:focus, .navfoot input:focus {
     outline: 2px solid var(--blau); outline-offset: 1px; border-color: var(--blau);
   }
   .steckbrief select { cursor: pointer; min-height: 42px; }
   .steckbrief textarea { min-height: 76px; resize: vertical; }
   input.kurz { max-width: 130px !important; }
+  input.mittel { max-width: 280px !important; }
   .zeile2 { display: flex; gap: 22px; flex-wrap: wrap; }
   .zeile2 > * { flex: 1 1 210px; }
   .fehlt { color: var(--kirsche-text); font-size: 13px; margin-top: 5px; }
-  .lf-kasten { background: var(--blau-10); border-radius: 6px; padding: 14px 16px 18px; margin-top: 14px; }
-  .lf-kasten .lf-titel { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--blau); margin-bottom: 2px; }
-  .lf-kasten .lf-sub { color: var(--fg-2); font-size: 13.5px; }
 
-  /* Ablesung: drei Felder in einer Zeile, alle in Worten. Kein Buchstabencode. */
+  /* Ablesung: seit dem Sparring vom 11.08. nur noch der Hinweis für die
+     Abwägung, in Worten. Kein Buchstabencode. */
   /* Bündig mit den Feldern: die Blöcke rücken um die 34px-Nummernspalte ein,
-     die Ablesung liegt außerhalb des Rasters und muss mitziehen */
-  .ablesung { background: var(--blau-10); border-radius: 6px; padding: 16px 18px; margin-top: 22px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
-  @media (max-width: 780px) { .ablesung { grid-template-columns: 1fr; gap: 16px; } }
-  .ab-feld + .ab-feld { border-left: 1px solid var(--line); padding-left: 20px; }
-  @media (max-width: 780px) { .ab-feld + .ab-feld { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; padding-top: 14px; } }
+     die Ablesung liegt außerhalb des Rasters und zieht mit (margin-left).
+     Die Kirsch-Kante links macht den Hinweis auffindbar, sie bewertet nicht:
+     sie steht auch vor "Aufschub unkritisch". Sie ist neben der Minze-Kante
+     am Leitungsfall die zweite tragende Kante im Werkzeug (Sparring 11.08.). */
+  .ablesung { background: var(--blau-10); border-left: 4px solid var(--kirsche-text); border-radius: 6px; padding: 16px 18px; margin-top: 22px; margin-left: 34px; }
   .empf-label { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 6px; }
   .empf-regel { color: var(--fg-2); font-size: 14px; }
   .ab-wort { font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--fg); margin-bottom: 2px; }
   .ab-wort.offen { color: var(--fg-muted); }
-  .ab-abweichung { color: var(--kirsche-text); font-size: 13px; margin-top: 5px; }
 
   /* Der Wert sind drei Gruppen mit Lücken, kein durchgehender Balken: sechs
      Zellen in einer Reihe lasen sich trotz Legende als Skala mit Verlauf.
@@ -330,6 +331,35 @@
   .lg i.offen { border: 1.5px dashed var(--blau-40); }
   .lg i.lf { background: var(--minze); width: 5px; height: 15px; border-radius: 2px; }
 
+  /* Laufzeiten (Sparring 11.08.): eine Zeile pro Vorhaben, ein Balken von
+     Start bis Ende. Der Horizont beginnt heute und zeigt 24 Monate im
+     Quartalsraster. Die Balkenfarben folgen der Entscheidungs-Legende oben,
+     die Sicht erfindet keine eigene Farbwelt. */
+  .lz-steuer { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .lz-steuer label { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); }
+  .lz-steuer select { background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 6px; color: var(--fg); font-family: var(--body); font-size: 14px; padding: 6px 10px; cursor: pointer; }
+  .lz-zeile { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 16px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .lz-achse { border-bottom-width: 2px; padding-bottom: 4px; }
+  .lz-heute { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); align-self: end; }
+  .lz-name { font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg); }
+  .lz-meta { display: block; color: var(--fg-muted); font-size: 12.5px; margin-top: 1px; }
+  .lz-spur { position: relative; height: 26px; }
+  .lz-achse .lz-spur { height: 18px; }
+  .lz-q { position: absolute; top: 0; padding-left: 5px; font-family: var(--display); font-size: 11px; font-weight: 700; color: var(--fg-muted); white-space: nowrap; }
+  .lz-balken { position: absolute; top: 4px; bottom: 4px; border-radius: 4px; min-width: 8px; }
+  .lz-balken.prio { background: var(--blau); }
+  .lz-balken.wartet { background: var(--blau-10); border: 1.5px solid var(--blau-40); }
+  .lz-balken.nicht { background: var(--lavendel); }
+  .lz-balken.offen { border: 1.5px dashed var(--blau-40); background: transparent; }
+  /* Offene Enden werden ausgeblendet statt abgeschnitten: laufende Vorhaben
+     kommen von links ins Bild, Überlanges läuft rechts weiter. */
+  .lz-anfang-offen { border-top-left-radius: 0; border-bottom-left-radius: 0; -webkit-mask-image: linear-gradient(to right, transparent, #000 24px); mask-image: linear-gradient(to right, transparent, #000 24px); }
+  .lz-ende-offen { border-top-right-radius: 0; border-bottom-right-radius: 0; -webkit-mask-image: linear-gradient(to left, transparent, #000 24px); mask-image: linear-gradient(to left, transparent, #000 24px); }
+  .lz-anfang-offen.lz-ende-offen { -webkit-mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent); }
+  .lz-leer { color: var(--fg-muted); font-size: 14px; padding: 14px 0; }
+  .lz-offen-zeile { font-size: 13.5px; color: var(--fg-2); padding: 3px 0; }
+  .lz-offen-zeile strong { font-family: var(--display); font-size: 13px; color: var(--fg); }
+
   /* Sichtwechsel */
   .sichten { display: flex; gap: 4px; background: var(--blau-10); border-radius: 6px; padding: 3px; }
   .sichten button { background: transparent; border: 0; border-radius: 4px; cursor: pointer; font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--fg-2); padding: 7px 13px; }
@@ -339,9 +369,6 @@
   /* Matrix: zwei ehrliche Achsen, Felder als Fächer statt Punktwolke */
   .mx-scroll { overflow-x: auto; padding-bottom: 4px; }
   .mx-achse-x { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin: 2px 0 8px 158px; }
-  /* In der Portfolio-Sicht ist der Zeilenkopf breiter als in der Matrix.
-     Das Achsenwort beginnt deshalb exakt mit der ersten Entscheidungsspalte. */
-  .mx-achse-x.pf-achse-x { margin-left: 0; }
   .matrix { display: grid; grid-template-columns: 150px repeat(4, minmax(198px, 1fr)); min-width: 940px; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
   .mx-kopf { font-family: var(--display); font-size: 12.5px; font-weight: 700; color: var(--fg-2); padding: 8px 10px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--blau-10); }
   .mx-kopf.leer { background: transparent; }
@@ -354,7 +381,10 @@
   .mx-reihe { display: contents; }
   /* Die Zone ist ein eigenes Rasterfeld über den vier Zellen oben rechts.
      Vorher war sie eine 9-Prozent-Tönung, die auf einem Beamer verschwand. */
-  .mx-zone { grid-column: 4 / 6; grid-row: 2 / 4; position: relative; z-index: 1; pointer-events: none; border: 2px solid var(--minze); border-radius: 6px; margin: -1px; }
+  /* Die Zone umschließt genau die Zeile, die ins Leitungsportfolio führt. Seit
+     dem Sparring 11.08. ist das allein "regelmäßige Rücksprachen", deshalb ist
+     sie eine Zeile hoch und nicht mehr zwei. */
+  .mx-zone { grid-column: 4 / 6; grid-row: 2 / 3; position: relative; z-index: 1; pointer-events: none; border: 2px solid var(--minze); border-radius: 6px; margin: -1px; }
   .mx-zone span { position: absolute; top: -11px; right: 10px; background: var(--minze); color: var(--dunkel); font-family: var(--display); font-size: 11px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
   .mx-lese { color: var(--fg-2); font-size: 13.5px; margin-top: 14px; }
   .mx-lese strong { font-family: var(--display); font-size: 13px; }
@@ -399,7 +429,7 @@
      Lavendelfläche. Die Körperzellen bleiben weiß, damit Fläche nicht zugleich
      Kopf und Portfolioart bedeutet. */
   /* Ohne Kopfspalte (Entscheidung 58): Die Zeilenachse unterschied nur in der
-     Eingeplant-Spalte etwas, "wartet" und "abgesagt" überspannen seit
+     Eingeplant-Spalte etwas, "wartet" und "eingestellt" überspannen seit
      Entscheidung 46 beide Zeilen. Die Kopfspalte beschriftete also über die
      volle Höhe eine Unterscheidung, die es in zwei von drei Spalten nicht gibt,
      und jede erste Kachel dort klebte optisch an der Zeile "Leitungsfall". */
@@ -411,7 +441,7 @@
      am hellsten, Zonenbänder Lavendel, Spaltenköpfe am dunkelsten. Dunkler heißt
      wichtiger. Blau-20 ist die neutrale Kartenkante und damit nicht belegt;
      volles Blau schied aus, weil es auf den Kacheln "eingeplant" bedeutet und
-     über der Abgesagt-Spalte das Gegenteil behauptet hätte.
+     über der Eingestellt-Spalte das Gegenteil behauptet hätte.
      Auf Blau-20 hält --fg-muted die 4,5:1 nicht (3,9:1), deshalb tragen
      Unterzeile und VZÄ dort --fg-2 (5,1:1) und das Achsenwort volles Dunkel. */
   .matrix.pf .mx-kopf { background: var(--blau-20); color: var(--fg); }
@@ -556,10 +586,6 @@
   .lf-name { font-family: var(--display); font-weight: 700; font-size: 15px; }
   .lf-frage { color: var(--fg-2); font-size: 14px; margin-top: 1px; }
   .lf-meta { color: var(--fg-muted); font-size: 12.5px; margin-top: 4px; }
-  .lf-mehr { margin-top: 5px; }
-  .lf-mehr summary { cursor: pointer; color: var(--fg-muted); font-family: var(--display); font-size: 12.5px; font-weight: 700; }
-  .lf-mehr summary:hover { color: var(--blau); }
-  .lf-mehr p { color: var(--fg-muted); font-size: 13px; margin-top: 3px; }
   .lf-zurueck-kopf { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 4px; }
   @media (max-width: 620px) {
     .konflikt { padding: 16px 16px 18px 48px; }
@@ -639,7 +665,7 @@
   <section id="ansicht-priorisieren" class="verborgen">
     <div class="anriss">
       <h1>Was tragen wir im nächsten Halbjahr wirklich?</h1>
-      <p>Alle Vorhaben liegen nebeneinander. Ihr entscheidet je Vorhaben: eingeplant, wartet oder abgesagt. Die Kapazitätslinie oben zeigt, was dabei nicht mehr hineinpasst.</p>
+      <p>Alle Vorhaben liegen nebeneinander. Ihr entscheidet je Vorhaben: eingeplant, wartet oder eingestellt. Die Kapazitätslinie oben zeigt, was dabei nicht mehr hineinpasst.</p>
     </div>
 
     <!-- Das Briefing steht vor der Werkbank und ist einklappbar (Entscheidung 63).
@@ -669,6 +695,7 @@
         <div class="bd-steuer">
           <div class="sichten">
             <button type="button" data-sicht="portfolio">Portfolio</button>
+            <button type="button" data-sicht="laufzeiten">Laufzeiten</button>
             <button type="button" data-sicht="matrix">Steuerung prüfen</button>
             <button type="button" data-sicht="ziele">Ziele</button>
           </div>
@@ -683,7 +710,7 @@
           <div class="legende">
             <span class="lg lg-status"><i class="prio"></i>eingeplant</span>
             <span class="lg lg-status"><i class="wartet"></i>wartet</span>
-            <span class="lg lg-status"><i class="nicht"></i>abgesagt</span>
+            <span class="lg lg-status"><i class="nicht"></i>eingestellt</span>
             <span class="lg lg-status"><i class="offen"></i>noch offen</span>
             <span class="lg"><i class="lf"></i>Leitungsfall</span>
           </div>
@@ -701,7 +728,7 @@
           <details class="leitungs-details">
             <summary>
               <span class="lf-summary-title" id="leitungsfaelleTitel"><i class="lf" aria-hidden="true"></i>Leitungsfälle fürs Haus<span id="leitungsfaelleZahl"></span></span>
-              <span class="lf-summary-hint">Frage, Termin und Zuständigkeit ansehen</span>
+              <span class="lf-summary-hint">Begründungen der BM-Einbindung ansehen</span>
             </summary>
             <div class="arbeitsflaeche" id="leitungsfaelle"></div>
           </details>
@@ -756,39 +783,59 @@
   const REICHWEITE = [WAEHLEN, 'ein einzelnes Referat', 'die Abteilung', 'das ganze Haus', 'externe Zielgruppen'];
   const WIRKUNG_AB = [WAEHLEN, 'unter 6 Monaten', '6 bis 12 Monaten', '12 bis 24 Monaten', 'über 24 Monaten'];
 
-  // Eine Achse, drei sich ausschließende Antworten: Muss die Leitung handeln?
-  // "Zur Kenntnis" fehlt bewusst, das ist kein Steuerungsbedarf. Wer die Leitung
-  // nur informieren will, schreibt das in den Hinweis für die Runde.
+  // Eine Achse, drei sich ausschließende Antworten: Wie stark ist BM eingebunden?
+  // Bis zum Sparring 11.08. fragte die Achse nach einem Leitungsfall ("Entscheidung
+  // der Hausleitung", "hausweiter Konflikt"). Das war eine Ja/Nein-Frage mit zwei
+  // Gründen und hat nie unterschieden, wie oft BM wirklich gebraucht wird. Jetzt
+  // steht dort die Häufigkeit der Einbindung, weil genau die den Unterschied
+  // zwischen Leitungs- und Abteilungsportfolio trägt (Sparring 11.08.).
+  // "Zur Kenntnis" fehlt weiter bewusst, das ist keine Einbindung. Wer BM nur
+  // informieren will, schreibt das in den Hinweis für die Runde.
   const LEITUNG = [
     { wert: 'offen', text: WAEHLEN },
-    { wert: 'keine', text: 'nein, die Abteilung steuert das selbst' },
-    { wert: 'entscheidung', text: 'ja, eine Entscheidung der Hausleitung steht an' },
-    { wert: 'konflikt', text: 'ja, ein hausweiter Konflikt muss gelöst werden' }
+    { wert: 'keine', text: 'die Abteilung steuert selbst' },
+    { wert: 'gelegentlich', text: 'gelegentliche Rücksprachen oder Freigaben durch BM erforderlich' },
+    { wert: 'regelmaessig', text: 'regelmäßige Rücksprachen mit BM erforderlich' }
   ];
-  const IST_LEITUNGSFALL = wert => wert === 'entscheidung' || wert === 'konflikt';
+  // Leitungsfall ist allein die regelmäßige Einbindung: nur sie muss dem Haus
+  // gemeldet werden. Gelegentliche Rücksprachen steuert die Abteilung mit
+  // (Sparring 11.08.), sie bekommen deshalb auch keine eigene Kante im Bild.
+  const IST_LEITUNGSFALL = wert => wert === 'regelmaessig';
+  // Begründungspflichtig ist jede Einbindung von BM, nicht nur die regelmäßige:
+  // wer BM in Anspruch nimmt, sagt wofür (Sparring 11.08.).
+  const BM_EINGEBUNDEN = wert => wert === 'regelmaessig' || wert === 'gelegentlich';
 
   // Alle drei Wörter sind Entscheidungen, keines beschreibt einen Zustand.
   // "läuft" stand hier bis 05.08. für die Entscheidung und kollidierte mit dem
   // Stand ("läuft bereits"). "Eingeplant" sagt zusätzlich, was die Entscheidung
   // kostet: das Vorhaben bekommt Kapazität. Ein Rang steckt bewusst nicht drin.
-  // "Abgesagt" hieß bis 05.08. "bewusst nicht": als einzige Nicht-Partizip-Form
-  // stach es aus der Achse heraus. Die Botschaft "wir haben bewusst verzichtet"
-  // steht weiter in den Unterzeilen. Der interne Schlüssel bleibt "nicht".
+  // "Eingestellt" hieß bis 05.08. "bewusst nicht" und bis 11.08. "abgesagt".
+  // "Abgesagt" klang nach etwas, das nie begonnen hat; "eingestellt" trägt
+  // beides, laufende und noch nicht gestartete Vorhaben (Sparring 11.08.).
+  // Die Botschaft "wird nicht weiterverfolgt" steht in den Unterzeilen.
+  // Der interne Schlüssel bleibt "nicht".
   const ENTSCHEIDUNG = {
     prio: 'eingeplant',
     wartet: 'wartet',
-    nicht: 'abgesagt',
+    nicht: 'eingestellt',
     offen: 'noch offen'
   };
 
   function neuesVorhaben(id, name) {
     return {
       id, name,
+      referat: '',
       ziel: WAEHLEN, veraenderung: '',
       reichweite: WAEHLEN, wirkungAb: WAEHLEN,
       ruhen: WAEHLEN, chanceKonkret: '', pflichtKonkret: '', schadenKonkret: '',
-      vzae: '', laeuft: WAEHLEN,
-      leitung: 'offen', lfFrage: '', lfTermin: '', lfFolge: '', lfWer: '',
+      // Zeitangaben als Monat (JJJJ-MM), keine taggenauen Daten (Sparring
+      // 11.08.). Laufende Vorhaben erfassen nur das Ende, ein historischer
+      // Start wird nicht nacherfasst.
+      vzae: '', laeuft: WAEHLEN, startAb: '', endeBis: '',
+      // Statt der vier Leitungsfall-Angaben genau eine Warum-Frage: die vier
+      // Felder wurden selten gefüllt und haben die Meldung aufgebläht, ohne
+      // dass sie besser wurde (Sparring 11.08.).
+      leitung: 'offen', bmWarum: '',
       // Abhängigkeiten sind Verweise, kein Freitext: {typ:'v', id} zeigt auf
       // ein Vorhaben der Liste, {typ:'x', id} auf einen externen Eintrag im
       // gemeinsamen Register. So gibt es dasselbe Ding nie zweimal in
@@ -841,7 +888,7 @@
     // Ein Feld, das keine Priorisierungsaussage bewegt, darf keinen Steckbrief
     // unreif machen. Fehlt er, meldet das die Kapazitätsleiste (siehe kapazitaet).
     if (v.leitung === 'offen') fehlt.push('Leitungsbedarf');
-    if (IST_LEITUNGSFALL(v.leitung) && !v.lfFrage.trim()) fehlt.push('Leitungsfrage');
+    if (BM_EINGEBUNDEN(v.leitung) && !v.bmWarum.trim()) fehlt.push('BM-Begründung');
     return fehlt;
   }
   const istReif = v => luecken(v).length === 0;
@@ -850,7 +897,7 @@
   // Die Steuerungsebene ist ein eigenes Feld und wird nicht mehr mit hineingerechnet.
   function empfehlung(v) {
     if (!v.veraenderung.trim()) {
-      return { wert: 'offen', regel: 'Die angestrebte Veränderung fehlt noch. Ohne sie kann niemand priorisieren.' };
+      return { wert: 'offen', regel: 'Beschreibung und angestrebte Veränderung fehlen noch. Ohne sie kann niemand priorisieren.' };
     }
     if (v.ruhen === WAEHLEN || v.ruhen === RUHEN[5]) {
       return { wert: 'offen', regel: 'Die Folgen des Ruhenlassens sind noch offen. Erst klären, dann entscheiden.' };
@@ -878,9 +925,10 @@
   // Entscheidung sofort. Seit Entscheidung 59 werden sie zum sichtbaren Rest,
   // statt im Moment des Zugs abgefragt zu werden.
   function offenePflicht(v) {
-    // Der Leitungsfall gilt auch ohne getroffene Entscheidung: Wer ihn meldet,
-    // schuldet dem Haus die Frage (Entscheidung 18).
-    if (IST_LEITUNGSFALL(v.leitung) && !v.lfFrage.trim()) return 'leitungsfrage';
+    // Die Einbindung von BM gilt auch ohne getroffene Entscheidung: Wer sie
+    // angibt, schuldet dem Haus die Begründung (Entscheidung 18, auf die zwei
+    // BM-Stufen umgestellt im Sparring 11.08.).
+    if (BM_EINGEBUNDEN(v.leitung) && !v.bmWarum.trim()) return 'bmWarum';
     if (v.entscheidung === 'offen') return null;
     if (gewaehlt(v) === 'wartet' && !v.bedingung.trim()) return 'bedingung';
     if (weichtAb(v) && !v.begruendung.trim()) return 'begruendung';
@@ -889,7 +937,7 @@
   const OFFENE_PFLICHT = {
     bedingung: { kurz: 'Bedingung fehlt', frage: 'Was muss eintreten, damit es startet?' },
     begruendung: { kurz: 'Begründung fehlt', frage: 'Warum weicht ihr von der Empfehlung ab?' },
-    leitungsfrage: { kurz: 'Leitungsfrage fehlt', frage: 'Was soll die Leitung entscheiden?' }
+    bmWarum: { kurz: 'BM-Begründung fehlt', frage: 'Warum braucht dieses Vorhaben Rücksprache oder Freigabe durch BM?' }
   };
 
   // Steuerungsbedarf: drei Teilwerte, jeder direkt aus einer Antwort, nichts gewichtet.
@@ -897,7 +945,7 @@
   // Der Wert entscheidet nichts, er fasst zusammen und wird nie ohne seine Teile gezeigt.
   const SCORE_FOLGEN = {};
   SCORE_FOLGEN[RUHEN[4]] = 0; SCORE_FOLGEN[RUHEN[3]] = 1; SCORE_FOLGEN[RUHEN[2]] = 2; SCORE_FOLGEN[RUHEN[1]] = 3;
-  const SCORE_LEITUNG = { keine: 0, entscheidung: 1, konflikt: 2 };
+  const SCORE_LEITUNG = { keine: 0, gelegentlich: 1, regelmaessig: 2 };
   const SCORE_MAX = 6;
 
   function steuerungsbedarf(v) {
@@ -915,12 +963,12 @@
   }
 
   // Wo das Vorhaben landet. Ergibt sich aus zwei getrennten Feldern: der Entscheidung
-  // (eingeplant, wartet, abgesagt) und dem Leitungsbedarf. Niemand wählt das direkt aus.
+  // (eingeplant, wartet, eingestellt) und dem Leitungsbedarf. Niemand wählt das direkt aus.
   const PORTFOLIO = {
     haus: 'Leitungsportfolio',
     fach: 'Abteilungsportfolio',
     warte: 'Warteliste',
-    nicht: 'Abgesagt',
+    nicht: 'Eingestellt',
     offen: 'Erst klären'
   };
 
@@ -928,9 +976,9 @@
     const wahl = gewaehlt(v);
     if (wahl === 'offen') return { wert: 'offen', satz: 'Noch nicht einzuordnen, es fehlen Antworten.' };
     if (wahl === 'wartet') return { wert: 'warte', satz: 'Wartet auf die benannte Bedingung, mit Wiedervorlage.' };
-    if (wahl === 'nicht') return { wert: 'nicht', satz: 'In diesem Halbjahr bewusst abgesagt, sichtbar ausgewiesen.' };
+    if (wahl === 'nicht') return { wert: 'nicht', satz: 'Wird nicht weiterverfolgt, sichtbar ausgewiesen.' };
     if (IST_LEITUNGSFALL(v.leitung)) {
-      return { wert: 'haus', satz: 'Eingeplant und braucht die Leitung. Als Leitungsfall gemeldet, ausgewählt wird im Haus.' };
+      return { wert: 'haus', satz: 'Eingeplant, BM ist regelmäßig dran. Als Leitungsfall gemeldet, ausgewählt wird im Haus.' };
     }
     return { wert: 'fach', satz: 'Eingeplant, die Abteilung steuert es selbst.' };
   }
@@ -972,7 +1020,7 @@
   // (Entscheidung 61). Er rechnet die Kapazität nicht neu, er stellt zwei
   // Größen gegenüber:
   //   verfuegbar  das gesetzte Budget. Ohne Budget ist über Kapazität nichts zu sagen.
-  //   bedarf      was die noch nicht abgesagten Vorhaben zusammen kosten würden.
+  //   bedarf      was die nicht eingestellten Vorhaben zusammen kosten würden.
   // Warum nicht kapazitaet().gebunden: das zählt nur Eingeplantes, und in
   // Schritt 1 hat noch nichts eine Entscheidung. Die Leiste in Schritt 2 würde
   // hier also immer "es passt" sagen, egal wie viel auf dem Tisch liegt.
@@ -992,7 +1040,7 @@
     const offene = liste.filter(v => !istReif(v));
     let bedarf = 0, ohneZahl = 0;
     liste.forEach(v => {
-      // Abgesagtes kostet nichts mehr und darf den Bedarf nicht aufblähen
+      // Eingestelltes kostet nichts mehr und darf den Bedarf nicht aufblähen
       if (gewaehlt(v) === 'nicht') return;
       const wert = vzaeWert(v);
       if (wert > 0) bedarf += wert; else ohneZahl += 1;
@@ -1022,13 +1070,13 @@
   // Mit Artikel und im Nominativ, damit der Satz "Bei X fehlen ..." trägt.
   const LUECKE_LANG = {
     'Ziel': 'das Portfolioziel',
-    'Veränderung': 'die angestrebte Veränderung',
+    'Veränderung': 'die Beschreibung und angestrebte Veränderung',
     'Folgen': 'die Folgen des Ruhenlassens',
     'Chance': 'die konkrete Chance',
     'Schaden': 'der konkrete Schaden',
     'Frist': 'die betroffene Frist',
     'Leitungsbedarf': 'der Leitungsbedarf',
-    'Leitungsfrage': 'die Frage an die Leitung'
+    'BM-Begründung': 'die Begründung für die BM-Einbindung'
   };
   function lueckenText(v) {
     const teile = luecken(v).map(marke => LUECKE_LANG[marke] || marke);
@@ -1069,7 +1117,7 @@
     if (kap.ueber > 0 && gestoppt.length === 0) {
       punkte.push({
         typ: 'besprechen',
-        befund: 'Kein einziges Vorhaben steht auf "abgesagt", obwohl die Kapazität nicht reicht.',
+        befund: 'Kein einziges Vorhaben steht auf "eingestellt", obwohl die Kapazität nicht reicht.',
         frage: 'Was legt ihr weg?'
       });
     }
@@ -1102,7 +1150,7 @@
       });
     }
 
-    // Die fehlende Leitungsfrage ist wie die fehlende Bedingung ein loses Ende
+    // Die fehlende BM-Begründung ist wie die fehlende Bedingung ein loses Ende
     // an einer schon getroffenen Meldung, keine Frage für die Runde. Sie steht
     // deshalb in der Zeile "Noch offen" (Entscheidung 60).
 
@@ -1128,17 +1176,48 @@
     { wert: RUHEN[1], kopf: 'Frist oder Pflicht platzt' }
   ];
   const MX_ZEILEN = [
-    { wert: 'konflikt', kopf: 'hausweiter Konflikt' },
-    { wert: 'entscheidung', kopf: 'Entscheidung der Leitung' },
+    { wert: 'regelmaessig', kopf: 'regelmäßige Rücksprachen' },
+    { wert: 'gelegentlich', kopf: 'gelegentliche Rücksprachen oder Freigaben' },
     { wert: 'keine', kopf: 'Abteilung steuert selbst' }
   ];
   const mxEinsortierbar = v => MX_SPALTEN.some(s => s.wert === v.ruhen) && MX_ZEILEN.some(z => z.wert === v.leitung);
 
   function cleanCell(wert) { return String(wert || '').replace(/[\t\r\n]+/g, ' ').trim(); }
 
+  // Laufzeiten (Sparring 11.08.): Monate zählen als fortlaufender Index
+  // (Jahr mal 12 plus Monat), damit Spannen ohne Datumsarithmetik vergleichbar
+  // sind. Die Laufzeitenansicht braucht je Vorhaben einen belastbaren
+  // Zeitraum: Laufendes braucht nur das Ende (ein historischer Start wird
+  // nicht nacherfasst), Geplantes braucht Start und Ende. Alles andere ist
+  // "Zeitraum noch offen" und verschwindet nicht aus der Ansicht.
+  function monatsIndex(wert) {
+    const teil = /^(\d{4})-(\d{2})$/.exec(String(wert || '').trim());
+    if (!teil) return null;
+    const monat = parseInt(teil[2], 10);
+    if (monat < 1 || monat > 12) return null;
+    return parseInt(teil[1], 10) * 12 + (monat - 1);
+  }
+  const MONATE = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+  const monatsText = index => MONATE[index % 12] + ' ' + Math.floor(index / 12);
+  function zeitraum(v) {
+    const start = monatsIndex(v.startAb), ende = monatsIndex(v.endeBis);
+    if (v.laeuft === LAEUFT[1]) {
+      if (ende === null) return { art: 'offen', grund: 'das voraussichtliche Ende fehlt' };
+      return { art: 'laufend', ende };
+    }
+    if (v.laeuft === LAEUFT[2]) {
+      if (start === null && ende === null) return { art: 'offen', grund: 'Start und Ende fehlen' };
+      if (start === null) return { art: 'offen', grund: 'der geplante Start fehlt' };
+      if (ende === null) return { art: 'offen', grund: 'das voraussichtliche Ende fehlt' };
+      if (ende < start) return { art: 'offen', grund: 'das Ende liegt vor dem Start' };
+      return { art: 'geplant', start, ende };
+    }
+    return { art: 'offen', grund: 'der Stand fehlt' };
+  }
+
   function tsv(abteilung, liste, externe) {
     // Der Wert wandert nur zerlegt in die Tabelle: drei Teilspalten plus Summe
-    const kopf = ['Abteilung', 'Vorhaben', 'Ziel', 'Angestrebte Veränderung', 'Wer profitiert', 'Erste Wirkung in', 'Folgen des Ruhenlassens', 'Konkretisierung', 'VZÄ', 'Stand', 'Leitungsbedarf', 'Leitungsfrage', 'Entscheidungstermin', 'Folge des Nichtentscheidens', 'Verantwortlich', 'Hängt an', 'Punkte Folgen (0 bis 3)', 'Punkte Leitung (0 bis 2)', 'Punkte Ziel (0 bis 1)', 'Steuerungsbedarf (0 bis 6)', 'Empfehlung', 'Regel', 'Entscheidung der Abteilung', 'Portfolio (abgeleitet)', 'Begründung bei Abweichung', 'Bedingung', 'Hinweis für die Runde'];
+    const kopf = ['Abteilung', 'Vorhaben', 'Referat', 'Ziel', 'Beschreibung und angestrebte Veränderung', 'Wer profitiert', 'Erste Wirkung in', 'Folgen des Ruhenlassens', 'Konkretisierung', 'VZÄ', 'Stand', 'Geplanter Start', 'Voraussichtliches Ende', 'Leitungsbedarf', 'Begründung BM-Einbindung', 'Hängt an', 'Punkte Folgen (0 bis 3)', 'Punkte Leitung (0 bis 2)', 'Punkte Ziel (0 bis 1)', 'Steuerungsbedarf (0 bis 6)', 'Empfehlung', 'Regel', 'Entscheidung der Abteilung', 'Portfolio (abgeleitet)', 'Begründung bei Abweichung', 'Bedingung', 'Hinweis für die Runde'];
     const zeilen = liste.map(v => {
       const e = empfehlung(v);
       const s = steuerungsbedarf(v);
@@ -1146,10 +1225,11 @@
       const konkret = v.ruhen === RUHEN[3] ? v.chanceKonkret : v.ruhen === RUHEN[1] ? v.pflichtKonkret : v.ruhen === RUHEN[2] ? v.schadenKonkret : '';
       const lb = (LEITUNG.find(o => o.wert === v.leitung) || {}).text;
       const haengt = (v.haengtAn || []).map(a => abhName(a, liste, externe)).filter(Boolean).join('; ');
-      return [abteilung, v.name, v.ziel === WAEHLEN ? '' : v.ziel, v.veraenderung,
+      return [abteilung, v.name, v.referat, v.ziel === WAEHLEN ? '' : v.ziel, v.veraenderung,
         v.reichweite === WAEHLEN ? '' : v.reichweite, v.wirkungAb === WAEHLEN ? '' : v.wirkungAb,
         v.ruhen === WAEHLEN ? '' : v.ruhen, konkret, v.vzae, v.laeuft === WAEHLEN ? '' : v.laeuft,
-        v.leitung === 'offen' ? '' : lb, v.lfFrage, v.lfTermin, v.lfFolge, v.lfWer, haengt,
+        v.startAb, v.endeBis,
+        v.leitung === 'offen' ? '' : lb, BM_EINGEBUNDEN(v.leitung) ? v.bmWarum : '', haengt,
         punkt(0), punkt(1), punkt(2), s.vollstaendig ? s.summe : '',
         ENTSCHEIDUNG[e.wert], e.regel, ENTSCHEIDUNG[gewaehlt(v)], PORTFOLIO[portfolio(v).wert],
         weichtAb(v) ? v.begruendung : '', gewaehlt(v) === 'wartet' ? v.bedingung : '', v.hinweis
@@ -1165,19 +1245,19 @@
 
   function beispieldaten() {
     const roh = [
-      { name: 'Digitale Antragsstrecke Wohngeld', ziel: 'Einfach Digital', veraenderung: 'Die häufigsten Wohngeld-Fälle kommen vollständig digital an, die Sachbearbeitung entscheidet ohne Rückfragen.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[2], schadenKonkret: 'Antragstellende warten weiter sechs Wochen auf ihren Bescheid, ein Drittel der Fälle braucht eine Rückfrage.', vzae: '2', laeuft: LAEUFT[1], leitung: 'entscheidung', lfFrage: 'Geht die Strecke vor der Registeranbindung live oder danach?', lfTermin: 'Oktober 2026', lfFolge: 'Ohne Entscheidung steht die Entwicklung ab November still.', lfWer: 'AL Z', haengtAn: [{ typ: 'v', id: 'v2' }] },
-      { name: 'Registeranbindung Meldewesen', ziel: 'Der neue Standard', veraenderung: 'Die Fachverfahren beziehen Meldedaten automatisch, niemand reicht mehr Meldebescheinigungen ein.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[1], pflichtKonkret: 'Gesetzliche Anbindungsfrist Ende März 2027.', vzae: '1,5', laeuft: LAEUFT[1], leitung: 'keine', haengtAn: [{ typ: 'x', id: 'x1' }] },
-      { name: 'Interner KI-Leitfaden', ziel: 'Besser KI', veraenderung: 'Referate nutzen die freigegebenen KI-Werkzeuge für Entwürfe, ohne die Zulässigkeit jedes Mal neu zu prüfen.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[3], chanceKonkret: 'Weniger Schatten-KI: die Freigabe-Anfragen an den Datenschutz sinken, weil der Leitfaden die Standardfälle klärt.', vzae: '0,5', laeuft: LAEUFT[1], leitung: 'keine' },
-      { name: 'Datenkooperation mit den Ländern', ziel: 'Der neue Standard', veraenderung: 'Bund und Länder tauschen Verfahrensdaten über eine gemeinsame Schnittstelle statt über Listen per Mail.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[2], schadenKonkret: 'Die Länder schicken Verfahrensdaten weiter als Listen per Mail, jede Auswertung kostet Wochen.', vzae: '2', laeuft: LAEUFT[2], leitung: 'konflikt', lfFrage: 'Wer trägt den Betrieb der Schnittstelle, Bund oder die Länder gemeinsam?', lfTermin: 'Klausur Ende September', lfFolge: 'Ohne Klärung startet das Vorhaben nicht, die Länder warten seit Mai.', lfWer: 'St', entscheidung: 'wartet', bedingung: 'Wird aktiv, sobald die Schnittstellen-Stelle nachbesetzt ist.' },
-      { name: 'Ausstellungsfläche Digitalprojekte im Foyer', ziel: OHNE_ZIEL, veraenderung: 'Besuchergruppen sehen im Foyer laufende Digitalprojekte des Hauses.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[4], vzae: '1', laeuft: LAEUFT[1], leitung: 'keine' },
+      { name: 'Digitale Antragsstrecke Wohngeld', ziel: 'Einfach Digital', referat: 'X II 2', veraenderung: 'Die häufigsten Wohngeld-Fälle kommen vollständig digital an, die Sachbearbeitung entscheidet ohne Rückfragen.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[2], schadenKonkret: 'Antragstellende warten weiter sechs Wochen auf ihren Bescheid, ein Drittel der Fälle braucht eine Rückfrage.', vzae: '2', laeuft: LAEUFT[1], endeBis: '2027-03', leitung: 'regelmaessig', bmWarum: 'Der Livegang hängt an der Reihenfolge mit der Registeranbindung, BM begleitet die Strecke eng.', haengtAn: [{ typ: 'v', id: 'v2' }] },
+      { name: 'Registeranbindung Meldewesen', ziel: 'Der neue Standard', referat: 'X II 1', veraenderung: 'Die Fachverfahren beziehen Meldedaten automatisch, niemand reicht mehr Meldebescheinigungen ein.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[1], pflichtKonkret: 'Gesetzliche Anbindungsfrist Ende März 2027.', vzae: '1,5', laeuft: LAEUFT[1], endeBis: '2027-03', leitung: 'keine', haengtAn: [{ typ: 'x', id: 'x1' }] },
+      { name: 'Interner KI-Leitfaden', ziel: 'Besser KI', referat: 'X I 3', veraenderung: 'Referate nutzen die freigegebenen KI-Werkzeuge für Entwürfe, ohne die Zulässigkeit jedes Mal neu zu prüfen.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[3], chanceKonkret: 'Weniger Schatten-KI: die Freigabe-Anfragen an den Datenschutz sinken, weil der Leitfaden die Standardfälle klärt.', vzae: '0,5', laeuft: LAEUFT[1], endeBis: '2026-12', leitung: 'keine' },
+      { name: 'Datenkooperation mit den Ländern', ziel: 'Der neue Standard', referat: 'X II 1', veraenderung: 'Bund und Länder tauschen Verfahrensdaten über eine gemeinsame Schnittstelle statt über Listen per Mail.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[2], schadenKonkret: 'Die Länder schicken Verfahrensdaten weiter als Listen per Mail, jede Auswertung kostet Wochen.', vzae: '2', laeuft: LAEUFT[2], startAb: '2026-11', endeBis: '2027-10', leitung: 'regelmaessig', bmWarum: 'Das Betriebsmodell der Schnittstelle ist zwischen Bund und Ländern strittig, ohne Klärung mit BM startet nichts.', entscheidung: 'wartet', bedingung: 'Wird aktiv, sobald die Schnittstellen-Stelle nachbesetzt ist.' },
+      { name: 'Ausstellungsfläche Digitalprojekte im Foyer', ziel: OHNE_ZIEL, referat: 'X I 3', veraenderung: 'Besuchergruppen sehen im Foyer laufende Digitalprojekte des Hauses.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[4], vzae: '1', laeuft: LAEUFT[1], endeBis: '2026-10', leitung: 'keine' },
       { name: 'Cloud-Pilot Fachverfahren', ziel: 'Einfach Digital', veraenderung: 'Ein Fachverfahren läuft produktiv in der Verwaltungscloud, Betriebserfahrung liegt vor.', ruhen: RUHEN[5], vzae: '1', laeuft: LAEUFT[2], leitung: 'offen' },
-      { name: 'Servicestandard für Förderanträge', ziel: 'Die große Entlastung', veraenderung: 'Antragstellende erhalten in allen Förderprogrammen dieselbe Rückmeldefrist und denselben Statusverlauf.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], chanceKonkret: 'Die Zahl der Nachfragen zum Bearbeitungsstand sinkt messbar, weil der Status sichtbar ist.', vzae: '1,5', laeuft: LAEUFT[2], leitung: 'keine', haengtAn: [{ typ: 'v', id: 'v4' }] },
-      { name: 'Evaluierung Beteiligungsplattform', ziel: 'Schlanker, bürgernaher Staat', veraenderung: 'Das Haus weiß belastbar, ob die Plattform genutzt wird und ob sich der Betrieb lohnt.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], chanceKonkret: 'Die Entscheidung über Weiterbetrieb oder Abschaltung wird belegbar statt Bauchgefühl.', vzae: '0,5', laeuft: LAEUFT[2], leitung: 'keine' },
-      { name: 'Bundesweites Förderportal', ziel: 'Einfach Digital', veraenderung: 'Antragstellende finden Förderprogramme, reichen Unterlagen ein und sehen den Bearbeitungsstand an einer Stelle.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[3], chanceKonkret: 'Förderanträge kommen vollständiger an, und Antragstellende fragen seltener nach dem Bearbeitungsstand.', vzae: '1', laeuft: LAEUFT[2], leitung: 'keine', haengtAn: [{ typ: 'v', id: 'v2' }, { typ: 'v', id: 'v4' }] }
+      { name: 'Servicestandard für Förderanträge', ziel: 'Die große Entlastung', referat: 'X II 2', veraenderung: 'Antragstellende erhalten in allen Förderprogrammen dieselbe Rückmeldefrist und denselben Statusverlauf.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], chanceKonkret: 'Die Zahl der Nachfragen zum Bearbeitungsstand sinkt messbar, weil der Status sichtbar ist.', vzae: '1,5', laeuft: LAEUFT[2], startAb: '2026-10', endeBis: '2027-06', leitung: 'gelegentlich', bmWarum: 'Der Standard braucht vor Veröffentlichung eine Freigabe durch BM.', haengtAn: [{ typ: 'v', id: 'v4' }] },
+      { name: 'Evaluierung Beteiligungsplattform', ziel: 'Schlanker, bürgernaher Staat', referat: 'X I 3', veraenderung: 'Das Haus weiß belastbar, ob die Plattform genutzt wird und ob sich der Betrieb lohnt.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], chanceKonkret: 'Die Entscheidung über Weiterbetrieb oder Abschaltung wird belegbar statt Bauchgefühl.', vzae: '0,5', laeuft: LAEUFT[2], startAb: '2027-01', endeBis: '2027-04', leitung: 'keine' },
+      { name: 'Bundesweites Förderportal', ziel: 'Einfach Digital', referat: 'X II 1', veraenderung: 'Antragstellende finden Förderprogramme, reichen Unterlagen ein und sehen den Bearbeitungsstand an einer Stelle.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[3], chanceKonkret: 'Förderanträge kommen vollständiger an, und Antragstellende fragen seltener nach dem Bearbeitungsstand.', vzae: '1', laeuft: LAEUFT[2], startAb: '2027-01', endeBis: '2028-12', leitung: 'keine', haengtAn: [{ typ: 'v', id: 'v2' }, { typ: 'v', id: 'v4' }] }
     ];
     return {
       v: 3,
-      abteilung: 'Abteilung Z (fiktive Beispieldaten)',
+      abteilung: 'Abteilung X',
       verfuegbar: '5',
       // Externe Abhängigkeiten leben einmal im Register, Vorhaben verweisen darauf
       externe: [{ id: 'x1', name: 'Registermodernisierung des Bundes' }],
@@ -1189,7 +1269,7 @@
   // entsprechen, was man beim Einstieg sieht. abhAktivId ist bewusst vom
   // Entscheidungspanel getrennt: eine Kachel im Portfolio zeigt Beziehungen,
   // sie fordert keine Eingabe an und verändert die Scrollposition nicht.
-  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, abhAktivId = null, ziehId = null, klickNachZugId = null, quittung = null, quittungUhr = null, naechste = 1, naechsteExtern = 1;
+  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, abhAktivId = null, ziehId = null, klickNachZugId = null, quittung = null, quittungUhr = null, naechste = 1, naechsteExtern = 1, lzReferat = 'alle';
 
   function laden() {
     try {
@@ -1205,6 +1285,34 @@
           S.vorhaben = S.vorhaben.map(v => Object.assign(neuesVorhaben(v.id, v.name), v));
           // Gespeicherte Staende aus der Fassung mit "zur Kenntnis" auf "keine" ziehen
           S.vorhaben.forEach(v => { if (v.leitung === 'kenntnis') v.leitung = 'keine'; });
+          // Die Leitungsfall-Achse ist seit dem Sparring 11.08. die BM-Einbindung.
+          // "Entscheidung der Hausleitung" war die schwächere der beiden alten
+          // Antworten, "hausweiter Konflikt" die stärkere, also wandern sie auf
+          // gelegentlich und regelmaessig. Die alte Frage an die Leitung ist die
+          // Begründung von heute. Termin, Zuständigkeit und Folge haben kein Feld
+          // mehr; sie stillschweigend wegzuwerfen wäre Datenverlust, deshalb
+          // hängen sie an den Hinweis für die Runde an.
+          S.vorhaben.forEach(v => {
+            if (v.leitung === 'entscheidung') v.leitung = 'gelegentlich';
+            else if (v.leitung === 'konflikt') v.leitung = 'regelmaessig';
+            if (!v.bmWarum.trim() && String(v.lfFrage || '').trim()) v.bmWarum = String(v.lfFrage).trim();
+            const reste = [
+              String(v.lfTermin || '').trim() ? 'Termin: ' + String(v.lfTermin).trim() : '',
+              String(v.lfWer || '').trim() ? 'Entscheidet: ' + String(v.lfWer).trim() : '',
+              String(v.lfFolge || '').trim() ? 'Ohne Entscheidung: ' + String(v.lfFolge).trim() : ''
+            ].filter(Boolean).join(' · ');
+            if (reste && !v.hinweis.includes(reste)) {
+              v.hinweis = (v.hinweis.trim() ? v.hinweis.trim() + ' · ' : '') + reste;
+            }
+            if (v.hinweis.length > 240) v.hinweis = v.hinweis.slice(0, 240);
+            delete v.lfFrage; delete v.lfTermin; delete v.lfWer; delete v.lfFolge;
+          });
+          // Die fiktive Abteilung heißt seit 11.08. schlicht "Abteilung X".
+          // Nur die exakten Beispielwerte wandern mit, eigene Eingaben nicht.
+          if (S.abteilung === 'Abteilung Z (fiktive Beispieldaten)') S.abteilung = 'Abteilung X';
+          S.vorhaben.forEach(v => {
+            if (['Z I 3', 'Z II 1', 'Z II 2'].includes(v.referat)) v.referat = 'X' + v.referat.slice(1);
+          });
         }
       }
     } catch (fehler) { S = null; }
@@ -1290,33 +1398,16 @@
     return { wort: 'Aufschub unkritisch', satz: 'Laut Steckbrief würde das Vorhaben auch dauerhaft kaum fehlen.' };
   }
 
-  // Rechts daneben: was die Runde in Schritt 2 daraus gemacht hat. Die
-  // Kapazitätsspalte ist raus, sie hat Block 4 wörtlich wiederholt. Der
-  // Steuerungsbedarf ist raus, er vergleicht, und hier steht nur ein Vorhaben.
-  // Er bleibt im Entscheidungspanel in Schritt 2.
+  // Das zweite Feld "Entscheidung der Runde" ist raus (Sparring 11.08.): es
+  // hat in Schritt 1 nur wiederholt, was in Schritt 2 entschieden wird, und
+  // damit die Abwägung verdrängt. Übrig bleibt genau der Hinweis, den die
+  // Erfassung braucht.
   function ablesungHtml(v) {
     const a = abwaegung(v);
-    const offen = v.entscheidung === 'offen';
     return `<div class="ab-feld">
         <p class="empf-label">Hinweis für die Abwägung</p>
         <p class="ab-wort ${a.offen ? 'offen' : ''}">${esc(a.wort)}</p>
         <p class="empf-regel">${esc(a.satz)}</p>
-      </div>
-      <div class="ab-feld">
-        <p class="empf-label">Entscheidung der Runde</p>
-        ${offen
-          ? `<p class="ab-wort offen">noch nicht entschieden</p>
-             <p class="empf-regel">Fällt in Schritt 2, wenn alle Vorhaben nebeneinander liegen.</p>`
-          : (() => {
-              // "abgesagt, also Abgesagt" stand dreimal fast dasselbe da. Der Korb
-              // wird nur genannt, wenn er mehr sagt als die Entscheidung selbst,
-              // und der Erklärsatz entfällt: das Wort trägt sich (Entscheidung 66).
-              const wort = ENTSCHEIDUNG[v.entscheidung];
-              const korb = PORTFOLIO[portfolio(v).wert];
-              const neuerName = korb.toLowerCase() !== wort.toLowerCase();
-              return `<p class="ab-wort">${esc(neuerName ? wort + ', also ' + korb : wort)}</p>
-             ${weichtAb(v) ? `<p class="ab-abweichung">Weicht von der Empfehlung ab${v.begruendung.trim() ? ': ' + esc(v.begruendung) : '.'}</p>` : ''}`;
-            })()}
       </div>`;
   }
 
@@ -1384,7 +1475,7 @@
   // Welches Feld die erste Lücke ist. Hinführen heißt: nicht suchen lassen.
   const LUECKE_FELD = {
     'Ziel': 'ziel', 'Veränderung': 'veraenderung', 'Folgen': 'ruhen',
-    'Leitungsbedarf': 'leitung', 'Leitungsfrage': 'lfFrage'
+    'Leitungsbedarf': 'leitung', 'BM-Begründung': 'bmWarum'
   };
   function zumSteckbrief(id) {
     offenId = id;
@@ -1426,7 +1517,9 @@
       wurzel.innerHTML = steckbriefLeer();
       return;
     }
-    const lf = IST_LEITUNGSFALL(v.leitung);
+    // Beide BM-Stufen verlangen dieselbe eine Begründung, nur "selbst steuern"
+    // und "noch offen" fragen nichts (Sparring 11.08.).
+    const bm = BM_EINGEBUNDEN(v.leitung);
 
     wurzel.innerHTML = `<div class="steckbrief">
       <div class="sb-kopf">
@@ -1441,16 +1534,28 @@
                woraus der Block besteht. Hilfe steht nur, wo sie das
                Antwortverhalten ändert (Entscheidung 43). -->
           <span class="frage">Worum geht es, und worauf zahlt es ein?</span>
+          <!-- Ganz oben bei den grundlegenden Angaben (Sparring 11.08.): das
+               federführende Referat, als Freitext mit Vorschlägen aus den
+               schon erfassten Referaten. Keine Pflichtangabe, die
+               Laufzeitenansicht ist danach filterbar. -->
+          <div class="feld">
+            <label for="referat">Federführendes Referat</label>
+            <input type="text" class="mittel" id="referat" data-id="${v.id}" data-feld="referat" maxlength="40" list="referatListe" autocomplete="off" value="${esc(v.referat)}">
+            <datalist id="referatListe">${[...new Set(S.vorhaben.map(x => x.referat.trim()).filter(Boolean))].map(r => `<option value="${esc(r)}"></option>`).join('')}</datalist>
+          </div>
           <div class="feld">
             <label for="ziel">Ziel des Hauses</label>
             <p class="feld-hilfe">"Kein Ziel erkennbar" ist eine zulässige Antwort.</p>
             <select id="ziel" data-id="${v.id}" data-feld="ziel">${optionen(ZIEL_OPTIONEN, v.ziel)}</select>
           </div>
           <div class="feld">
-            <!-- "für wen" fragt seit v3 Block 2, hier stand es doppelt -->
-            <label for="veraenderung">Angestrebte Veränderung</label>
-            <p class="feld-hilfe">Ein Zustand, kein Ding: Was machen Menschen künftig anders?</p>
+            <!-- "für wen" fragt seit v3 Block 2, hier stand es doppelt.
+                 Seit 11.08. fragt das Feld Beschreibung und Veränderung zusammen:
+                 im Sparring war unklar, wo das Worum-geht-es hingehört. -->
+            <label for="veraenderung">Beschreibung und angestrebte Veränderung</label>
+            <p class="feld-hilfe">Worum geht es, und was machen oder erleben Menschen dadurch künftig anders?</p>
             <textarea id="veraenderung" data-id="${v.id}" data-feld="veraenderung" maxlength="240">${esc(v.veraenderung)}</textarea>
+            ${v.veraenderung.trim() ? '' : `<p class="feld-hilfe wv-hinweis">Neues Vorhaben? Das Denkwerkzeug <a href="https://julelabs.github.io/wirkungswerkstatt/wirkungsversprechen.html" target="_blank" rel="noopener">Wirkungsversprechen</a> zeigt die Logik hinter dieser Frage. Es ist ein ungetesteter Prototyp, keine abgestimmte Vorgabe des Hauses.</p>`}
           </div>
         </div>
       </div>
@@ -1503,42 +1608,43 @@
               <select id="laeuft" data-id="${v.id}" data-feld="laeuft">${optionen(LAEUFT, v.laeuft)}</select>
             </div>
           </div>
+          <!-- Die Zeitangaben folgen dem Stand (Sparring 11.08.): Laufendes
+               erfasst nur das voraussichtliche Ende, ein historischer Start
+               wird nicht nacherfasst. Geplantes erfasst Start und Ende.
+               Monatsgenau, keine Tage. -->
+          ${v.laeuft === LAEUFT[2] ? `<div class="zeile2">
+            <div class="feld">
+              <label for="startAb">Geplanter Start (Monat)</label>
+              <input type="month" class="mittel" id="startAb" data-id="${v.id}" data-feld="startAb" value="${esc(v.startAb)}">
+            </div>
+            <div class="feld">
+              <label for="endeBis">Voraussichtliches Ende (Monat)</label>
+              <input type="month" class="mittel" id="endeBis" data-id="${v.id}" data-feld="endeBis" value="${esc(v.endeBis)}">
+            </div>
+          </div>` : ''}
+          ${v.laeuft === LAEUFT[1] ? `<div class="feld">
+            <label for="endeBis">Voraussichtliches Ende (Monat)</label>
+            <p class="feld-hilfe">Grob geschätzt genügt, die Laufzeitenansicht liest daraus den Balken.</p>
+            <input type="month" class="mittel" id="endeBis" data-id="${v.id}" data-feld="endeBis" value="${esc(v.endeBis)}">
+          </div>` : ''}
         </div>
       </div>
 
       <div class="block">
         <span class="block-nr">5</span>
         <div>
-          <span class="frage">Braucht es dafür die Hausleitung?</span>
-          <p class="hilfe">Nicht "ist es wichtig", sondern: liegt eine Entscheidung an, die nur die Leitung treffen kann. Alles andere steuert die Abteilung selbst.</p>
+          <span class="frage">Wie ist BM eingebunden?</span>
+          <p class="hilfe">Nicht "ist es wichtig": Braucht das Vorhaben Rücksprachen oder Freigaben durch BM? Alles andere steuert die Abteilung selbst.</p>
           <div class="feld">
             <select id="leitung" data-id="${v.id}" data-feld="leitung">
               ${LEITUNG.map(o => `<option value="${o.wert}" ${o.wert === v.leitung ? 'selected' : ''}>${esc(o.text)}</option>`).join('')}
             </select>
           </div>
-        ${lf ? `<div class="lf-kasten">
-          <p class="lf-titel">Leitungsfall</p>
-          <p class="lf-sub">Vier Angaben, damit die Hausleitung entscheiden kann.</p>
-          <div class="feld">
-            <label for="lfFrage">Die Frage an die Hausleitung, in einem Satz</label>
-            <input type="text" id="lfFrage" data-id="${v.id}" data-feld="lfFrage" maxlength="240" value="${esc(v.lfFrage)}">
-            ${v.lfFrage.trim() ? '' : '<p class="fehlt">Ohne Frage ist es kein Leitungsfall.</p>'}
-          </div>
-          <div class="zeile2">
-            <div class="feld">
-              <label for="lfTermin">Bis wann wird die Entscheidung gebraucht</label>
-              <input type="text" id="lfTermin" data-id="${v.id}" data-feld="lfTermin" maxlength="60" value="${esc(v.lfTermin)}">
-            </div>
-            <div class="feld">
-              <label for="lfWer">Wer entscheidet</label>
-              <input type="text" id="lfWer" data-id="${v.id}" data-feld="lfWer" maxlength="60" value="${esc(v.lfWer)}">
-            </div>
-          </div>
-          <div class="feld">
-            <label for="lfFolge">Was passiert, wenn nicht entschieden wird</label>
-            <input type="text" id="lfFolge" data-id="${v.id}" data-feld="lfFolge" maxlength="240" value="${esc(v.lfFolge)}">
-          </div>
-        </div>` : ''}
+        ${bm ? `<div class="feld">
+            <label for="bmWarum">Warum braucht dieses Vorhaben Rücksprache oder Freigabe durch BM?</label>
+            <input type="text" id="bmWarum" data-id="${v.id}" data-feld="bmWarum" maxlength="240" value="${esc(v.bmWarum)}">
+            ${v.bmWarum.trim() ? '' : '<p class="fehlt">Begründung fehlt noch.</p>'}
+          </div>` : ''}
         </div>
       </div>
 
@@ -1760,8 +1866,11 @@
     const zellen = MX_ZEILEN.map((zeile, zi) => {
       const felder = MX_SPALTEN.map((spalte, si) => {
         const inhalt = sortiert(S.vorhaben.filter(v => v.ruhen === spalte.wert && v.leitung === zeile.wert));
-        // Oben rechts: Leitung muss steuern und Ruhenlassen kostet etwas.
-        const haus = zi <= 1 && si >= 2;
+        // Oben rechts: BM ist regelmäßig dran und Ruhenlassen kostet etwas.
+        // Die Zeile wird nicht mehr über ihren Index bestimmt, sondern über
+        // IST_LEITUNGSFALL: sonst müsste die Markierung jedes Mal nachgezogen
+        // werden, wenn sich die Zahl der Zeilen ändert (Sparring 11.08.).
+        const haus = IST_LEITUNGSFALL(zeile.wert) && si >= 2;
         // Jede Zelle steht explizit im Raster. Die Zone unten ist ein eigenes
         // Rasterfeld, und ein fest platziertes Feld würde die automatische
         // Verteilung sonst verschieben.
@@ -1774,21 +1883,21 @@
       ? 'Zurzeit liegt dort kein Vorhaben.'
       : drin.length === inZone.length
         ? `Alle ${inZone.length} sind eingeplant und gehen damit als Leitungsfall ins Leitungsportfolio.`
-        : `${drin.length} von ${inZone.length} sind eingeplant und gehen damit ins Leitungsportfolio, der Rest wartet oder ist bewusst abgesagt.`;
+        : `${drin.length} von ${inZone.length} sind eingeplant und gehen damit ins Leitungsportfolio, der Rest wartet oder ist eingestellt.`;
 
     wurzel.innerHTML = `
       <p class="mx-achse-x">Folgen des Ruhenlassens &rarr;</p>
       <div class="mx-scroll">
-        <div class="matrix" role="table" aria-label="Vorhaben nach Kosten des Ruhenlassens und Entscheidungsbedarf">
+        <div class="matrix" role="table" aria-label="Vorhaben nach Kosten des Ruhenlassens und Einbindung von BM">
           <div class="mx-reihe" role="row">
-            <div class="mx-kopf leer" role="columnheader" style="grid-column:1; grid-row:1">Wer muss entscheiden?</div>
+            <div class="mx-kopf leer" role="columnheader" style="grid-column:1; grid-row:1">Wie ist BM eingebunden?</div>
             ${MX_SPALTEN.map((s, si) => `<div class="mx-kopf" role="columnheader" style="grid-column:${si + 2}; grid-row:1">${esc(s.kopf)}</div>`).join('')}
           </div>
           ${zellen}
           <div class="mx-zone" aria-hidden="true"><span>Kandidaten fürs Leitungsportfolio</span></div>
         </div>
       </div>
-      <p class="mx-lese"><strong>So liest sich das Bild:</strong> Auf der Diagonale von oben rechts nach unten links passt beides zusammen. Im umrandeten Feld muss die Leitung steuern und Liegenlassen kostet etwas, das sind die Kandidaten fürs Leitungsportfolio. ${esc(zonenSatz)} Unten links muss niemand entscheiden, und es würde auch dauerhaft kaum fehlen. Die Fragen stecken in den anderen zwei Ecken: Oben links ist etwas als Leitungsfall gemeldet, obwohl Ruhenlassen kaum auffallen würde. Unten rechts trägt die Abteilung eine Frist oder einen Schaden allein.</p>
+      <p class="mx-lese"><strong>So liest sich das Bild:</strong> Auf der Diagonale von oben rechts nach unten links passt beides zusammen. Im umrandeten Feld ist BM regelmäßig dran und Liegenlassen kostet etwas, das sind die Kandidaten fürs Leitungsportfolio. ${esc(zonenSatz)} Unten links braucht es BM nicht, und es würde auch dauerhaft kaum fehlen. Die Fragen stecken in den anderen zwei Ecken: Oben links ist BM regelmäßig eingebunden, obwohl Ruhenlassen kaum auffallen würde. Unten rechts trägt die Abteilung eine Frist oder einen Schaden allein.</p>
       ${offen.length ? `<div class="mx-offen">
         <p class="mx-offen-kopf">Noch nicht einsortierbar · ${offen.length}</p>
         <div class="mx-offen-body">${sortiert(offen).map(v => kachel(v)).join('')}</div>
@@ -1813,13 +1922,13 @@
   }
 
   // Die Portfolio-Sicht ist die gefaltete Schwester der Matrix (Entscheidung
-  // 46): gleiche Grammatik, keine künstlichen Zellen. "Wartet" und "abgesagt"
+  // 46): gleiche Grammatik, keine künstlichen Zellen. "Wartet" und "eingestellt"
   // führen unabhängig vom Leitungsbedarf in ihren Korb, ihre Zellen
   // überspannen deshalb beide Zeilen. Nur "eingeplant" teilt sich danach, wer
   // steuert. Die Verbindlichkeit steigt nach rechts, wie in der Matrix die
   // Folgen: der Aufmerksamkeitsort oben rechts ist das Leitungsportfolio.
   const PF_SPALTEN = [
-    { wahl: 'nicht', sub: 'in diesem Halbjahr bewusst abgesagt' },
+    { wahl: 'nicht', sub: 'wird nicht weiterverfolgt' },
     { wahl: 'wartet', sub: 'wird aktiv, wenn die benannte Bedingung eintritt' },
     { wahl: 'prio', sub: 'bindet Kapazität im nächsten Halbjahr', gebunden: true }
   ];
@@ -1974,7 +2083,8 @@
 
     const offen = imKorb('offen');
     document.getElementById('bildKoerper').innerHTML = `
-      <p class="mx-achse-x pf-achse-x">Entscheidung der Abteilung &rarr;</p>
+      <!-- Die Achsenüberschrift "Entscheidung der Abteilung" ist raus (Sparring
+           11.08.): die Spaltenköpfe erklären die Ansicht bereits selbst. -->
       <p class="abh-info" aria-live="polite">
         <span>${fokus ? esc(abhaengigkeitsSatz(fokus)) : '<strong>Abhängigkeiten:</strong> Ein Vorhaben anklicken, um seine direkten Verbindungen zu sehen.'}</span>
         <span class="abh-info-meta">${fokus ? 'Erneut anklicken setzt die Auswahl zurück.' : 'Pfeile zeigen auf die Voraussetzung.'}</span>
@@ -2004,8 +2114,94 @@
   // Drei Sichten zeigen dasselbe Portfolio anders angeordnet, deshalb tragen sie
   // denselben Titel. "Steuerung prüfen" ist keine vierte Anordnung, sondern eine
   // Frage an die Daten, also stellt die Überschrift sie (Entscheidung 65).
+  /* ---------- Sicht: Laufzeiten (Sparring 11.08.) ---------- */
+
+  // Der Horizont beginnt im aktuellen Monat und zeigt 24 Monate. Das ist die
+  // vorläufige Antwort auf die offene Frage nach Standardhorizont und
+  // Granularität: Monatsraster mit Quartalsmarken, keine Tage. Eine
+  // Übersicht, keine Projektplanung und keine Ressourcenplanung über die Zeit.
+  const LZ_MONATE = 24;
+
+  function renderLaufzeiten() {
+    const heute = new Date();
+    const h0 = heute.getFullYear() * 12 + heute.getMonth();
+    const referate = [...new Set(S.vorhaben.map(v => v.referat.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'de'));
+    if (lzReferat !== 'alle' && lzReferat !== 'ohne' && !referate.includes(lzReferat)) lzReferat = 'alle';
+    const gefiltert = S.vorhaben.filter(v => lzReferat === 'alle'
+      || (lzReferat === 'ohne' ? !v.referat.trim() : v.referat.trim() === lzReferat));
+    const mitZeit = gefiltert.map(v => ({ v, z: zeitraum(v) }));
+    const balken = mitZeit.filter(e => e.z.art !== 'offen');
+    const offene = mitZeit.filter(e => e.z.art === 'offen');
+    // Laufendes zuerst nach Ende, dann Geplantes nach Start: so liest sich die
+    // Fläche von "bindet heute" nach "kommt später".
+    balken.sort((a, b) => {
+      const sa = a.z.art === 'laufend' ? -1 : a.z.start, sb = b.z.art === 'laufend' ? -1 : b.z.start;
+      return sa - sb || a.z.ende - b.z.ende || a.v.name.localeCompare(b.v.name, 'de');
+    });
+
+    // Quartalsmarken beginnen am nächsten Quartalsanfang, das Monatsraster
+    // der Spuren ist auf denselben Versatz geschoben.
+    const versatz = (3 - (h0 % 3)) % 3;
+    const marken = [];
+    for (let m = versatz; m < LZ_MONATE; m += 3) {
+      const abs = h0 + m;
+      marken.push(`<span class="lz-q" style="left:${(m / LZ_MONATE * 100).toFixed(3)}%">Q${Math.floor((abs % 12) / 3) + 1} ${Math.floor(abs / 12)}</span>`);
+    }
+    const rasterStil = `background-image: repeating-linear-gradient(to right, var(--line) 0 1px, transparent 1px ${(3 / LZ_MONATE * 100).toFixed(3)}%); background-position-x: ${(versatz / LZ_MONATE * 100).toFixed(3)}%;`;
+
+    const zeile = e => {
+      const { v, z } = e;
+      const wahl = gewaehlt(v);
+      const von = z.art === 'laufend' ? 0 : Math.max(0, Math.min(z.start - h0, LZ_MONATE - 1));
+      const bisRoh = z.ende - h0 + 1;
+      const bis = Math.max(von + 1, Math.min(bisRoh, LZ_MONATE));
+      const endeVorbei = bisRoh <= 0;
+      const startSpaeter = z.art === 'geplant' && z.start - h0 > LZ_MONATE - 1;
+      const klassen = ['lz-balken', wahl,
+        z.art === 'laufend' ? 'lz-anfang-offen' : '',
+        bisRoh > LZ_MONATE || startSpaeter ? 'lz-ende-offen' : ''].filter(Boolean).join(' ');
+      const text = z.art === 'laufend'
+        ? 'läuft, voraussichtlich bis ' + monatsText(z.ende)
+        : monatsText(z.start) + ' bis ' + monatsText(z.ende);
+      const warnung = endeVorbei ? ' · das Ende liegt in der Vergangenheit' : '';
+      return `<div class="lz-zeile">
+        <div><p class="lz-name">${esc(v.name)}</p>
+          <span class="lz-meta">${esc((v.referat.trim() ? v.referat.trim() + ' · ' : '') + text + warnung)}</span></div>
+        <div class="lz-spur" style="${rasterStil}">
+          <span class="${klassen}" style="left:${(von / LZ_MONATE * 100).toFixed(3)}%; width:${((bis - von) / LZ_MONATE * 100).toFixed(3)}%" title="${esc(v.name + ': ' + text)}"></span>
+        </div>
+      </div>`;
+    };
+
+    document.getElementById('bildKoerper').innerHTML = `
+      <div class="lz-steuer">
+        <label for="lzReferat">Referat</label>
+        <select id="lzReferat">
+          <option value="alle" ${lzReferat === 'alle' ? 'selected' : ''}>alle Referate</option>
+          ${referate.map(r => `<option value="${esc(r)}" ${lzReferat === r ? 'selected' : ''}>${esc(r)}</option>`).join('')}
+          <option value="ohne" ${lzReferat === 'ohne' ? 'selected' : ''}>ohne Referat</option>
+        </select>
+      </div>
+      <div class="lz-zeile lz-achse" aria-hidden="true">
+        <span class="lz-heute">ab heute (${monatsText(h0)})</span>
+        <div class="lz-spur" style="${rasterStil}">${marken.join('')}</div>
+      </div>
+      ${balken.length ? balken.map(zeile).join('') : `<p class="lz-leer">Kein Vorhaben mit Zeitangaben${lzReferat === 'alle' ? '' : ' in diesem Referat'}.</p>`}
+      <p class="mx-lese"><strong>So liest sich das Bild:</strong> Eine Zeile pro Vorhaben, der Balken reicht vom geplanten Start bis zum voraussichtlichen Ende. Was schon läuft, kommt offen vom linken Rand; was über die ${LZ_MONATE} Monate hinausreicht, läuft rechts offen weiter. Die Farben sind die der Entscheidungen oben.</p>
+      ${offene.length ? `<div class="mx-offen">
+        <p class="mx-offen-kopf">Zeitraum noch offen · ${offene.length}</p>
+        <p class="lane-sub">Diese Vorhaben verschwinden nicht aus der Ansicht, es fehlen nur Zeitangaben im Steckbrief.</p>
+        ${offene.map(e => `<p class="lz-offen-zeile"><strong>${esc(e.v.name)}</strong> · ${esc(e.z.grund)}</p>`).join('')}
+      </div>` : ''}`;
+    document.getElementById('lzReferat').addEventListener('change', ev => {
+      lzReferat = ev.target.value;
+      renderBild();
+    });
+  }
+
   const SICHT_TITEL = {
-    matrix: 'Passen Leitungsbedarf und Folgen zusammen?'
+    matrix: 'Passen Leitungsbedarf und Folgen zusammen?',
+    laufzeiten: 'Welche Vorhaben laufen wann?'
   };
   const TITEL_STANDARD = 'Das Portfolio der Abteilung <span class="einheit">Zahlen in Vollzeitäquivalenten</span>';
 
@@ -2013,6 +2209,7 @@
     document.getElementById('bildTitel').innerHTML = SICHT_TITEL[sicht] || TITEL_STANDARD;
     if (sicht === 'matrix') renderMatrix();
     else if (sicht === 'portfolio') renderPortfolio();
+    else if (sicht === 'laufzeiten') renderLaufzeiten();
     else renderLanes();
     document.querySelectorAll('.sichten button').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.sicht === sicht)));
     document.getElementById('bildKoerper').querySelectorAll('[data-kachel]').forEach(el => el.addEventListener('click', () => {
@@ -2036,7 +2233,7 @@
 
   // Nur in der Portfolio-Sicht und nur waagerecht: die Spalte ist die
   // Entscheidung, die man treffen darf. Die Zeile ist der Leitungsbedarf,
-  // der braucht seine vier Pflichtangaben und ist keine Zieh-Geste.
+  // der braucht seine Begründung und ist keine Zieh-Geste.
   // Bedingungs- und Begründungspflicht laufen weiter über das Panel, das
   // Ziehen ist nur ein schnellerer Weg zum selben Feld. Tastatur und Panel
   // bleiben der vollwertige Weg ohne Maus.
@@ -2087,11 +2284,11 @@
     ziehId = null;
     if (!v) return;
     v.entscheidung = wahl;
-    // Wer in die obere Zone zieht, meldet einen Leitungsfall. Ein schon
-    // gemeldeter hausweiter Konflikt bleibt, was er ist. Wer in die untere
-    // Zone zieht, nimmt die Meldung zurück; Frage, Termin und Folge bleiben
-    // gespeichert, ein Zug zurück stellt sie wieder her.
-    if (zone === 'haus' && !IST_LEITUNGSFALL(v.leitung)) v.leitung = 'entscheidung';
+    // Wer in die obere Zone zieht, meldet einen Leitungsfall, also die
+    // regelmäßige Einbindung von BM. Wer in die untere Zone zieht, nimmt die
+    // Meldung zurück; die Begründung bleibt gespeichert, ein Zug zurück stellt
+    // sie wieder her.
+    if (zone === 'haus' && !IST_LEITUNGSFALL(v.leitung)) v.leitung = 'regelmaessig';
     if (zone === 'fach' && IST_LEITUNGSFALL(v.leitung)) v.leitung = 'keine';
     speichern();
     quittungFuer(v.id);
@@ -2188,7 +2385,7 @@
       <div class="wahl">
         ${knopf('prio', 'Eingeplant', 'wird im nächsten Halbjahr gemacht und bekommt Kapazität')}
         ${knopf('wartet', 'Wartet', 'gewollt, startet erst bei einer benannten Bedingung')}
-        ${knopf('nicht', 'Abgesagt', 'in diesem Halbjahr bewusst nicht weiter')}
+        ${knopf('nicht', 'Eingestellt', 'wird nicht weiterverfolgt')}
       </div>
       <!-- Ohne Artikel formuliert, sonst hieße es "im Warteliste" -->
       <p class="pn-landet">Landet damit hier: <strong>${esc(PORTFOLIO[portfolio(v).wert])}</strong>. ${esc(portfolio(v).satz)}</p>
@@ -2272,19 +2469,16 @@
 
   function renderLeitungsfaelle() {
     const faelle = leitungsfaelle(S.vorhaben);
-    // Name, Frage und Meta bleiben sichtbar, die Folge des Nichtentscheidens
-    // klappt auf: sie ist der längste Text und wird erst im Gespräch gebraucht.
-    // Der frühere Vorsatz "Ohne Entscheidung:" ist raus, die Sätze im Feld
-    // fangen selbst so an und lasen sich doppelt.
+    // Ein Eintrag ist Name plus Begründung, mehr nicht: Termin, Zuständigkeit
+    // und die Folge des Nichtentscheidens sind mit dem Sparring vom 11.08.
+    // entfallen, sie wurden selten gefüllt und trugen die Meldung nicht.
     // Der einordnende Satz ist die erste Zeile der Arbeitsfläche, nicht ein
     // Vorspann darüber: sonst begänne die rechte Fläche tiefer als die linke.
     const intro = '<p class="lf-intro">Aus den Leitungsfällen aller Abteilungen wählt das Haus sein Portfolio.</p>';
     document.getElementById('leitungsfaelle').innerHTML = intro + (faelle.length
       ? faelle.map(v => `<div class="lf-eintrag">
           <p class="lf-name">${esc(v.name)}</p>
-          <p class="lf-frage">${v.lfFrage.trim() ? esc(v.lfFrage) : '<span style="color:var(--kirsche-text)">Frage fehlt noch.</span>'}</p>
-          <p class="lf-meta">${[v.lfTermin ? 'bis ' + v.lfTermin : '', v.lfWer ? 'entscheidet: ' + v.lfWer : '', v.leitung === 'konflikt' ? 'hausweiter Konflikt' : ''].filter(Boolean).map(esc).join(' · ')}</p>
-          ${v.lfFolge.trim() ? `<details class="lf-mehr"><summary>Was ohne Entscheidung passiert</summary><p>${esc(v.lfFolge)}</p></details>` : ''}
+          <p class="lf-frage">${v.bmWarum.trim() ? esc(v.bmWarum) : '<span style="color:var(--kirsche-text)">Begründung fehlt noch.</span>'}</p>
         </div>`).join('')
       : '<p class="ruhig">Kein Leitungsfall gemeldet. Die Abteilung steuert ihr Portfolio in diesem Halbjahr allein.</p>');
     document.getElementById('leitungsfaelleZahl').textContent = ' · ' + faelle.length;
@@ -2424,7 +2618,7 @@
     });
     // Der alte Abhängigkeiten-Direktlink bleibt als Weiterleitung erhalten.
     // Die Funktion lebt jetzt in der Portfolio-Sicht und hat keinen eigenen Tab.
-    const sprung = { '#entscheiden': null, '#portfolio': 'portfolio', '#matrix': 'matrix', '#abhaengig': 'portfolio' };
+    const sprung = { '#entscheiden': null, '#portfolio': 'portfolio', '#matrix': 'matrix', '#abhaengig': 'portfolio', '#laufzeiten': 'laufzeiten' };
     if (location.hash in sprung) {
       if (sprung[location.hash]) sicht = sprung[location.hash];
       wechsle('priorisieren');
