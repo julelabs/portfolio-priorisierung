@@ -108,16 +108,15 @@
   section h2 { font-size: clamp(26px,3.4vw,38px); max-width: 24ch; }
   p.lead { margin-top: 16px; max-width: 66ch; font-size: clamp(15.5px,1.7vw,17.5px); color: var(--fg-2); }
 
-  /* ---------- Der Weg: vier Situationen ---------- */
-  /* Ein Zyklus, gelesen als Weg von links nach rechts. Die Linie verbindet
-     die Nummern, sie dreht sich nicht im Kreis. */
-  .weg { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 44px; }
-  .weg::before { content: ''; position: absolute; top: 17px; left: calc(12.5% ); right: calc(12.5%); height: 2px; background: var(--blau-20); }
+  /* ---------- Vier Situationen ---------- */
+  /* Bewusst kein Stepper: keine Nummern, keine Fortschrittslinie. Vier
+     Zustaende, in denen man die Seite aufmacht, nebeneinander. */
+  .weg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 40px; }
   .schritt { display: flex; flex-direction: column; }
-  .schritt .nr { position: relative; z-index: 1; width: 36px; height: 36px; border-radius: 50%; background: var(--minze); color: var(--dunkel); font-family: var(--display); font-weight: 800; font-size: 15px; display: grid; place-items: center; margin: 0 auto 16px; box-shadow: 0 0 0 6px var(--weiss); }
+  .situation { align-self: flex-start; font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; background: var(--blau-10); color: var(--blau); }
+  .schritt .fuer { font-family: var(--display); font-size: 12.5px; font-weight: 600; color: var(--fg-muted); margin-top: -2px; }
   .schritt .karte { flex: 1; display: flex; flex-direction: column; gap: 10px; background: var(--weiss); border: 1px solid var(--line); border-radius: 14px; padding: 22px 20px; text-decoration: none; transition: border-color .2s, transform .2s; }
   .schritt .karte:hover { border-color: var(--blau); transform: translateY(-2px); }
-  .schritt .wer { align-self: flex-start; font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; background: var(--lavendel); color: var(--fg-2); }
   .schritt h3 { font-size: 18.5px; }
   .schritt .lage { font-size: 14px; color: var(--fg-muted); font-style: normal; }
   .schritt p { font-size: 14.5px; color: var(--fg-2); }
@@ -125,8 +124,6 @@
   .weg-fuss { margin-top: 26px; font-size: 15px; color: var(--fg-2); max-width: 70ch; }
   @media (max-width: 940px) {
     .weg { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .weg::before { display: none; }
-    .schritt .nr { margin: 0 0 12px; box-shadow: none; }
   }
   @media (max-width: 560px) { .weg { grid-template-columns: 1fr; } }
 
@@ -164,7 +161,7 @@
   <div class="links">
     <a href="#situationen">Vier Situationen</a>
     <a href="#danach">Und danach?</a>
-    <a href="#prinzipien">Wie es rechnet</a>
+    <a href="#prinzipien">Wie Empfehlungen entstehen</a>
     <a class="tool" href="werkzeug.html">Zum Werkzeug</a>
   </div>
 </nav>
@@ -174,7 +171,7 @@
     <div class="hero-copy">
       <div class="kicker">Für Abteilungen mit mehr Ideen als Leuten</div>
       <h1>Was tragen wir <span class="hl">wirklich?</span></h1>
-      <p class="sub">Die Portfolio-Priorisierung führt eure Abteilung von der Idee zur ehrlichen Entscheidung: ein Steckbrief pro Vorhaben, transparente Wenn-dann-Regeln und eine Kapazitätslinie, die den Schnitt erzwingt, den keine Rangliste schafft.</p>
+      <p class="sub">Die Portfolio-Priorisierung bringt eure Vorhaben immer wieder zur ehrlichen Entscheidung: ein Steckbrief pro Vorhaben, transparente Wenn-dann-Regeln und eine Kapazitätslinie, die den Schnitt erzwingt, den keine Rangliste schafft.</p>
       <div class="ctas">
         <a class="btn minze" href="werkzeug.html#portfolio">Das Portfolio ansehen</a>
         <a class="quiet-link" href="werkzeug.html">Direkt ein Vorhaben eintragen →</a>
@@ -194,9 +191,9 @@
 
     <div class="weg">
       <div class="schritt">
-        <span class="nr">1</span>
         <a class="karte" href="werkzeug.html">
-          <span class="wer">Referate</span>
+          <span class="situation">Neues Vorhaben</span>
+          <span class="fuer">für Referate</span>
           <h3>Vorhaben erfassen</h3>
           <span class="lage">Ein Vorhaben ist neu oder noch nirgends beschrieben.</span>
           <p>Ein Steckbrief, sechs Blöcke: Worum geht es, was passiert beim Ruhenlassen, welche Kapazität bindet es, wie ist BM eingebunden. Leer lassen ist erlaubt, das Werkzeug zeigt, was noch fehlt.</p>
@@ -204,19 +201,19 @@
         </a>
       </div>
       <div class="schritt">
-        <span class="nr">2</span>
         <a class="karte" href="werkzeug.html">
-          <span class="wer">Referate</span>
+          <span class="situation">Zwischen den Runden</span>
+          <span class="fuer">für Referate</span>
           <h3>Vorhaben aktualisieren</h3>
-          <span class="lage">Der Stand hat sich geändert: neue Zahlen, neues Ende, neue Abhängigkeit.</span>
-          <p>Steckbrief öffnen, nachziehen, fertig. Portfolio und Laufzeiten lesen jede Änderung sofort mit, es gibt keinen zweiten Datenbestand.</p>
+          <span class="lage">Der Stand hat sich geändert: neue Zahlen, neuer Endtermin, neue Abhängigkeit.</span>
+          <p>Steckbrief öffnen, nachziehen, fertig. Die Änderung erscheint sofort im Portfolio und in den Laufzeiten. Es gibt keinen zweiten Datenbestand.</p>
           <span class="go">Zur Vorhabenliste</span>
         </a>
       </div>
       <div class="schritt">
-        <span class="nr">3</span>
         <a class="karte" href="werkzeug.html#vorbereiten">
-          <span class="wer">Abteilung</span>
+          <span class="situation">Vor der Runde</span>
+          <span class="fuer">für die Abteilung</span>
           <h3>Steuerungsrunde vorbereiten</h3>
           <span class="lage">Die Runde steht an. Was ist reif, was fehlt, was ist überbucht?</span>
           <p>Stand der Erfassung, offene Lücken, Kapazitätslage und die Fragen, die vor der Entscheidung geklärt sein sollten, auf einen Blick statt in fünf Mails.</p>
@@ -224,9 +221,9 @@
         </a>
       </div>
       <div class="schritt">
-        <span class="nr">4</span>
         <a class="karte" href="werkzeug.html#portfolio">
-          <span class="wer">Abteilungsleitung</span>
+          <span class="situation">In der Runde</span>
+          <span class="fuer">für die Abteilungsleitung</span>
           <h3>Portfolio entscheiden</h3>
           <span class="lage">Alle Vorhaben liegen nebeneinander, die Runde sitzt.</span>
           <p>Je Vorhaben: eingeplant, wartet oder eingestellt. Die Kapazitätslinie zeigt, was nicht mehr hineinpasst, und jede Abweichung von der Empfehlung braucht einen Satz Begründung.</p>
@@ -234,7 +231,7 @@
         </a>
       </div>
     </div>
-    <p class="weg-fuss">Nach der Entscheidung beginnt die Pflege, nicht die Ablage: Situation 2 ist der Normalfall zwischen zwei Runden. So schließt sich der Zyklus, ohne dass ihn jemand malen muss.</p>
+    <p class="weg-fuss">Nach der Entscheidung beginnt die Pflege, nicht die Ablage: Das Aktualisieren ist der Normalfall zwischen zwei Runden. So schließt sich der Zyklus, ohne dass ihn jemand malen muss.</p>
   </div>
 </section>
 
@@ -242,19 +239,19 @@
   <div class="wrap">
     <div class="sec-kicker">Die zugesagte Konsequenz</div>
     <h2>Und was passiert mit eurer Entscheidung?</h2>
-    <p class="lead">Das entschiedene Portfolio bleibt nicht in der Abteilung liegen. Es geht an den Stab, und der bereitet damit die Entscheidung der Hausleitung vor. Ehrliches Ausfüllen hat einen Adressaten.</p>
+    <p class="lead">Das priorisierte Abteilungsportfolio bleibt nicht in der Abteilung liegen. Es geht an den Stab, und der bereitet damit die Entscheidung der Hausleitung vor. Was ihr eintragt, wird tatsächlich gebraucht.</p>
     <div class="staffel">
       <div class="stufe">
-        <b>Einsammeln</b>
-        <p>Der Stab nimmt die entschiedenen Portfolios aller Abteilungen entgegen: dieselbe Struktur, dieselben Begriffe, vergleichbar ohne Nacharbeit.</p>
+        <b>Zusammenführen</b>
+        <p>Der Stab führt die priorisierten Abteilungsportfolios zusammen: dieselbe Struktur, dieselben Begriffe, vergleichbar ohne Nacharbeit.</p>
       </div>
       <div class="stufe">
         <b>Einschätzen</b>
-        <p>Die Kandidaten fürs Leitungsportfolio werden einzeln geprüft, vor allem ihr Wirkungsversprechen. Von Menschen, nicht von einer Punktzahl: Wirkung lässt sich nicht seriös scoren, wohl aber prüfen, wo es darauf ankommt.</p>
+        <p>Die Kandidaten fürs Leitungsportfolio werden einzeln geprüft, vor allem ihr Wirkungsversprechen. Von Menschen, nicht von einer Punktzahl: Wirkung lässt sich nicht seriös scoren. Das Wirkungsversprechen lässt sich aber sichtbar machen und fachlich diskutieren.</p>
       </div>
       <div class="stufe">
         <b>Vorschlagen</b>
-        <p>Aus den Einschätzungen entsteht der Vorschlag für das Hausportfolio. Die Hausleitung entscheidet, der Stab dokumentiert, die Abteilungen sehen, was aus ihren Vorschlägen geworden ist.</p>
+        <p>Aus den Einschätzungen entsteht der Vorschlag für das Leitungsportfolio. Die Hausleitung entscheidet, der Stab dokumentiert, die Abteilungen sehen, was aus ihren Vorschlägen geworden ist.</p>
       </div>
     </div>
     <div class="hint">Die Gesamtsicht über alle Abteilungsportfolios ist ein eigenes Arbeitswerkzeug des Stabs und Teil des Ausbaus.<span class="pill">folgt</span></div>
@@ -263,19 +260,19 @@
 
 <section id="prinzipien">
   <div class="wrap">
-    <div class="sec-kicker">Wie es rechnet</div>
+    <div class="sec-kicker">Wie Empfehlungen entstehen</div>
     <h2>Drei Regeln, die das Werkzeug ehrlich halten</h2>
     <div class="prinzipien">
       <div class="p">
         <h3>Kein Score</h3>
-        <p>Keine Punktzahl mit verborgenen Gewichten entscheidet über ein Vorhaben. Der Steuerungsbedarf tritt nur zerlegt in seine drei Bestandteile auf und entscheidet nichts.</p>
+        <p>Keine Punktzahl mit verborgenen Gewichten entscheidet über ein Vorhaben. Das Werkzeug zeigt den Steuerungsbedarf nur zerlegt in seine drei Teilwerte und berechnet keinen Gesamtwert.</p>
       </div>
       <div class="p">
         <h3>Sichtbare Regeln</h3>
-        <p>Jede Empfehlung nennt die Wenn-dann-Regel, aus der sie entsteht, und jede Antwort, die zu "eingeplant" führt, verlangt einen Beleg. Die Runde kann überstimmen, mit einem Satz Begründung.</p>
+        <p>Jede Empfehlung nennt die Wenn-dann-Regel, aus der sie entsteht, und jede Antwort, die zu "eingeplant" führt, verlangt einen Beleg. Die Runde kann anders entscheiden, mit einem Satz Begründung.</p>
       </div>
       <div class="p">
-        <h3>Kapazität ist ein Preis</h3>
+        <h3>Kapazität setzt die Grenze</h3>
         <p>Kapazität ist kein Wert und fließt in keine Bewertung ein. Die Kapazitätslinie zeigt, was hineinpasst, und erzwingt den Schnitt, statt Ränge auszuhandeln.</p>
       </div>
     </div>
