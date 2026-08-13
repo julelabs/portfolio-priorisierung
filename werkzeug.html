@@ -632,6 +632,44 @@
   .verborgen { display: none; }
   /* Nur für Screenreader: die Minze-Kante allein transportiert die Nominierung nicht */
   .nur-vorlesen { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  /* Die zwei leisen Fußwege der Vorbereiten-Sicht stehen zusammen links, der
+     laute Weg bleibt rechts (Entscheidung 82, 13.08.). */
+  .vb-fuss-leise { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+
+  /* Druckansicht für den StS (Entscheidung 82, 13.08.): keine neuen
+     Kartenstile, keine Schatten, Haarlinien statt Flächen. Die drei
+     Kachel-Behandlungen aus dem Portfolio (eingeplant blaue Kante, wartet
+     Umriss, eingestellt gedimmt) werden zitiert, aber so, dass sie auch in
+     Graustufen lesbar bleiben. */
+  .druck-leiste { position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; background: var(--blau-10); border-bottom: 1px solid var(--line); padding: 12px clamp(16px, 4vw, 40px); }
+  .druck-seite { max-width: 760px; margin: 0 auto; padding: clamp(32px, 5vw, 56px) clamp(20px, 4vw, 40px) 90px; background: var(--weiss); }
+  .druck-kopf { border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 26px; }
+  .druck-kopf h1 { font-size: 22px; max-width: 34ch; }
+  .druck-datum { color: var(--fg-2); font-size: 14px; margin-top: 4px; }
+  .druck-block { margin-bottom: 24px; break-inside: avoid; }
+  .druck-block h2 { font-family: var(--display); font-weight: 800; font-size: 12.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-2); border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 4px; }
+  .druck-block-hilfe { color: var(--fg-muted); font-size: 12.5px; margin-bottom: 8px; }
+  .druck-leer { color: var(--fg-muted); font-size: 13.5px; padding: 8px 0; }
+  .druck-item { break-inside: avoid; border-top: 1px solid var(--line); padding: 10px 0 10px 12px; border-left: 3px solid transparent; }
+  .druck-item:first-child { border-top: 0; }
+  .druck-item.eingeplant { border-left-color: var(--blau); }
+  .druck-item-name { font-family: var(--display); font-weight: 700; font-size: 14.5px; color: var(--fg); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .druck-item-vzae { font-family: var(--body); font-weight: 400; color: var(--fg-2); font-size: 13px; white-space: nowrap; }
+  .druck-warum { color: var(--fg-2); font-size: 13.5px; margin-top: 4px; line-height: 1.5; }
+  .druck-kompakt-zeile { break-inside: avoid; display: flex; justify-content: space-between; gap: 12px; font-size: 13.5px; color: var(--fg-2); padding: 6px 8px; border-top: 1px solid var(--line); }
+  .druck-kompakt-zeile:first-child { border-top: 0; }
+  .druck-kompakt-zeile.wartet { border: 1px solid var(--blau-40); border-radius: 4px; margin: 3px 0; }
+  .druck-kompakt-zeile.wartet:first-child { border-top: 1px solid var(--blau-40); }
+  .druck-kompakt-zeile.nicht { color: var(--fg-muted); }
+  .druck-kapazitaet { break-inside: avoid; margin-top: 4px; }
+  .druck-kap-zeile { font-size: 14px; color: var(--fg-2); margin-bottom: 8px; }
+  .druck-kap-zeile strong { font-family: var(--display); color: var(--fg); }
+  @media print {
+    header.top, .druck-leiste, .no-print { display: none !important; }
+    body { background: var(--weiss); }
+    .druck-seite { max-width: none; margin: 0; padding: 0; }
+    .druck-block, .druck-item, .druck-kompakt-zeile, .druck-kapazitaet { break-inside: avoid; }
+  }
 </style>
 </head>
 <body>
@@ -786,6 +824,8 @@
       <span>Interner Prototyp mit fiktiven Beispieldaten. Speichert nur lokal in diesem Browser, keine Übertragung.</span>
       <span class="fuss-rechts">
         <button class="btn leise" type="button" id="copy">Als Tabelle kopieren</button>
+        <button class="btn leise" type="button" id="downloadTsv">TSV herunterladen</button>
+        <button class="btn leise" type="button" id="downloadJson">JSON sichern</button>
         <button class="textbtn" type="button" id="reset">Beispieldaten wiederherstellen</button>
       </span>
     </div>
@@ -823,8 +863,58 @@
     </section>
 
     <div class="vb-fuss">
-      <button class="textbtn blau" type="button" id="vbZuSteckbriefen">Zu den Steckbriefen</button>
+      <span class="vb-fuss-leise">
+        <button class="textbtn blau" type="button" id="vbZuSteckbriefen">Zu den Steckbriefen</button>
+        <!-- Dritter leiser Weg neben den zwei bestehenden (Entscheidung 82,
+             13.08.): die schreibgeschützte Druck- und Ergebnisansicht für den
+             StS, Direktlink #druck. -->
+        <button class="textbtn blau" type="button" id="vbDruckansicht">Druckansicht für StS</button>
+      </span>
       <button class="btn primary" type="button" id="vbZuEntscheiden">Portfolio entscheiden</button>
+    </div>
+  </section>
+
+  <!-- Druckansicht für den StS (Entscheidung 82, 13.08.): schreibgeschützte
+       Ausgabe des Abteilungsportfolios, gedacht zum Drucken oder als PDF
+       Sichern. Direktlink #druck, Zugang über den leisen Fußweg oben in der
+       Vorbereiten-Sicht. Die Leiste am Kopf ist die einzige Bedienfläche der
+       Ansicht und wird beim Drucken ausgeblendet (siehe @media print). Der
+       Rest ist reine Ausgabe: kein Eingabefeld, kein Ziehen, keine
+       Speicherung, sie liest denselben Datenstand wie die anderen Ansichten. -->
+  <section id="ansicht-druck" class="verborgen">
+    <div class="druck-leiste no-print">
+      <button class="textbtn blau" type="button" id="druckZurueck">&#8592; Zurück zur Vorbereitung</button>
+      <button class="btn primary" type="button" id="druckKnopf">Drucken oder als PDF sichern</button>
+    </div>
+    <div class="druck-seite">
+      <header class="druck-kopf">
+        <h1 id="druckAbteilung"></h1>
+        <p class="druck-datum" id="druckDatum"></p>
+      </header>
+
+      <section class="druck-block" id="druckLeitung">
+        <h2>Leitungsportfolio</h2>
+        <p class="druck-block-hilfe">Eingeplant und für die Leitung nominiert, mit der Begründung der Abteilung.</p>
+        <div id="druckLeitungListe"></div>
+      </section>
+
+      <section class="druck-block" id="druckFach">
+        <h2>Abteilungsportfolio</h2>
+        <p class="druck-block-hilfe">Eingeplant, die Abteilung steuert es selbst.</p>
+        <div id="druckFachListe"></div>
+      </section>
+
+      <section class="druck-block druck-kompakt" id="druckWarte">
+        <h2>Warteliste</h2>
+        <div id="druckWarteListe"></div>
+      </section>
+
+      <section class="druck-block druck-kompakt" id="druckNicht">
+        <h2>Eingestellt</h2>
+        <div id="druckNichtListe"></div>
+      </section>
+
+      <section class="druck-kapazitaet" id="druckKapazitaet"></section>
     </div>
   </section>
 
@@ -1399,6 +1489,48 @@
     return v;
   }
 
+  const SCHEMAVERSION = '1';
+
+  function exportDatum(zeitpunkt) {
+    const datum = zeitpunkt === undefined ? new Date() : new Date(zeitpunkt);
+    return Number.isFinite(datum.getTime()) ? datum : null;
+  }
+
+  function halbjahr(zeitpunkt) {
+    const datum = exportDatum(zeitpunkt);
+    if (!datum) return '';
+    return datum.getUTCFullYear() + '-H' + (datum.getUTCMonth() < 6 ? '1' : '2');
+  }
+
+  function dateiKuerzel(abteilung) {
+    const sauber = String(abteilung || '')
+      .trim()
+      .toLowerCase()
+      .replace(/ß/g, 'ss')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return sauber || 'abteilung';
+  }
+
+  function exportMetadaten(abteilung, zeitpunkt) {
+    const datum = exportDatum(zeitpunkt);
+    return {
+      abteilung: String(abteilung || '').trim(),
+      berichtszeitraum: datum ? halbjahr(datum) : '',
+      exportzeitpunkt: datum ? datum.toISOString() : '',
+      schemaversion: SCHEMAVERSION
+    };
+  }
+
+  function jsonExport(abteilung, stand, zeitpunkt) {
+    return {
+      metadaten: exportMetadaten(abteilung, zeitpunkt),
+      stand
+    };
+  }
+
   function cleanCell(wert) { return String(wert || '').replace(/[\t\r\n]+/g, ' ').trim(); }
 
   // Laufzeiten (Sparring 11.08.): Monate zählen als fortlaufender Index
@@ -1432,9 +1564,13 @@
     return { art: 'offen', grund: 'der Stand fehlt' };
   }
 
-  function tsv(abteilung, liste, externe) {
+  function tsv(abteilung, liste, zeitpunkt, externe) {
     // Der Wert wandert nur zerlegt in die Tabelle: drei Teilspalten plus Summe
-    const kopf = ['Abteilung', 'Vorhaben', 'Referat', 'Ziel', 'Beschreibung und angestrebte Veränderung', 'Wer profitiert', 'Erste Wirkung in', 'Folgen des Ruhenlassens', 'Konkretisierung', 'VZÄ', 'Davon gedeckt (VZÄ)', 'Stand', 'Geplanter Start', 'Voraussichtliches Ende', 'Nominierung', 'Begründung Nominierung', 'Hängt zusammen mit', 'Fehlende Rollen oder Fähigkeiten', 'Punkte Folgen (0 bis 3)', 'Punkte Nominierung (0 bis 1)', 'Punkte Ziel (0 bis 1)', 'Steuerungsbedarf (0 bis 5)', 'Empfehlung', 'Regel', 'Entscheidung der Abteilung', 'Portfolio (abgeleitet)', 'Begründung bei Abweichung', 'Bedingung', 'Hinweis für die Runde'];
+    // Entscheidung 84: Die ersten fünf Spalten sind der Exportvertrag. Die
+    // Metadaten stehen in jeder Datenzeile, damit Power Query mehrere Dateien
+    // ohne Vorspann zusammenführen kann.
+    const meta = exportMetadaten(abteilung, zeitpunkt);
+    const kopf = ['Abteilung', 'Berichtszeitraum', 'Exportzeitpunkt', 'Schemaversion', 'Vorhaben-ID', 'Vorhaben', 'Referat', 'Ziel', 'Beschreibung und angestrebte Veränderung', 'Wer profitiert', 'Erste Wirkung in', 'Folgen des Ruhenlassens', 'Konkretisierung', 'VZÄ', 'Davon gedeckt (VZÄ)', 'Stand', 'Geplanter Start', 'Voraussichtliches Ende', 'Nominierung', 'Begründung Nominierung', 'Hängt zusammen mit', 'Fehlende Rollen oder Fähigkeiten', 'Punkte Folgen (0 bis 3)', 'Punkte Nominierung (0 bis 1)', 'Punkte Ziel (0 bis 1)', 'Steuerungsbedarf (0 bis 5)', 'Empfehlung', 'Regel', 'Entscheidung der Abteilung', 'Portfolio (abgeleitet)', 'Begründung bei Abweichung', 'Bedingung', 'Hinweis für die Runde'];
     const zeilen = liste.map(v => {
       const e = empfehlung(v, liste);
       const s = steuerungsbedarf(v);
@@ -1442,7 +1578,8 @@
       const konkret = v.ruhen === RUHEN[4] ? v.chanceKonkret : v.ruhen === RUHEN[1] ? v.pflichtKonkret : v.ruhen === RUHEN[2] ? v.zusageKonkret : v.ruhen === RUHEN[3] ? v.schadenKonkret : '';
       const lb = (LEITUNG.find(o => o.wert === v.leitung) || {}).text;
       const haengt = (v.haengtAn || []).map(a => abhName(a, liste, externe)).filter(Boolean).join('; ');
-      return [abteilung, v.name, v.referat, v.ziel === WAEHLEN ? '' : v.ziel, v.veraenderung,
+      return [meta.abteilung, meta.berichtszeitraum, meta.exportzeitpunkt, meta.schemaversion, v.id,
+        v.name, v.referat, v.ziel === WAEHLEN ? '' : v.ziel, v.veraenderung,
         v.reichweite === WAEHLEN ? '' : v.reichweite, v.wirkungAb === WAEHLEN ? '' : v.wirkungAb,
         v.ruhen === WAEHLEN ? '' : v.ruhen, konkret, v.vzae, v.vzaeGedeckt, v.laeuft === WAEHLEN ? '' : v.laeuft,
         v.startAb, v.endeBis,
@@ -2775,6 +2912,70 @@
     renderOffenePflichten();
   }
 
+  /* ---------- Druckansicht für den StS (Entscheidung 82, 13.08.) ---------- */
+
+  const heuteText = () => new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  // Eine Zeile im Leitungs- oder Abteilungsportfolio: Name, VZÄ, und bei einer
+  // Nominierung das Warum im Klartext. Die blaue Kante zitiert die
+  // Eingeplant-Kante der Kachel, ohne Schatten oder neue Kartenform.
+  function druckItemHtml(v) {
+    const vzae = vzaeWert(v);
+    const warum = IST_NOMINIERT(v.leitung) && v.bmWarum.trim() ? `<p class="druck-warum">${esc(v.bmWarum)}</p>` : '';
+    return `<div class="druck-item eingeplant">
+      <p class="druck-item-name">${esc(v.name)}<span class="druck-item-vzae">${vzae ? zahlText(vzae) + ' VZÄ' : 'VZÄ offen'}</span></p>
+      ${warum}
+    </div>`;
+  }
+
+  // Warteliste und Eingestellt bleiben kompakt: eine Zeile je Vorhaben, die
+  // Umriss- beziehungsweise Dimm-Behandlung der Kachel steht als Rahmen oder
+  // gedämpfte Schrift, damit sie auch in Graustufen lesbar bleibt.
+  function druckKompaktZeile(v, klasse) {
+    const vzae = vzaeWert(v);
+    return `<p class="druck-kompakt-zeile ${klasse}"><span>${esc(v.name)}</span><span class="druck-item-vzae">${vzae ? zahlText(vzae) + ' VZÄ' : ''}</span></p>`;
+  }
+
+  function renderDruck() {
+    const liste = S.vorhaben;
+    document.getElementById('druckAbteilung').textContent = (S.abteilung || 'Abteilung') + ': Portfolio für die Steuerungsrunde';
+    document.getElementById('druckDatum').textContent = 'Stand ' + heuteText();
+
+    const haus = liste.filter(v => portfolio(v, liste).wert === 'haus');
+    const fach = liste.filter(v => portfolio(v, liste).wert === 'fach');
+    const warte = liste.filter(v => portfolio(v, liste).wert === 'warte');
+    const nicht = liste.filter(v => portfolio(v, liste).wert === 'nicht');
+
+    document.getElementById('druckLeitungListe').innerHTML = haus.length
+      ? haus.map(druckItemHtml).join('')
+      : '<p class="druck-leer">Keine Nominierung im Leitungsportfolio.</p>';
+    document.getElementById('druckFachListe').innerHTML = fach.length
+      ? fach.map(druckItemHtml).join('')
+      : '<p class="druck-leer">Kein Vorhaben im Abteilungsportfolio.</p>';
+    document.getElementById('druckWarteListe').innerHTML = warte.length
+      ? warte.map(v => druckKompaktZeile(v, 'wartet')).join('')
+      : '<p class="druck-leer">Nichts wartet.</p>';
+    document.getElementById('druckNichtListe').innerHTML = nicht.length
+      ? nicht.map(v => druckKompaktZeile(v, 'nicht')).join('')
+      : '<p class="druck-leer">Nichts eingestellt.</p>';
+
+    // Dieselbe Rechnung wie die Kapazitätsleiste in Schritt 2 (gebunden gegen
+    // Grenze), hier als eigene Zeile ohne die klebende Werkbank-Mechanik.
+    const kap = kapazitaet(liste, verfuegbarWert());
+    const skala = Math.max(kap.gebunden, kap.verfuegbar, 1);
+    const gedeckt = Math.min(kap.gebunden, kap.verfuegbar);
+    const breiteGedeckt = (gedeckt / skala) * 100;
+    const breiteUeber = (kap.ueber / skala) * 100;
+    const marke = (kap.verfuegbar / skala) * 100;
+    document.getElementById('druckKapazitaet').innerHTML = `
+      <p class="druck-kap-zeile"><strong>${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} VZÄ gebunden</strong>${kap.ueber > 0 ? `, ${zahlText(kap.ueber)} über der Grenze` : ''}</p>
+      <div class="bd-skala" role="img" aria-label="Gebunden ${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} Vollzeitäquivalenten${kap.ueber > 0 ? ', ' + zahlText(kap.ueber) + ' über der Grenze' : ''}">
+        <div class="bd-gedeckt" style="width:${breiteGedeckt}%"></div>
+        ${kap.ueber > 0 ? `<div class="bd-ueberhang" style="left:${marke}%; width:${breiteUeber}%"></div>` : ''}
+        <div class="bd-marke ${marke > 88 ? 'rechts' : ''}" style="left:${marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>
+      </div>`;
+  }
+
   /* ---------- Rahmen ---------- */
 
   function wechsle(neu) {
@@ -2782,8 +2983,11 @@
     if (neu !== 'priorisieren') abhAktivId = null;
     document.querySelectorAll('.schritt').forEach(el => el.setAttribute('aria-current', String(el.dataset.ansicht === ansicht)));
     // Im Einstieg stehen dieselben zwei Wege bereits groß und mit Kontext.
-    // Erst danach braucht der Kopf die Navigation als Rückweg.
-    document.getElementById('schrittNav').classList.toggle('verborgen', ansicht === 'erfassen');
+    // Erst danach braucht der Kopf die Navigation als Rückweg. Die
+    // Druckansicht ist kein vierter Schritt (Entscheidung 82) und hat ihre
+    // eigene, nicht druckbare Leiste, die Schritt-Navigation bleibt also auch
+    // hier verborgen.
+    document.getElementById('schrittNav').classList.toggle('verborgen', ansicht === 'erfassen' || ansicht === 'druck');
     document.getElementById('ansicht-erfassen').classList.toggle('verborgen', ansicht !== 'erfassen');
     // Der Auftakt gehört zu Schritt 1 und liegt außerhalb der Bühne, also muss
     // er hier mitgeschaltet werden. In Schritt 1 entscheidet renderAuftakt
@@ -2795,8 +2999,10 @@
     document.getElementById('vorbereitenKopf').classList.toggle('verborgen', ansicht !== 'vorbereiten');
     document.getElementById('ansicht-vorbereiten').classList.toggle('verborgen', ansicht !== 'vorbereiten');
     document.getElementById('ansicht-priorisieren').classList.toggle('verborgen', ansicht !== 'priorisieren');
+    document.getElementById('ansicht-druck').classList.toggle('verborgen', ansicht !== 'druck');
     if (ansicht === 'erfassen') renderErfassen();
     else if (ansicht === 'vorbereiten') renderVorbereiten();
+    else if (ansicht === 'druck') renderDruck();
     else renderPriorisieren();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -2818,6 +3024,12 @@
     // Vorhaben wie über den Schriftzug.
     document.getElementById('vbZuEntscheiden').addEventListener('click', () => wechsle('priorisieren'));
     document.getElementById('vbZuSteckbriefen').addEventListener('click', zurUebersicht);
+    // Dritter, leiser Fußweg (Entscheidung 82, 13.08.): in die schreibgeschützte
+    // Druckansicht für den StS. Zurück führt dort die eigene, nicht druckbare
+    // Leiste, nicht der allgemeine Schritt-Rückweg.
+    document.getElementById('vbDruckansicht').addEventListener('click', () => wechsle('druck'));
+    document.getElementById('druckZurueck').addEventListener('click', () => wechsle('vorbereiten'));
+    document.getElementById('druckKnopf').addEventListener('click', () => window.print());
     document.querySelectorAll('.sichten button').forEach(el => el.addEventListener('click', () => sichtWechseln(el.dataset.sicht)));
     document.getElementById('neuZeigen').addEventListener('click', () => {
       document.getElementById('neuZeigen').classList.add('verborgen');
@@ -2840,6 +3052,8 @@
       speichern();
     });
     document.getElementById('copy').addEventListener('click', kopieren);
+    document.getElementById('downloadTsv').addEventListener('click', tsvHerunterladen);
+    document.getElementById('downloadJson').addEventListener('click', jsonHerunterladen);
     document.getElementById('reset').addEventListener('click', () => {
       if (!confirm('Alle Eingaben verwerfen und die Beispieldaten wiederherstellen?')) return;
       S = beispieldaten();
@@ -2860,8 +3074,12 @@
     const sprung = { '#entscheiden': null, '#portfolio': 'portfolio', '#matrix': 'portfolio', '#abhaengig': 'portfolio', '#laufzeiten': 'laufzeiten' };
     // Die Vorbereiten-Sicht ist kein Bild von Schritt 2, sondern eine eigene
     // Ansicht. Deshalb steht sie neben der Tabelle, nicht darin (Sparring 11.08.).
+    // Die Druckansicht (Entscheidung 82) ist aus demselben Grund ein eigener
+    // Direktlink, kein Eintrag in "sprung": sie ist keine Sicht auf Schritt 2.
     if (location.hash === '#vorbereiten') {
       wechsle('vorbereiten');
+    } else if (location.hash === '#druck') {
+      wechsle('druck');
     } else if (location.hash in sprung) {
       if (sprung[location.hash]) sicht = sprung[location.hash];
       wechsle('priorisieren');
@@ -2897,6 +3115,31 @@
     } else {
       window.prompt('Kopieren mit Strg+C:', text);
     }
+  }
+
+  function herunterladen(inhalt, dateiname, mime) {
+    const blob = new Blob([inhalt], { type: mime + ';charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = dateiname;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
+
+  function tsvHerunterladen() {
+    const zeitpunkt = new Date();
+    const name = 'portfolio_' + dateiKuerzel(S.abteilung) + '.tsv';
+    herunterladen(tsv(S.abteilung, S.vorhaben, zeitpunkt), name, 'text/tab-separated-values');
+  }
+
+  function jsonHerunterladen() {
+    const zeitpunkt = new Date();
+    const name = 'portfolio_' + dateiKuerzel(S.abteilung) + '.json';
+    const text = JSON.stringify(jsonExport(S.abteilung, S, zeitpunkt), null, 2);
+    herunterladen(text, name, 'application/json');
   }
 
   start();
