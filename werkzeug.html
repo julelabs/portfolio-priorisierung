@@ -130,7 +130,7 @@
      Werkzettel schon "Stand der Erfassung" beschriftet (.z-kopf), also bleibt
      es bei einer Form für "kleine Aufschrift auf dunklem Grund". */
   .vb-kopf h1 { max-width: 26ch; }
-  /* Der Rumpf besteht aus vier Abschnitten, alle aus vorhandenen Bausteinen:
+  /* Der Rumpf besteht aus Abschnitten, alle aus vorhandenen Bausteinen:
      Überschrift, Arbeitsfläche mit Zeilen, leise Zeile für den leeren Fall.
      Offen statt eingeklappt, denn diese Ansicht ist die Vorbereitung selbst. */
   .vb-block { margin-bottom: clamp(20px, 3vw, 30px); }
@@ -194,6 +194,7 @@
   .block { display: grid; grid-template-columns: 34px minmax(0, 1fr); padding: 28px 0 4px; }
   .block:first-of-type { padding-top: 22px; }
   .block-nr { font-family: var(--display); font-size: 13px; font-weight: 800; color: var(--feldkante); padding-top: 4px; }
+  .block-thema { display: block; font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 3px; }
   .frage { display: block; font-family: var(--display); font-size: 16px; font-weight: 700; margin-bottom: 3px; }
   .hilfe { color: var(--fg-muted); font-size: 13.5px; margin-bottom: 9px; }
   .feld { margin-top: 18px; }
@@ -227,6 +228,9 @@
   .zeile2 { display: flex; gap: 22px; flex-wrap: wrap; }
   .zeile2 > * { flex: 1 1 210px; }
   .fehlt { color: var(--kirsche-text); font-size: 13px; margin-top: 5px; }
+  .deckung-rechnung { min-height: 20px; margin-top: 7px; font-size: 13.5px; color: var(--fg-2); }
+  .deckung-rechnung:empty { display: none; }
+  .deckung-rechnung.luecke, .deckung-rechnung.ueber { color: var(--kirsche-text); }
 
   /* Ablesung: seit dem Sparring vom 11.08. nur noch der Hinweis für die
      Abwägung, in Worten. Kein Buchstabencode. */
@@ -506,6 +510,10 @@
   .of-zeile { padding: 14px 18px 15px; }
   .of-name { font-family: var(--display); font-weight: 700; font-size: 14.5px; }
   .of-frage { color: var(--fg-2); font-size: 14px; margin-top: 1px; }
+  .vb-rollen label { display: block; margin-top: 10px; font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg); }
+  .vb-rollen input { width: 100%; max-width: 620px; margin-top: 5px; background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 6px; color: var(--fg); font-family: var(--body); font-size: 15px; padding: 9px 12px; }
+  .vb-rollen input:hover { border-color: var(--blau-60); }
+  .vb-rollen input:focus { outline: 2px solid var(--blau); outline-offset: 1px; border-color: var(--blau); }
   .pt-korb { font-size: 11.5px; color: var(--fg-muted); }
   .pt-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--fg-muted); }
   .pt-state { font-family: var(--display); font-weight: 800; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
@@ -787,13 +795,19 @@
        Markup hinter Schritt 2, obwohl sie davor bedient wird: sichtbar ist immer
        nur eine Ansicht, und so bleibt die erste Fundstelle jeder gemeinsam
        genutzten Klasse (.konflikt, .of-zeile) die der Werkbank.
-       Alle vier Abschnitte lesen dieselben Funktionen wie Schritt 2, hier nur
-       offen dargestellt: nichts an Text wird doppelt gepflegt. -->
+       Die Abschnitte lesen dieselben Funktionen wie Schritt 2 oder reine
+       Kernaussagen, hier nur offen dargestellt. -->
   <section id="ansicht-vorbereiten" class="verborgen">
     <section class="vb-block" aria-labelledby="vbFragenTitel">
       <h2 class="vb-titel" id="vbFragenTitel">Bevor ihr entscheidet</h2>
       <p class="vb-zaehler" id="vbKonflikteTitel"></p>
       <div class="arbeitsflaeche" id="vbKonflikte"></div>
+    </section>
+
+    <section class="vb-block verborgen" id="vbRessourcenBlock" aria-labelledby="vbRessourcenTitel">
+      <h2 class="vb-titel" id="vbRessourcenTitel">Ungedeckte Ressourcen</h2>
+      <p class="vb-zaehler">Was der Abteilung für die Umsetzung noch fehlt</p>
+      <div class="arbeitsflaeche" id="vbRessourcen"></div>
     </section>
 
     <section class="vb-block" aria-labelledby="vbLeitungTitel">
@@ -882,7 +896,7 @@
       // Zeitangaben als Monat (JJJJ-MM), keine taggenauen Daten (Sparring
       // 11.08.). Laufende Vorhaben erfassen nur das Ende, ein historischer
       // Start wird nicht nacherfasst.
-      vzae: '', laeuft: WAEHLEN, startAb: '', endeBis: '',
+      vzae: '', vzaeGedeckt: '', rollenFehlen: '', laeuft: WAEHLEN, startAb: '', endeBis: '',
       // Die Warum-Frage gehoert nur zur Nominierung. Das Feld bleibt beim
       // Zuruecknehmen gespeichert, damit ein spaeterer Zug zurueck nichts
       // vernichtet.
@@ -1019,6 +1033,8 @@
     // Steuerungsbedarf oder Portfolio. Er ist reine Kapazitätsbuchhaltung.
     // Ein Feld, das keine Priorisierungsaussage bewegt, darf keinen Steckbrief
     // unreif machen. Fehlt er, meldet das die Kapazitätsleiste (siehe kapazitaet).
+    // Auch die Deckung ist keine Reifelücke. Sie beschreibt, wie der Bedarf
+    // besetzt ist, und nicht, ob die Runde das Vorhaben einordnen kann.
     if (v.leitung === 'offen' || (IST_NOMINIERT(v.leitung) && !v.bmWarum.trim())) fehlt.push('Nominierung');
     return fehlt;
   }
@@ -1135,6 +1151,23 @@
   }
   const runde1 = zahl => Math.round(zahl * 10) / 10;
   const zahlText = zahl => String(runde1(zahl)).replace('.', ',');
+
+  // Bedarf und Deckung beantworten zwei verschiedene Fragen. Die optionale
+  // Deckungsangabe braucht deshalb einen eigenen Zustand fuer "nicht gesagt".
+  // Eine eingetragene Null ist dagegen eine Aussage: Der ganze Bedarf ist offen.
+  function deckung(v) {
+    const bedarf = runde1(vzaeWert(v));
+    const roh = String(v.vzaeGedeckt == null ? '' : v.vzaeGedeckt).trim();
+    const zahl = parseFloat(roh.replace(',', '.'));
+    const hatAngabe = roh !== '' && Number.isFinite(zahl) && zahl >= 0;
+    const gedeckt = hatAngabe ? runde1(zahl) : null;
+    return {
+      bedarf,
+      gedeckt,
+      luecke: hatAngabe ? runde1(Math.max(0, bedarf - gedeckt)) : null,
+      ueberdeckt: hatAngabe && gedeckt > bedarf
+    };
+  }
 
   // Kapazitaet ehrlich getrennt: was das kommende Halbjahr binden soll, was heute laeuft
   // und tatsaechlich gestoppt wird, und was gar nicht erst neu gebunden wird.
@@ -1401,7 +1434,7 @@
 
   function tsv(abteilung, liste, externe) {
     // Der Wert wandert nur zerlegt in die Tabelle: drei Teilspalten plus Summe
-    const kopf = ['Abteilung', 'Vorhaben', 'Referat', 'Ziel', 'Beschreibung und angestrebte Veränderung', 'Wer profitiert', 'Erste Wirkung in', 'Folgen des Ruhenlassens', 'Konkretisierung', 'VZÄ', 'Stand', 'Geplanter Start', 'Voraussichtliches Ende', 'Nominierung', 'Begründung Nominierung', 'Hängt zusammen mit', 'Punkte Folgen (0 bis 3)', 'Punkte Nominierung (0 bis 1)', 'Punkte Ziel (0 bis 1)', 'Steuerungsbedarf (0 bis 5)', 'Empfehlung', 'Regel', 'Entscheidung der Abteilung', 'Portfolio (abgeleitet)', 'Begründung bei Abweichung', 'Bedingung', 'Hinweis für die Runde'];
+    const kopf = ['Abteilung', 'Vorhaben', 'Referat', 'Ziel', 'Beschreibung und angestrebte Veränderung', 'Wer profitiert', 'Erste Wirkung in', 'Folgen des Ruhenlassens', 'Konkretisierung', 'VZÄ', 'Davon gedeckt (VZÄ)', 'Stand', 'Geplanter Start', 'Voraussichtliches Ende', 'Nominierung', 'Begründung Nominierung', 'Hängt zusammen mit', 'Fehlende Rollen oder Fähigkeiten', 'Punkte Folgen (0 bis 3)', 'Punkte Nominierung (0 bis 1)', 'Punkte Ziel (0 bis 1)', 'Steuerungsbedarf (0 bis 5)', 'Empfehlung', 'Regel', 'Entscheidung der Abteilung', 'Portfolio (abgeleitet)', 'Begründung bei Abweichung', 'Bedingung', 'Hinweis für die Runde'];
     const zeilen = liste.map(v => {
       const e = empfehlung(v, liste);
       const s = steuerungsbedarf(v);
@@ -1411,9 +1444,9 @@
       const haengt = (v.haengtAn || []).map(a => abhName(a, liste, externe)).filter(Boolean).join('; ');
       return [abteilung, v.name, v.referat, v.ziel === WAEHLEN ? '' : v.ziel, v.veraenderung,
         v.reichweite === WAEHLEN ? '' : v.reichweite, v.wirkungAb === WAEHLEN ? '' : v.wirkungAb,
-        v.ruhen === WAEHLEN ? '' : v.ruhen, konkret, v.vzae, v.laeuft === WAEHLEN ? '' : v.laeuft,
+        v.ruhen === WAEHLEN ? '' : v.ruhen, konkret, v.vzae, v.vzaeGedeckt, v.laeuft === WAEHLEN ? '' : v.laeuft,
         v.startAb, v.endeBis,
-        v.leitung === 'offen' ? '' : lb, IST_NOMINIERT(v.leitung) ? v.bmWarum : '', haengt,
+        v.leitung === 'offen' ? '' : lb, IST_NOMINIERT(v.leitung) ? v.bmWarum : '', haengt, v.rollenFehlen,
         punkt(0), punkt(1), punkt(2), s.vollstaendig ? s.summe : '',
         ENTSCHEIDUNG[e.wert], e.regel, ENTSCHEIDUNG[gewaehlt(v, liste)], PORTFOLIO[portfolio(v, liste).wert],
         weichtAb(v, liste) ? v.begruendung : '', gewaehlt(v, liste) === 'wartet' ? v.bedingung : '', v.hinweis
@@ -1429,9 +1462,9 @@
 
   function beispieldaten() {
     const roh = [
-      { name: 'Digitale Antragsstrecke Wohngeld', ziel: 'Einfach Digital', referat: 'X II 2', veraenderung: 'Die häufigsten Wohngeld-Fälle kommen vollständig digital an, die Sachbearbeitung entscheidet ohne Rückfragen.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], schadenKonkret: 'Antragstellende warten weiter sechs Wochen auf ihren Bescheid, ein Drittel der Fälle braucht eine Rückfrage.', vzae: '2', laeuft: LAEUFT[1], endeBis: '2027-03', leitung: 'nominiert', bmWarum: 'Der Livegang hängt an der Reihenfolge mit der Registeranbindung, BM begleitet die Strecke eng.', haengtAn: [{ typ: 'v', id: 'v2' }] },
-      { name: 'Registeranbindung Meldewesen', ziel: 'Der neue Standard', referat: 'X II 1', veraenderung: 'Die Fachverfahren beziehen Meldedaten automatisch, niemand reicht mehr Meldebescheinigungen ein.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[1], pflichtKonkret: 'Gesetzliche Anbindungsfrist Ende März 2027.', vzae: '1,5', laeuft: LAEUFT[1], endeBis: '2027-03', leitung: 'keine', haengtAn: [{ typ: 'x', id: 'x1' }] },
-      { name: 'Interner KI-Leitfaden', ziel: 'Besser KI', referat: 'X I 3', veraenderung: 'Referate nutzen die freigegebenen KI-Werkzeuge für Entwürfe, ohne die Zulässigkeit jedes Mal neu zu prüfen.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[4], chanceKonkret: 'Weniger Schatten-KI: die Freigabe-Anfragen an den Datenschutz sinken, weil der Leitfaden die Standardfälle klärt.', vzae: '0,5', laeuft: LAEUFT[1], endeBis: '2026-12', leitung: 'keine' },
+      { name: 'Digitale Antragsstrecke Wohngeld', ziel: 'Einfach Digital', referat: 'X II 2', veraenderung: 'Die häufigsten Wohngeld-Fälle kommen vollständig digital an, die Sachbearbeitung entscheidet ohne Rückfragen.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], schadenKonkret: 'Antragstellende warten weiter sechs Wochen auf ihren Bescheid, ein Drittel der Fälle braucht eine Rückfrage.', vzae: '2', vzaeGedeckt: '1', laeuft: LAEUFT[1], endeBis: '2027-03', leitung: 'nominiert', bmWarum: 'Der Livegang hängt an der Reihenfolge mit der Registeranbindung, BM begleitet die Strecke eng.', haengtAn: [{ typ: 'v', id: 'v2' }] },
+      { name: 'Registeranbindung Meldewesen', ziel: 'Der neue Standard', referat: 'X II 1', veraenderung: 'Die Fachverfahren beziehen Meldedaten automatisch, niemand reicht mehr Meldebescheinigungen ein.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[1], pflichtKonkret: 'Gesetzliche Anbindungsfrist Ende März 2027.', vzae: '1,5', vzaeGedeckt: '1,5', laeuft: LAEUFT[1], endeBis: '2027-03', leitung: 'keine', haengtAn: [{ typ: 'x', id: 'x1' }] },
+      { name: 'Interner KI-Leitfaden', ziel: 'Besser KI', referat: 'X I 3', veraenderung: 'Referate nutzen die freigegebenen KI-Werkzeuge für Entwürfe, ohne die Zulässigkeit jedes Mal neu zu prüfen.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[4], chanceKonkret: 'Weniger Schatten-KI: die Freigabe-Anfragen an den Datenschutz sinken, weil der Leitfaden die Standardfälle klärt.', vzae: '0,5', vzaeGedeckt: '0,5', laeuft: LAEUFT[1], endeBis: '2026-12', leitung: 'keine' },
       { name: 'Datenkooperation mit den Ländern', ziel: 'Der neue Standard', referat: 'X II 1', veraenderung: 'Bund und Länder tauschen Verfahrensdaten über eine gemeinsame Schnittstelle statt über Listen per Mail.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[3], schadenKonkret: 'Die Länder schicken Verfahrensdaten weiter als Listen per Mail, jede Auswertung kostet Wochen.', vzae: '2', laeuft: LAEUFT[2], startAb: '2026-11', endeBis: '2027-10', leitung: 'nominiert', bmWarum: 'Das Betriebsmodell der Schnittstelle ist zwischen Bund und Ländern strittig, ohne Klärung mit BM startet nichts.', entscheidung: 'wartet', bedingung: 'Wird aktiv, sobald die Schnittstellen-Stelle nachbesetzt ist.' },
       { name: 'Ausstellungsfläche Digitalprojekte im Foyer', ziel: OHNE_ZIEL, referat: 'X I 3', veraenderung: 'Besuchergruppen sehen im Foyer laufende Digitalprojekte des Hauses.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[5], vzae: '1', laeuft: LAEUFT[1], endeBis: '2026-10', leitung: 'keine' },
       { name: 'Cloud-Pilot Fachverfahren', ziel: 'Einfach Digital', veraenderung: 'Ein Fachverfahren läuft produktiv in der Verwaltungscloud, Betriebserfahrung liegt vor.', ruhen: RUHEN[6], vzae: '1', laeuft: LAEUFT[2], leitung: 'offen' },
@@ -1799,12 +1832,20 @@
       <div class="block">
         <span class="block-nr">4</span>
         <div>
-          <span class="frage">Welche Kapazität bindet es?</span>
+          <span class="block-thema">Ressourcen</span>
+          <span class="frage">Welche Ressourcen braucht das Vorhaben?</span>
           <div class="zeile2">
-            <div class="feld">
-              <label for="vzae">Bedarf in VZÄ</label>
-              <p class="feld-hilfe">Grob geschätzt genügt.</p>
-              <input type="text" inputmode="decimal" class="kurz" id="vzae" data-id="${v.id}" data-feld="vzae" maxlength="6" value="${esc(v.vzae)}">
+            <div>
+              <div class="feld">
+                <label for="vzae">Personalbedarf in den nächsten sechs Monaten (VZÄ)</label>
+                <p class="feld-hilfe">Grob geschätzt genügt.</p>
+                <input type="text" inputmode="decimal" class="kurz" id="vzae" data-id="${v.id}" data-feld="vzae" maxlength="6" value="${esc(v.vzae)}">
+              </div>
+              <div class="feld">
+                <label for="vzaeGedeckt">Davon durch Personal der Abteilung gedeckt (VZÄ)</label>
+                <input type="text" inputmode="decimal" class="kurz" id="vzaeGedeckt" data-id="${v.id}" data-feld="vzaeGedeckt" maxlength="6" value="${esc(v.vzaeGedeckt)}">
+              </div>
+              <p class="deckung-rechnung ${deckung(v).ueberdeckt ? 'ueber' : deckung(v).luecke > 0 ? 'luecke' : ''}" id="deckungRechnung" aria-live="polite">${esc(deckungText(v))}</p>
             </div>
             <div class="feld">
               <label for="laeuft">Läuft es bereits?</label>
@@ -1945,6 +1986,22 @@
     });
   }
 
+  function deckungText(v) {
+    const d = deckung(v);
+    if (d.gedeckt === null) return '';
+    if (d.ueberdeckt) return 'Gedeckt ist mehr als der Bedarf. Passt eine der zwei Zahlen nicht?';
+    if (d.luecke > 0) return `Noch ungedeckt: ${zahlText(d.luecke)} VZÄ`;
+    return 'Der Personalbedarf ist gedeckt.';
+  }
+
+  function renderDeckung(v) {
+    const ausgabe = document.getElementById('deckungRechnung');
+    if (!ausgabe) return;
+    const d = deckung(v);
+    ausgabe.textContent = deckungText(v);
+    ausgabe.className = 'deckung-rechnung' + (d.ueberdeckt ? ' ueber' : d.luecke > 0 ? ' luecke' : '');
+  }
+
   // Beim Tippen nur das Noetige neu zeichnen, damit der Fokus im Feld bleibt
   function renderNachTippen() {
     renderNav();
@@ -1954,6 +2011,7 @@
     // Fokus nicht klauen, und so können Empfehlung und Abweichung nicht driften.
     const ablesung = document.querySelector('.ablesung');
     if (ablesung) ablesung.innerHTML = ablesungHtml(v);
+    renderDeckung(v);
     const fuss = document.querySelector('.sb-foot .lane-meta');
     if (fuss) fuss.textContent = istReif(v) ? 'Steckbrief vollständig.' : 'Offen: ' + luecken(v).join(', ') + '.';
   }
@@ -2673,6 +2731,27 @@
         el.addEventListener('click', () => zumVorhabenImBild(el.dataset.offen))));
   }
 
+  function renderRessourcenluecken() {
+    const block = document.getElementById('vbRessourcenBlock');
+    const wurzel = document.getElementById('vbRessourcen');
+    const liste = S.vorhaben.map(v => ({ v, stand: deckung(v) }))
+      .filter(eintrag => eintrag.stand.luecke > 0);
+    block.classList.toggle('verborgen', liste.length === 0);
+    if (!liste.length) { wurzel.innerHTML = ''; return; }
+    wurzel.innerHTML = liste.map(({ v, stand }) => `<div class="of-zeile vb-rollen">
+      <p class="of-name">${esc(v.name)}</p>
+      <p class="of-frage">Noch ungedeckt: ${zahlText(stand.luecke)} VZÄ</p>
+      <label for="rollenFehlen-${v.id}">Welche Rollen oder Fähigkeiten fehlen?</label>
+      <input type="text" id="rollenFehlen-${v.id}" data-rollen="${v.id}" maxlength="240" value="${esc(v.rollenFehlen)}">
+    </div>`).join('');
+    wurzel.querySelectorAll('[data-rollen]').forEach(el => el.addEventListener('input', () => {
+      const v = nachId(el.dataset.rollen);
+      if (!v) return;
+      v.rollenFehlen = el.value;
+      speichern();
+    }));
+  }
+
   function renderPriorisieren() {
     renderBudget();
     renderBild();
@@ -2686,11 +2765,12 @@
   /* ---------- Ansicht "Steuerungsrunde vorbereiten" (Sparring 11.08.) ---------- */
 
   // Die Ansicht baut sich bei jedem Aufruf frisch aus dem Zustand auf, wie die
-  // anderen render-Funktionen auch. Eigene Inhalte hat sie keine: Kopf, Fragen,
-  // Nominierungen und lose Enden lesen dieselben Funktionen wie Schritt 2.
+  // anderen render-Funktionen auch. Kopf, Fragen, Ressourcenlücken,
+  // Nominierungen und lose Enden lesen den gemeinsamen Zustand.
   function renderVorbereiten() {
     renderVorbereitenKopf();
     renderKonflikte();
+    renderRessourcenluecken();
     renderLeitungsfaelle();
     renderOffenePflichten();
   }
