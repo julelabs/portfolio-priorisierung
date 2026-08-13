@@ -234,7 +234,7 @@
      die Ablesung liegt außerhalb des Rasters und zieht mit (margin-left).
      Die Kirsch-Kante links macht den Hinweis auffindbar, sie bewertet nicht:
      sie steht auch vor "Aufschub unkritisch". Sie ist neben der Minze-Kante
-     am Leitungsfall die zweite tragende Kante im Werkzeug (Sparring 11.08.). */
+     an der Nominierung die zweite tragende Kante im Werkzeug. */
   .ablesung { background: var(--blau-10); border-left: 4px solid var(--kirsche-text); border-radius: 6px; padding: 16px 18px; margin-top: 22px; margin-left: 34px; }
   .empf-label { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 6px; }
   .empf-regel { color: var(--fg-2); font-size: 14px; }
@@ -250,13 +250,13 @@
   .sb-zellen { display: flex; gap: 2px; }
   .sb-zelle { height: 14px; width: 26px; border-radius: 2px; background: var(--lavendel); }
   .sb-zelle.folgen { background: var(--blau); }
-  .sb-zelle.leitung { background: var(--blau-60); }
+  .sb-zelle.nominierung { background: var(--blau-60); }
   .sb-zelle.ziel { background: var(--blau-40); }
   .sb-label { color: var(--fg-2); font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px; }
   .sb-label b { font-family: var(--display); font-weight: 700; }
   .sb-label i { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; background: var(--lavendel); }
   .sb-label.folgen i { background: var(--blau); }
-  .sb-label.leitung i { background: var(--blau-60); }
+  .sb-label.nominierung i { background: var(--blau-60); }
   .sb-label.ziel i { background: var(--blau-40); }
   .sb-summe { font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--fg); }
   .sb-summe span { font-weight: 400; color: var(--fg-muted); font-size: 13.5px; }
@@ -392,26 +392,15 @@
   .sichten button:hover { color: var(--blau); }
   .sichten button[aria-pressed="true"] { background: var(--weiss); color: var(--blau); box-shadow: 0 2px 6px rgba(13,12,43,.08); }
 
-  /* Matrix: zwei ehrliche Achsen, Felder als Fächer statt Punktwolke */
+  /* Gemeinsames Raster fuer Portfolio und offene Streifen */
   .mx-scroll { overflow-x: auto; padding-bottom: 4px; }
-  .mx-achse-x { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin: 2px 0 8px 158px; }
-  .matrix { display: grid; grid-template-columns: 150px repeat(4, minmax(198px, 1fr)); min-width: 940px; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+  .matrix { display: grid; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
   .mx-kopf { font-family: var(--display); font-size: 12.5px; font-weight: 700; color: var(--fg-2); padding: 8px 10px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--blau-10); }
   .mx-kopf.leer { background: transparent; }
   .mx-zeile { font-family: var(--display); font-size: 12.5px; font-weight: 700; color: var(--fg-2); padding: 12px 10px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--blau-10); }
   .mx-zelle { display: flex; flex-wrap: wrap; gap: 7px; align-content: flex-start; min-height: 94px; padding: 9px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  /* Die Zellen der Kandidaten-Zone haben keine eigene Füllung mehr: Rahmen,
-     Pill und Füllung zusammen waren drei Markierungen für eine Aussage.
-     Die Klasse .haus bleibt, sie benennt die Zone für Tests und Logik. */
-  /* Die Zeilen tragen nur die Vorlese-Semantik, das Raster bleibt das der Matrix */
+  /* Die Zeilen tragen nur die Vorlese-Semantik, das Raster bleibt stabil */
   .mx-reihe { display: contents; }
-  /* Die Zone ist ein eigenes Rasterfeld über den vier Zellen oben rechts.
-     Vorher war sie eine 9-Prozent-Tönung, die auf einem Beamer verschwand. */
-  /* Die Zone umschließt genau die Zeile, die ins Leitungsportfolio führt. Seit
-     dem Sparring 11.08. ist das allein "regelmäßige Rücksprachen", deshalb ist
-     sie eine Zeile hoch und nicht mehr zwei. */
-  .mx-zone { grid-column: 4 / 6; grid-row: 2 / 3; position: relative; z-index: 1; pointer-events: none; border: 2px solid var(--minze); border-radius: 6px; margin: -1px; }
-  .mx-zone span { position: absolute; top: -11px; right: 10px; background: var(--minze); color: var(--dunkel); font-family: var(--display); font-size: 11px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
   .mx-lese { color: var(--fg-2); font-size: 13.5px; margin-top: 14px; }
   .mx-lese strong { font-family: var(--display); font-size: 13px; }
   .mx-offen { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
@@ -428,14 +417,13 @@
   @keyframes abh-heben { from { transform: translateY(0); } }
   #bildKoerper .abh-vorn { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(13,12,43,.14); animation: abh-heben .3s var(--ease); }
   #bildKoerper .abh-auswahl { box-shadow: 0 0 0 3px var(--blau-20), 0 12px 26px rgba(13,12,43,.16); }
-  .abh-rolle { font-family: var(--display); font-size: 11px; font-weight: 700; color: var(--blau-60); }
   .abh-netz { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
   .abh-linie-halo, .abh-linie { fill: none; stroke-linecap: round; stroke-linejoin: round; }
   .abh-linie-halo { stroke: var(--weiss); stroke-width: 7px; opacity: .94; }
   .abh-linie { stroke: var(--blau-60); stroke-width: 2.5px; }
-  .abh-pfeil { fill: var(--blau-60); }
+  .pt-hinweis { display: block; color: var(--fg-muted); font-size: 12px; line-height: 1.25; margin-top: 3px; }
 
-  /* Abhängigkeiten im Steckbrief: Chips sind Verweise, das Feld darunter
+  /* Verknüpfungen im Steckbrief: Chips sind Verweise, das Feld darunter
      schlägt Bestehendes vor, bevor etwas Neues entsteht */
   .abh-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 8px; }
   .abh-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--blau-10); border-radius: 999px; padding: 5px 6px 5px 12px; font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--fg-2); }
@@ -458,7 +446,7 @@
      Eingeplant-Spalte etwas, "wartet" und "eingestellt" überspannen seit
      Entscheidung 46 beide Zeilen. Die Kopfspalte beschriftete also über die
      volle Höhe eine Unterscheidung, die es in zwei von drei Spalten nicht gibt,
-     und jede erste Kachel dort klebte optisch an der Zeile "Leitungsfall". */
+     und jede erste Kachel dort klebte optisch an dieser Zeile. */
   .matrix.pf { position: relative; grid-template-columns: repeat(3, minmax(200px, 1fr)); min-width: 660px; }
   .matrix.pf .pt { z-index: 3; }
   /* Das Achsenwort führt, die Zahl stützt (Kleinigkeiten-Notiz 06.08.:
@@ -481,7 +469,6 @@
   .matrix.pf.ziehbar .pt { cursor: grab; }
   .pt.zieht { opacity: .45; }
   .mx-zelle.drop-ziel { outline: 2px dashed var(--blau); outline-offset: -5px; }
-  .mx-zieh-hinweis { background: var(--blau-10); border-radius: 6px; color: var(--fg-2); font-size: 13px; padding: 8px 12px; margin-bottom: 10px; }
 
   .pf-korb, .pf-korb-leer { flex-basis: 100%; min-height: 13px; }
   .pf-korb { font-family: var(--display); font-size: 10.5px; line-height: 15px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-2); }
@@ -534,7 +521,7 @@
   .pt.nicht { background: var(--lavendel); border-color: transparent; }
   .pt.nicht .pt-name, .pt.nicht .pt-state { color: var(--fg-2); }
   .pt.offen { border-style: dashed; border-color: var(--blau-40); background: transparent; }
-  /* Leitungsfall: eingelassener Streifen statt dicker Rand-Kante. Die alte
+  /* Nominierung: eingelassener Streifen statt dicker Rand-Kante. Die alte
      border-left lief in den Eckradius und wirkte auf den weißen Karten wie
      ein angeklebter Blob (Kleinigkeiten-Notiz 06.08.). Der Streifen liegt
      innerhalb der Kartenkante, die Kachelform und das Padding bleiben gleich. */
@@ -561,7 +548,7 @@
 
   /* Der Block ist keine Fußnote unter dem Bild, sondern der Übergang vom
      Betrachten zum Handeln. Die Fragen führen und bekommen die volle Breite.
-     Leitungsfälle bleiben als Kontext erhalten, öffnen sich aber erst auf
+     Nominierungen bleiben als Kontext erhalten, öffnen sich aber erst auf
      Nachfrage (Entscheidung 54). */
   .entscheid-hinweise { background: var(--blau-10); box-shadow: inset 0 4px 0 var(--blau); padding-top: clamp(24px, 3vw, 34px); padding-bottom: clamp(28px, 3.5vw, 40px); }
   .fl-teil + .entscheid-hinweise { border-top: 0; }
@@ -635,7 +622,7 @@
   .fusszeile { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--fg-muted); font-size: 13px; }
   .fuss-rechts { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
   .verborgen { display: none; }
-  /* Nur für Screenreader: die Minze-Kante allein transportiert den Leitungsfall nicht */
+  /* Nur für Screenreader: die Minze-Kante allein transportiert die Nominierung nicht */
   .nur-vorlesen { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 </style>
 </head>
@@ -741,7 +728,6 @@
           <div class="sichten">
             <button type="button" data-sicht="portfolio">Portfolio</button>
             <button type="button" data-sicht="laufzeiten">Laufzeiten</button>
-            <button type="button" data-sicht="matrix">Steuerung prüfen</button>
             <button type="button" data-sicht="ziele">Ziele</button>
           </div>
         </div>
@@ -757,7 +743,7 @@
             <span class="lg lg-status"><i class="wartet"></i>wartet</span>
             <span class="lg lg-status"><i class="nicht"></i>eingestellt</span>
             <span class="lg lg-status"><i class="offen"></i>noch offen</span>
-            <span class="lg"><i class="lf"></i>Leitungsfall</span>
+            <span class="lg"><i class="lf"></i>Nominiert für Leitung</span>
           </div>
         </div>
         <div id="quittung" aria-live="polite"></div>
@@ -772,8 +758,8 @@
         <div class="arbeitszone">
           <details class="leitungs-details">
             <summary>
-              <span class="lf-summary-title" id="leitungsfaelleTitel"><i class="lf" aria-hidden="true"></i>Leitungsfälle fürs Haus<span id="leitungsfaelleZahl"></span></span>
-              <span class="lf-summary-hint">Begründungen der BM-Einbindung ansehen</span>
+              <span class="lf-summary-title" id="leitungsfaelleTitel"><i class="lf" aria-hidden="true"></i>Nominierungen für Leitung<span id="leitungsfaelleZahl"></span></span>
+              <span class="lf-summary-hint">Begründungen der Nominierung ansehen</span>
             </summary>
             <div class="arbeitsflaeche" id="leitungsfaelle"></div>
           </details>
@@ -811,7 +797,7 @@
     </section>
 
     <section class="vb-block" aria-labelledby="vbLeitungTitel">
-      <h2 class="vb-titel" id="vbLeitungTitel">Leitungsfälle fürs Haus</h2>
+      <h2 class="vb-titel" id="vbLeitungTitel">Nominierungen für Leitung</h2>
       <p class="vb-zaehler">Was die Abteilung ans Haus meldet</p>
       <div class="arbeitsflaeche" id="vbLeitungsfaelle"></div>
     </section>
@@ -846,6 +832,7 @@
 
   const RUHEN = [WAEHLEN,
     'eine Frist oder rechtliche Pflicht wird verletzt',
+    'eine politische Zusage kann nicht eingehalten werden',
     'spürbarer Schaden, Wirkung geht verloren',
     'eine Chance verschiebt sich, kurzfristig merkt es kaum jemand',
     'wenig, es würde auch dauerhaft kaum auffallen',
@@ -859,27 +846,15 @@
   const REICHWEITE = [WAEHLEN, 'ein einzelnes Referat', 'die Abteilung', 'das ganze Haus', 'externe Zielgruppen'];
   const WIRKUNG_AB = [WAEHLEN, 'unter 6 Monaten', '6 bis 12 Monaten', '12 bis 24 Monaten', 'über 24 Monaten'];
 
-  // Eine Achse, drei sich ausschließende Antworten: Wie stark ist BM eingebunden?
-  // Bis zum Sparring 11.08. fragte die Achse nach einem Leitungsfall ("Entscheidung
-  // der Hausleitung", "hausweiter Konflikt"). Das war eine Ja/Nein-Frage mit zwei
-  // Gründen und hat nie unterschieden, wie oft BM wirklich gebraucht wird. Jetzt
-  // steht dort die Häufigkeit der Einbindung, weil genau die den Unterschied
-  // zwischen Leitungs- und Abteilungsportfolio trägt (Sparring 11.08.).
-  // "Zur Kenntnis" fehlt weiter bewusst, das ist keine Einbindung. Wer BM nur
-  // informieren will, schreibt das in den Hinweis für die Runde.
+  // Eine Nominierung, zwei Antworten: Entweder soll das Vorhaben in die Auswahl
+  // fuer die Leitung, oder die Abteilung steuert selbst. Die drei BM-Stufen aus
+  // Entscheidung 73 sind gestrichen (Entscheidung 78 vom 13.08.).
   const LEITUNG = [
     { wert: 'offen', text: WAEHLEN },
-    { wert: 'keine', text: 'die Abteilung steuert selbst' },
-    { wert: 'gelegentlich', text: 'gelegentliche Rücksprachen oder Freigaben durch BM erforderlich' },
-    { wert: 'regelmaessig', text: 'regelmäßige Rücksprachen mit BM erforderlich' }
+    { wert: 'nominiert', text: 'als hausweit wichtiges Fokusvorhaben nominieren' },
+    { wert: 'keine', text: 'nicht nominieren, die Abteilung steuert selbst' }
   ];
-  // Leitungsfall ist allein die regelmäßige Einbindung: nur sie muss dem Haus
-  // gemeldet werden. Gelegentliche Rücksprachen steuert die Abteilung mit
-  // (Sparring 11.08.), sie bekommen deshalb auch keine eigene Kante im Bild.
-  const IST_LEITUNGSFALL = wert => wert === 'regelmaessig';
-  // Begründungspflichtig ist jede Einbindung von BM, nicht nur die regelmäßige:
-  // wer BM in Anspruch nimmt, sagt wofür (Sparring 11.08.).
-  const BM_EINGEBUNDEN = wert => wert === 'regelmaessig' || wert === 'gelegentlich';
+  const IST_NOMINIERT = wert => wert === 'nominiert';
 
   // Alle drei Wörter sind Entscheidungen, keines beschreibt einen Zustand.
   // "läuft" stand hier bis 05.08. für die Entscheidung und kollidierte mit dem
@@ -903,47 +878,127 @@
       referat: '',
       ziel: WAEHLEN, veraenderung: '',
       reichweite: WAEHLEN, wirkungAb: WAEHLEN,
-      ruhen: WAEHLEN, chanceKonkret: '', pflichtKonkret: '', schadenKonkret: '',
+      ruhen: WAEHLEN, chanceKonkret: '', pflichtKonkret: '', zusageKonkret: '', schadenKonkret: '',
       // Zeitangaben als Monat (JJJJ-MM), keine taggenauen Daten (Sparring
       // 11.08.). Laufende Vorhaben erfassen nur das Ende, ein historischer
       // Start wird nicht nacherfasst.
       vzae: '', laeuft: WAEHLEN, startAb: '', endeBis: '',
-      // Statt der vier Leitungsfall-Angaben genau eine Warum-Frage: die vier
-      // Felder wurden selten gefüllt und haben die Meldung aufgebläht, ohne
-      // dass sie besser wurde (Sparring 11.08.).
+      // Die Warum-Frage gehoert nur zur Nominierung. Das Feld bleibt beim
+      // Zuruecknehmen gespeichert, damit ein spaeterer Zug zurueck nichts
+      // vernichtet.
       leitung: 'offen', bmWarum: '',
-      // Abhängigkeiten sind Verweise, kein Freitext: {typ:'v', id} zeigt auf
-      // ein Vorhaben der Liste, {typ:'x', id} auf einen externen Eintrag im
-      // gemeinsamen Register. So gibt es dasselbe Ding nie zweimal in
-      // verschiedenen Schreibweisen.
+      // Verknüpfungen sind Verweise, kein Freitext. {typ:'v', id} zeigt auf
+      // ein Vorhaben der Liste. Die Richtung wird nur gespeichert, damit das
+      // Feld an einem Steckbrief hängen kann, fachlich gilt die Verbindung
+      // seit Entscheidung 79 vom 13.08. ungerichtet.
       haengtAn: [],
       hinweis: '',
       entscheidung: 'offen', bedingung: '', begruendung: ''
     };
   }
 
-  // Eingabe auf einen bestehenden Eintrag auflösen: erst die Vorhaben, dann
-  // die schon benannten externen, verglichen ohne Groß/Klein und Randleerraum.
-  // Nur wenn nichts passt, entsteht ein neuer externer Eintrag.
-  function abhAufloesen(eingabe, liste, externe, selbstId) {
+  function freieVorhabenId(liste, start) {
+    const belegt = new Set((liste || []).map(v => v.id));
+    let nummer = Number.isFinite(start) && start > 0 ? Math.floor(start) : 1;
+    while (belegt.has('v' + nummer)) nummer += 1;
+    return 'v' + nummer;
+  }
+
+  function abhaengigkeitenBereinigen(liste) {
+    const ids = new Set((liste || []).map(v => v.id));
+    (liste || []).forEach(v => {
+      const gesehen = new Set();
+      v.haengtAn = (v.haengtAn || []).filter(a => {
+        if (!a || a.typ !== 'v' || a.id === v.id || !ids.has(a.id)) return false;
+        if (gesehen.has(a.id)) return false;
+        gesehen.add(a.id);
+        return true;
+      });
+    });
+    return liste;
+  }
+
+  // Eingabe auf einen bestehenden Eintrag auflösen: Vorhaben werden ohne
+  // Groß/Klein und Randleerraum verglichen. Passt nichts, entsteht sofort ein
+  // echtes leeres Vorhaben, damit der Name links sichtbar und wiederverwendbar
+  // ist (Entscheidung 79 vom 13.08.).
+  function abhAufloesen(eingabe, liste, externe, selbstId, neueId) {
     const norm = wert => String(wert || '').trim().toLowerCase();
     const gesucht = norm(eingabe);
     if (!gesucht) return null;
-    // Der eigene Name ist keine Abhängigkeit und darf auch keinen externen
-    // Doppelgänger anlegen
+    // Der eigene Name ist keine Verknüpfung und darf auch kein neues Vorhaben
+    // mit demselben Namen anlegen.
     const selbst = liste.find(x => x.id === selbstId && norm(x.name) === gesucht);
     if (selbst) return null;
     const v = liste.find(x => x.id !== selbstId && norm(x.name) === gesucht);
     if (v) return { typ: 'v', id: v.id };
-    const x = (externe || []).find(e => norm(e.name) === gesucht);
-    if (x) return { typ: 'x', id: x.id };
-    return { typ: 'neu', name: String(eingabe).trim() };
+    const neu = neuesVorhaben(neueId || freieVorhabenId(liste), String(eingabe).trim());
+    liste.push(neu);
+    return { typ: 'v', id: neu.id };
   }
 
   function abhName(a, liste, externe) {
     if (a.typ === 'v') { const v = liste.find(x => x.id === a.id); return v ? v.name : null; }
     const x = (externe || []).find(e => e.id === a.id);
-    return x ? x.name + ' (extern)' : null;
+    return x ? x.name : null;
+  }
+
+  function verknuepfteIds(v, liste) {
+    const verbunden = new Set();
+    if (!v || !Array.isArray(liste)) return verbunden;
+    const ids = new Set(liste.map(x => x.id));
+    (v.haengtAn || []).forEach(a => {
+      if (a && a.typ === 'v' && a.id !== v.id && ids.has(a.id)) verbunden.add(a.id);
+    });
+    liste.forEach(x => {
+      if (x.id === v.id) return;
+      if ((x.haengtAn || []).some(a => a && a.typ === 'v' && a.id === v.id)) verbunden.add(x.id);
+    });
+    return verbunden;
+  }
+
+  const verknuepfungsZahl = (v, liste) => verknuepfteIds(v, liste).size;
+  const verknuepfungsRegeltext = (v, liste) => {
+    const zahl = verknuepfungsZahl(v, liste);
+    return zahl >= 3 ? `Mit ${zahl} Vorhaben verknüpft: ein zentraler Knoten im Portfolio.` : '';
+  };
+
+  function migriereExterneAbhaengigkeiten(stand) {
+    if (!stand || !Array.isArray(stand.vorhaben)) return stand;
+    const liste = stand.vorhaben;
+    const externe = Array.isArray(stand.externe) ? stand.externe : [];
+    if (!externe.length) {
+      abhaengigkeitenBereinigen(liste);
+      delete stand.externe;
+      return stand;
+    }
+    const norm = wert => String(wert || '').trim().toLowerCase();
+    const nachName = new Map();
+    liste.forEach(v => {
+      const name = norm(v.name);
+      if (name && !nachName.has(name)) nachName.set(name, v);
+    });
+    const zielId = new Map();
+    externe.forEach(x => {
+      const name = String(x.name || '').trim();
+      if (!name) return;
+      let ziel = nachName.get(norm(name));
+      if (!ziel) {
+        ziel = neuesVorhaben(freieVorhabenId(liste), name);
+        liste.push(ziel);
+        nachName.set(norm(name), ziel);
+      }
+      zielId.set(x.id, ziel.id);
+    });
+    liste.forEach(v => {
+      v.haengtAn = (v.haengtAn || []).map(a => {
+        if (a && a.typ === 'x' && zielId.has(a.id)) return { typ: 'v', id: zielId.get(a.id) };
+        return a;
+      });
+    });
+    abhaengigkeitenBereinigen(liste);
+    delete stand.externe;
+    return stand;
   }
 
   // Reife: kann die Runde mit diesem Steckbrief arbeiten?
@@ -951,85 +1006,87 @@
     const fehlt = [];
     if (v.ziel === WAEHLEN) fehlt.push('Ziel');
     if (!v.veraenderung.trim()) fehlt.push('Veränderung');
-    if (v.ruhen === WAEHLEN || v.ruhen === RUHEN[5]) fehlt.push('Folgen');
-    if (v.ruhen === RUHEN[3] && !v.chanceKonkret.trim()) fehlt.push('Chance');
+    if (v.ruhen === WAEHLEN || v.ruhen === RUHEN[6]) fehlt.push('Folgen');
+    if (v.ruhen === RUHEN[4] && !v.chanceKonkret.trim()) fehlt.push('Chance');
     if (v.ruhen === RUHEN[1] && !v.pflichtKonkret.trim()) fehlt.push('Frist');
+    if (v.ruhen === RUHEN[2] && !String(v.zusageKonkret || '').trim()) fehlt.push('Zusage');
     // "Spürbarer Schaden" war bis 10.08. die einzige Antwort ohne Beleg, und
     // gerade sie führt direkt zu "eingeplant" (siehe empfehlung). Es gab also
     // genau ein Schlupfloch: ankreuzen und nie gefragt werden, welcher Schaden.
-    // Jeder andere Weg verlangt einen falsifizierbaren Satz (Entscheidung 64).
-    if (v.ruhen === RUHEN[2] && !v.schadenKonkret.trim()) fehlt.push('Schaden');
+    // Jeder Weg zu "eingeplant" verlangt einen falsifizierbaren Satz.
+    if (v.ruhen === RUHEN[3] && !v.schadenKonkret.trim()) fehlt.push('Schaden');
     // Der Stand fehlt hier bewusst: er beeinflusst weder Empfehlung noch
-    // Steuerungsbedarf, Portfolio oder Matrix. Er ist reine Kapazitätsbuchhaltung.
+    // Steuerungsbedarf oder Portfolio. Er ist reine Kapazitätsbuchhaltung.
     // Ein Feld, das keine Priorisierungsaussage bewegt, darf keinen Steckbrief
     // unreif machen. Fehlt er, meldet das die Kapazitätsleiste (siehe kapazitaet).
-    if (v.leitung === 'offen') fehlt.push('Leitungsbedarf');
-    if (BM_EINGEBUNDEN(v.leitung) && !v.bmWarum.trim()) fehlt.push('BM-Begründung');
+    if (v.leitung === 'offen' || (IST_NOMINIERT(v.leitung) && !v.bmWarum.trim())) fehlt.push('Nominierung');
     return fehlt;
   }
   const istReif = v => luecken(v).length === 0;
 
   // Empfehlung liegt jetzt auf einer einzigen Achse: machen wir es im naechsten Halbjahr?
   // Die Steuerungsebene ist ein eigenes Feld und wird nicht mehr mit hineingerechnet.
-  function empfehlung(v) {
+  function empfehlung(v, liste) {
+    let ergebnis;
     if (!v.veraenderung.trim()) {
-      return { wert: 'offen', regel: 'Beschreibung und angestrebte Veränderung fehlen noch. Ohne sie kann niemand priorisieren.' };
+      ergebnis = { wert: 'offen', regel: 'Beschreibung und angestrebte Veränderung fehlen noch. Ohne sie kann niemand priorisieren.' };
+    } else if (v.ruhen === WAEHLEN || v.ruhen === RUHEN[6]) {
+      ergebnis = { wert: 'offen', regel: 'Die Folgen des Ruhenlassens sind noch offen. Erst klären, dann entscheiden.' };
+    } else if (v.ruhen === RUHEN[1]) {
+      ergebnis = { wert: 'prio', regel: 'Ruhenlassen verletzt eine Frist oder eine rechtliche Pflicht.' };
+    } else if (v.ruhen === RUHEN[2]) {
+      ergebnis = { wert: 'prio', regel: 'Ruhenlassen verhindert eine politische Zusage.' };
+    } else if (v.ruhen === RUHEN[3]) {
+      ergebnis = { wert: 'prio', regel: 'Ruhenlassen richtet spürbaren Schaden an oder Wirkung geht verloren.' };
+    } else if (v.ruhen === RUHEN[5] && v.ziel === OHNE_ZIEL) {
+      ergebnis = { wert: 'nicht', regel: 'Das Vorhaben zahlt auf kein Ziel des Hauses ein und würde dauerhaft kaum fehlen.' };
+    } else if (v.ruhen === RUHEN[5]) {
+      ergebnis = { wert: 'wartet', regel: 'Es würde dauerhaft kaum fehlen. Dann muss es in diesem Halbjahr nicht eingeplant werden.' };
+    } else if (v.ziel === OHNE_ZIEL) {
+      // Ohne Zielbezug trägt auch eine verschobene Chance keine Einplanung: das
+      // spiegelt die Kaum-fehlen-Regeln, bei denen erst das Ziel zwischen wartet
+      // und eingestellt unterscheidet. Vorher lief dieser Fall in die letzte
+      // Regel und bekam "eingeplant" mit einem Regeltext, der ein Ziel behauptete.
+      ergebnis = { wert: 'wartet', regel: 'Eine Chance verschiebt sich, aber das Vorhaben zahlt auf kein Ziel des Hauses ein. Dann muss es in diesem Halbjahr nicht eingeplant werden.' };
+    } else {
+      ergebnis = { wert: 'prio', regel: 'Eine Chance verschiebt sich, und das Vorhaben zahlt auf ein Ziel des Hauses ein.' };
     }
-    if (v.ruhen === WAEHLEN || v.ruhen === RUHEN[5]) {
-      return { wert: 'offen', regel: 'Die Folgen des Ruhenlassens sind noch offen. Erst klären, dann entscheiden.' };
+    const knoten = verknuepfungsRegeltext(v, liste);
+    if (knoten && (ergebnis.wert === 'offen' || ergebnis.wert === 'wartet')) {
+      return { wert: 'prio', regel: knoten };
     }
-    if (v.ruhen === RUHEN[1]) {
-      return { wert: 'prio', regel: 'Ruhenlassen verletzt eine Frist oder eine rechtliche Pflicht.' };
-    }
-    if (v.ruhen === RUHEN[2]) {
-      return { wert: 'prio', regel: 'Ruhenlassen richtet spürbaren Schaden an oder Wirkung geht verloren.' };
-    }
-    if (v.ruhen === RUHEN[4] && v.ziel === OHNE_ZIEL) {
-      return { wert: 'nicht', regel: 'Das Vorhaben zahlt auf kein Ziel des Hauses ein und würde dauerhaft kaum fehlen.' };
-    }
-    if (v.ruhen === RUHEN[4]) {
-      return { wert: 'wartet', regel: 'Es würde dauerhaft kaum fehlen. Dann muss es in diesem Halbjahr nicht eingeplant werden.' };
-    }
-    // Ohne Zielbezug trägt auch eine verschobene Chance keine Einplanung: das
-    // spiegelt die Kaum-fehlen-Regeln, bei denen erst das Ziel zwischen wartet
-    // und eingestellt unterscheidet. Vorher lief dieser Fall in die letzte
-    // Regel und bekam "eingeplant" mit einem Regeltext, der ein Ziel behauptete.
-    if (v.ziel === OHNE_ZIEL) {
-      return { wert: 'wartet', regel: 'Eine Chance verschiebt sich, aber das Vorhaben zahlt auf kein Ziel des Hauses ein. Dann muss es in diesem Halbjahr nicht eingeplant werden.' };
-    }
-    return { wert: 'prio', regel: 'Eine Chance verschiebt sich, und das Vorhaben zahlt auf ein Ziel des Hauses ein.' };
+    return ergebnis;
   }
 
-  const gewaehlt = v => v.entscheidung === 'offen' ? empfehlung(v).wert : v.entscheidung;
-  const weichtAb = v => v.entscheidung !== 'offen' && v.entscheidung !== empfehlung(v).wert;
+  const gewaehlt = (v, liste) => v.entscheidung === 'offen' ? empfehlung(v, liste).wert : v.entscheidung;
+  const weichtAb = (v, liste) => v.entscheidung !== 'offen' && v.entscheidung !== empfehlung(v, liste).wert;
 
   // Pflichten, die an einer schon getroffenen Entscheidung hängen (Entscheidungen
   // 3 und 8). Sie blockieren nichts und haben das nie getan: Ablegen setzt die
   // Entscheidung sofort. Seit Entscheidung 59 werden sie zum sichtbaren Rest,
   // statt im Moment des Zugs abgefragt zu werden.
-  function offenePflicht(v) {
-    // Die Einbindung von BM gilt auch ohne getroffene Entscheidung: Wer sie
-    // angibt, schuldet dem Haus die Begründung (Entscheidung 18, auf die zwei
-    // BM-Stufen umgestellt im Sparring 11.08.).
-    if (BM_EINGEBUNDEN(v.leitung) && !v.bmWarum.trim()) return 'bmWarum';
+  function offenePflicht(v, liste) {
+    // Die Nominierung gilt auch ohne getroffene Entscheidung: Wer fuer die
+    // Leitung nominiert, schuldet die strategische Begruendung.
+    if (IST_NOMINIERT(v.leitung) && !v.bmWarum.trim()) return 'bmWarum';
     if (v.entscheidung === 'offen') return null;
-    if (gewaehlt(v) === 'wartet' && !v.bedingung.trim()) return 'bedingung';
-    if (weichtAb(v) && !v.begruendung.trim()) return 'begruendung';
+    if (gewaehlt(v, liste) === 'wartet' && !v.bedingung.trim()) return 'bedingung';
+    if (weichtAb(v, liste) && !v.begruendung.trim()) return 'begruendung';
     return null;
   }
   const OFFENE_PFLICHT = {
     bedingung: { kurz: 'Bedingung fehlt', frage: 'Was muss eintreten, damit es startet?' },
     begruendung: { kurz: 'Begründung fehlt', frage: 'Warum weicht ihr von der Empfehlung ab?' },
-    bmWarum: { kurz: 'BM-Begründung fehlt', frage: 'Warum braucht dieses Vorhaben Rücksprache oder Freigabe durch BM?' }
+    bmWarum: { kurz: 'Begründung Nominierung fehlt', frage: 'Warum ist dieses Vorhaben für das Haus strategisch wichtig?' }
   };
 
   // Steuerungsbedarf: drei Teilwerte, jeder direkt aus einer Antwort, nichts gewichtet.
   // Die Ressourcen fehlen hier bewusst: Kapazität ist ein Preis, kein Wert.
   // Der Wert entscheidet nichts, er fasst zusammen und wird nie ohne seine Teile gezeigt.
   const SCORE_FOLGEN = {};
-  SCORE_FOLGEN[RUHEN[4]] = 0; SCORE_FOLGEN[RUHEN[3]] = 1; SCORE_FOLGEN[RUHEN[2]] = 2; SCORE_FOLGEN[RUHEN[1]] = 3;
-  const SCORE_LEITUNG = { keine: 0, gelegentlich: 1, regelmaessig: 2 };
-  const SCORE_MAX = 6;
+  SCORE_FOLGEN[RUHEN[5]] = 0; SCORE_FOLGEN[RUHEN[4]] = 1; SCORE_FOLGEN[RUHEN[3]] = 2; SCORE_FOLGEN[RUHEN[2]] = 2; SCORE_FOLGEN[RUHEN[1]] = 3;
+  const SCORE_LEITUNG = { keine: 0, nominiert: 1 };
+  const SCORE_MAX = 5;
 
   function steuerungsbedarf(v) {
     const folgen = SCORE_FOLGEN[v.ruhen];
@@ -1037,7 +1094,7 @@
     const ziel = v.ziel === WAEHLEN ? undefined : (v.ziel === OHNE_ZIEL ? 0 : 1);
     const teile = [
       { name: 'Folgen', wert: folgen, max: 3 },
-      { name: 'Leitung', wert: leitung, max: 2 },
+      { name: 'Nominierung', wert: leitung, max: 1 },
       { name: 'Ziel', wert: ziel, max: 1 }
     ];
     const vollstaendig = teile.every(t => t.wert !== undefined);
@@ -1046,7 +1103,7 @@
   }
 
   // Wo das Vorhaben landet. Ergibt sich aus zwei getrennten Feldern: der Entscheidung
-  // (eingeplant, wartet, eingestellt) und dem Leitungsbedarf. Niemand wählt das direkt aus.
+  // (eingeplant, wartet, eingestellt) und der Nominierung. Niemand wählt das direkt aus.
   const PORTFOLIO = {
     haus: 'Leitungsportfolio',
     fach: 'Abteilungsportfolio',
@@ -1055,13 +1112,19 @@
     offen: 'Erst klären'
   };
 
-  function portfolio(v) {
-    const wahl = gewaehlt(v);
+  function portfolio(v, liste) {
+    // Unreif heißt Erst klären, aber nur ohne eigene Entscheidung: Eine
+    // getroffene Entscheidung zieht den Ort mit (Entscheidungen 26 und 59),
+    // was fehlt, bleibt sichtbarer Rest statt die Kachel auszuwerfen. Die
+    // Reife-Schranke fängt vor allem die Anhebe-Regel der Verknüpfungen ab
+    // (Entscheidung 79): eine angehobene Empfehlung macht nicht reif.
+    if (!istReif(v) && v.entscheidung === 'offen') return { wert: 'offen', satz: 'Noch nicht einzuordnen, es fehlen Antworten.' };
+    const wahl = gewaehlt(v, liste);
     if (wahl === 'offen') return { wert: 'offen', satz: 'Noch nicht einzuordnen, es fehlen Antworten.' };
     if (wahl === 'wartet') return { wert: 'warte', satz: 'Wartet auf die benannte Bedingung, mit Wiedervorlage.' };
     if (wahl === 'nicht') return { wert: 'nicht', satz: 'Wird nicht weiterverfolgt, sichtbar ausgewiesen.' };
-    if (IST_LEITUNGSFALL(v.leitung)) {
-      return { wert: 'haus', satz: 'Eingeplant, BM ist regelmäßig dran. Als Leitungsfall gemeldet, ausgewählt wird im Haus.' };
+    if (IST_NOMINIERT(v.leitung)) {
+      return { wert: 'haus', satz: 'Eingeplant und für Leitung nominiert. Ausgewählt wird im Haus.' };
     }
     return { wert: 'fach', satz: 'Eingeplant, die Abteilung steuert es selbst.' };
   }
@@ -1079,7 +1142,7 @@
     let gebunden = 0, gestoppt = 0, nichtGebunden = 0, standOffen = 0;
     liste.forEach(v => {
       const wert = vzaeWert(v);
-      const wahl = gewaehlt(v);
+      const wahl = gewaehlt(v, liste);
       if (wahl === 'prio') { gebunden += wert; return; }
       if (wahl !== 'nicht' && wahl !== 'wartet') return;
       // Ohne Stand lässt sich nicht sagen, ob hier etwas frei wird oder nur
@@ -1124,7 +1187,7 @@
     let bedarf = 0, ohneZahl = 0;
     liste.forEach(v => {
       // Eingestelltes kostet nichts mehr und darf den Bedarf nicht aufblähen
-      if (gewaehlt(v) === 'nicht') return;
+      if (gewaehlt(v, liste) === 'nicht') return;
       const wert = vzaeWert(v);
       if (wert > 0) bedarf += wert; else ohneZahl += 1;
     });
@@ -1156,10 +1219,10 @@
     'Veränderung': 'die Beschreibung und angestrebte Veränderung',
     'Folgen': 'die Folgen des Ruhenlassens',
     'Chance': 'die konkrete Chance',
+    'Zusage': 'die politische Zusage',
     'Schaden': 'der konkrete Schaden',
     'Frist': 'die betroffene Frist',
-    'Leitungsbedarf': 'der Leitungsbedarf',
-    'BM-Begründung': 'die Begründung für die BM-Einbindung'
+    'Nominierung': 'die Nominierung'
   };
   function lueckenText(v) {
     const teile = luecken(v).map(marke => LUECKE_LANG[marke] || marke);
@@ -1170,12 +1233,12 @@
   const lueckenVerb = v => luecken(v).length === 1 ? 'fehlt' : 'fehlen';
 
   // Gemeldet wird, was auch eingeplant ist. Vorher meldete diese Liste auch
-  // wartende Leitungsfälle, während portfolio() sie ausdrücklich nicht ins
+  // wartende Nominierungen, während portfolio() sie ausdrücklich nicht ins
   // Leitungsportfolio nahm. Dasselbe Vorhaben war je nach Blickwinkel drin oder
   // draußen. Jetzt entscheidet portfolio(), und der Rest verschwindet nicht
   // lautlos, sondern steht als Notiz darunter.
-  const leitungsfaelle = liste => liste.filter(v => IST_LEITUNGSFALL(v.leitung) && gewaehlt(v) === 'prio');
-  const leitungsfaelleZurueck = liste => liste.filter(v => IST_LEITUNGSFALL(v.leitung) && gewaehlt(v) !== 'prio');
+  const nominierungen = liste => liste.filter(v => IST_NOMINIERT(v.leitung) && portfolio(v, liste).wert === 'haus');
+  const nominierungenZurueck = liste => liste.filter(v => IST_NOMINIERT(v.leitung) && portfolio(v, liste).wert !== 'haus');
 
   // Fragen für die Runde: konkret, bearbeitbar, nach Schaerfe sortiert. Hart
   // auf vier gedeckelt, damit der Block kein Noergel-Dashboard wird. Jede
@@ -1196,7 +1259,7 @@
       });
     }
 
-    const gestoppt = liste.filter(v => gewaehlt(v) === 'nicht');
+    const gestoppt = liste.filter(v => gewaehlt(v, liste) === 'nicht');
     if (kap.ueber > 0 && gestoppt.length === 0) {
       punkte.push({
         typ: 'besprechen',
@@ -1205,27 +1268,49 @@
       });
     }
 
-    // Abhängigkeiten: eingeplant auf einer Voraussetzung, die nicht kommt.
-    // Nur interne Kanten, externe Einträge haben keinen prüfbaren Zustand.
+    // Verknüpfungen: ein eingeplantes Vorhaben ist mit etwas verbunden, das
+    // wartet oder eingestellt ist. Die Verbindung ist seit Entscheidung 79 vom
+    // 13.08. ungerichtet, deshalb werden gespeicherte Kanten als Paare gelesen.
+    const paare = new Set();
     liste.forEach(v => {
-      if (gewaehlt(v) !== 'prio') return;
       (v.haengtAn || []).filter(a => a.typ === 'v').forEach(a => {
-        const d = liste.find(x => x.id === a.id);
-        if (!d) return;
-        const zustand = gewaehlt(d);
+        if (!liste.some(x => x.id === a.id)) return;
+        paare.add([v.id, a.id].sort().join('|'));
+      });
+    });
+    paare.forEach(key => {
+      const [aId, bId] = key.split('|');
+      const a = liste.find(x => x.id === aId);
+      const b = liste.find(x => x.id === bId);
+      if (!a || !b) return;
+      [[a, b], [b, a]].forEach(([prio, anderer]) => {
+        if (gewaehlt(prio, liste) !== 'prio' || portfolio(prio, liste).wert === 'offen') return;
+        const zustand = gewaehlt(anderer, liste);
         if (zustand !== 'wartet' && zustand !== 'nicht') return;
         punkte.push({
           typ: 'besprechen',
-          befund: `"${v.name}" ist eingeplant, hängt aber an "${d.name}" (${ENTSCHEIDUNG[zustand]}).`,
+          befund: `"${prio.name}" ist eingeplant, hängt aber zusammen mit "${anderer.name}" (${ENTSCHEIDUNG[zustand]}).`,
           frage: 'Soll das so bleiben?',
-          namen: [v.name, d.name],
-          vId: v.id
+          namen: [prio.name, anderer.name],
+          vId: prio.id
         });
       });
     });
 
-    const entschieden = liste.filter(v => gewaehlt(v) !== 'offen');
-    if (entschieden.length >= 4 && entschieden.every(v => gewaehlt(v) === 'prio')) {
+    liste.forEach(v => {
+      const zahl = verknuepfungsZahl(v, liste);
+      if (zahl < 3 || gewaehlt(v, liste) !== 'nicht' || portfolio(v, liste).wert === 'offen') return;
+      punkte.push({
+        typ: 'besprechen',
+        befund: `"${v.name}" ist eingestellt, ${zahl} Vorhaben hängen mit daran.`,
+        frage: 'Bleibt das so?',
+        namen: [v.name],
+        vId: v.id
+      });
+    });
+
+    const entschieden = liste.filter(v => gewaehlt(v, liste) !== 'offen');
+    if (entschieden.length >= 4 && entschieden.every(v => gewaehlt(v, liste) === 'prio')) {
       punkte.push({
         typ: 'besprechen',
         befund: `Alle ${entschieden.length} Vorhaben sind eingeplant. Ein Portfolio, das nichts weglässt, ist eine Liste.`,
@@ -1233,7 +1318,7 @@
       });
     }
 
-    // Die fehlende BM-Begründung ist wie die fehlende Bedingung ein loses Ende
+    // Die fehlende Nominierungsbegruendung ist wie die fehlende Bedingung ein loses Ende
     // an einer schon getroffenen Meldung, keine Frage für die Runde. Sie steht
     // deshalb in der Zeile "Noch offen" (Entscheidung 60).
 
@@ -1250,20 +1335,36 @@
     return punkte.slice(0, 4);
   }
 
-  // Achsen der Matrix. Beide kommen aus je einer direkt beantworteten Frage,
-  // es wird nichts verrechnet: jede Position ist auf ein Dropdown zurückführbar.
-  const MX_SPALTEN = [
-    { wert: RUHEN[4], kopf: 'kaum etwas' },
-    { wert: RUHEN[3], kopf: 'eine Chance verschiebt sich' },
-    { wert: RUHEN[2], kopf: 'spürbarer Schaden' },
-    { wert: RUHEN[1], kopf: 'Frist oder Pflicht platzt' }
-  ];
-  const MX_ZEILEN = [
-    { wert: 'regelmaessig', kopf: 'regelmäßige Rücksprachen' },
-    { wert: 'gelegentlich', kopf: 'gelegentliche Rücksprachen oder Freigaben' },
-    { wert: 'keine', kopf: 'Abteilung steuert selbst' }
-  ];
-  const mxEinsortierbar = v => MX_SPALTEN.some(s => s.wert === v.ruhen) && MX_ZEILEN.some(z => z.wert === v.leitung);
+  function hinweisAnhaengen(v, text) {
+    const sauber = String(text || '').trim();
+    if (!sauber || String(v.hinweis || '').includes(sauber)) return;
+    v.hinweis = (String(v.hinweis || '').trim() ? String(v.hinweis).trim() + ' · ' : '') + sauber;
+    if (v.hinweis.length > 240) v.hinweis = v.hinweis.slice(0, 240);
+  }
+
+  function migriereNominierung(v) {
+    if (!v) return v;
+    if (v.leitung === 'kenntnis') v.leitung = 'keine';
+    if ((v.leitung === 'konflikt' || v.leitung === 'regelmaessig') && !String(v.bmWarum || '').trim() && String(v.lfFrage || '').trim()) {
+      v.bmWarum = String(v.lfFrage).trim();
+    }
+    if (v.leitung === 'konflikt' || v.leitung === 'regelmaessig') {
+      v.leitung = 'nominiert';
+    } else if (v.leitung === 'entscheidung' || v.leitung === 'gelegentlich') {
+      const alt = String(v.bmWarum || v.lfFrage || '').trim();
+      if (alt) hinweisAnhaengen(v, 'Bisherige BM-Begründung: ' + alt);
+      v.bmWarum = '';
+      v.leitung = 'keine';
+    }
+    const reste = [
+      String(v.lfTermin || '').trim() ? 'Termin: ' + String(v.lfTermin).trim() : '',
+      String(v.lfWer || '').trim() ? 'Entscheidet: ' + String(v.lfWer).trim() : '',
+      String(v.lfFolge || '').trim() ? 'Ohne Entscheidung: ' + String(v.lfFolge).trim() : ''
+    ].filter(Boolean).join(' · ');
+    if (reste) hinweisAnhaengen(v, reste);
+    delete v.lfFrage; delete v.lfTermin; delete v.lfWer; delete v.lfFolge;
+    return v;
+  }
 
   function cleanCell(wert) { return String(wert || '').replace(/[\t\r\n]+/g, ' ').trim(); }
 
@@ -1300,22 +1401,22 @@
 
   function tsv(abteilung, liste, externe) {
     // Der Wert wandert nur zerlegt in die Tabelle: drei Teilspalten plus Summe
-    const kopf = ['Abteilung', 'Vorhaben', 'Referat', 'Ziel', 'Beschreibung und angestrebte Veränderung', 'Wer profitiert', 'Erste Wirkung in', 'Folgen des Ruhenlassens', 'Konkretisierung', 'VZÄ', 'Stand', 'Geplanter Start', 'Voraussichtliches Ende', 'Leitungsbedarf', 'Begründung BM-Einbindung', 'Hängt an', 'Punkte Folgen (0 bis 3)', 'Punkte Leitung (0 bis 2)', 'Punkte Ziel (0 bis 1)', 'Steuerungsbedarf (0 bis 6)', 'Empfehlung', 'Regel', 'Entscheidung der Abteilung', 'Portfolio (abgeleitet)', 'Begründung bei Abweichung', 'Bedingung', 'Hinweis für die Runde'];
+    const kopf = ['Abteilung', 'Vorhaben', 'Referat', 'Ziel', 'Beschreibung und angestrebte Veränderung', 'Wer profitiert', 'Erste Wirkung in', 'Folgen des Ruhenlassens', 'Konkretisierung', 'VZÄ', 'Stand', 'Geplanter Start', 'Voraussichtliches Ende', 'Nominierung', 'Begründung Nominierung', 'Hängt zusammen mit', 'Punkte Folgen (0 bis 3)', 'Punkte Nominierung (0 bis 1)', 'Punkte Ziel (0 bis 1)', 'Steuerungsbedarf (0 bis 5)', 'Empfehlung', 'Regel', 'Entscheidung der Abteilung', 'Portfolio (abgeleitet)', 'Begründung bei Abweichung', 'Bedingung', 'Hinweis für die Runde'];
     const zeilen = liste.map(v => {
-      const e = empfehlung(v);
+      const e = empfehlung(v, liste);
       const s = steuerungsbedarf(v);
       const punkt = i => s.teile[i].wert === undefined ? '' : s.teile[i].wert;
-      const konkret = v.ruhen === RUHEN[3] ? v.chanceKonkret : v.ruhen === RUHEN[1] ? v.pflichtKonkret : v.ruhen === RUHEN[2] ? v.schadenKonkret : '';
+      const konkret = v.ruhen === RUHEN[4] ? v.chanceKonkret : v.ruhen === RUHEN[1] ? v.pflichtKonkret : v.ruhen === RUHEN[2] ? v.zusageKonkret : v.ruhen === RUHEN[3] ? v.schadenKonkret : '';
       const lb = (LEITUNG.find(o => o.wert === v.leitung) || {}).text;
       const haengt = (v.haengtAn || []).map(a => abhName(a, liste, externe)).filter(Boolean).join('; ');
       return [abteilung, v.name, v.referat, v.ziel === WAEHLEN ? '' : v.ziel, v.veraenderung,
         v.reichweite === WAEHLEN ? '' : v.reichweite, v.wirkungAb === WAEHLEN ? '' : v.wirkungAb,
         v.ruhen === WAEHLEN ? '' : v.ruhen, konkret, v.vzae, v.laeuft === WAEHLEN ? '' : v.laeuft,
         v.startAb, v.endeBis,
-        v.leitung === 'offen' ? '' : lb, BM_EINGEBUNDEN(v.leitung) ? v.bmWarum : '', haengt,
+        v.leitung === 'offen' ? '' : lb, IST_NOMINIERT(v.leitung) ? v.bmWarum : '', haengt,
         punkt(0), punkt(1), punkt(2), s.vollstaendig ? s.summe : '',
-        ENTSCHEIDUNG[e.wert], e.regel, ENTSCHEIDUNG[gewaehlt(v)], PORTFOLIO[portfolio(v).wert],
-        weichtAb(v) ? v.begruendung : '', gewaehlt(v) === 'wartet' ? v.bedingung : '', v.hinweis
+        ENTSCHEIDUNG[e.wert], e.regel, ENTSCHEIDUNG[gewaehlt(v, liste)], PORTFOLIO[portfolio(v, liste).wert],
+        weichtAb(v, liste) ? v.begruendung : '', gewaehlt(v, liste) === 'wartet' ? v.bedingung : '', v.hinweis
       ].map(cleanCell).join('\t');
     });
     return [kopf.join('\t'), ...zeilen].join('\n');
@@ -1328,21 +1429,22 @@
 
   function beispieldaten() {
     const roh = [
-      { name: 'Digitale Antragsstrecke Wohngeld', ziel: 'Einfach Digital', referat: 'X II 2', veraenderung: 'Die häufigsten Wohngeld-Fälle kommen vollständig digital an, die Sachbearbeitung entscheidet ohne Rückfragen.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[2], schadenKonkret: 'Antragstellende warten weiter sechs Wochen auf ihren Bescheid, ein Drittel der Fälle braucht eine Rückfrage.', vzae: '2', laeuft: LAEUFT[1], endeBis: '2027-03', leitung: 'regelmaessig', bmWarum: 'Der Livegang hängt an der Reihenfolge mit der Registeranbindung, BM begleitet die Strecke eng.', haengtAn: [{ typ: 'v', id: 'v2' }] },
+      { name: 'Digitale Antragsstrecke Wohngeld', ziel: 'Einfach Digital', referat: 'X II 2', veraenderung: 'Die häufigsten Wohngeld-Fälle kommen vollständig digital an, die Sachbearbeitung entscheidet ohne Rückfragen.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], schadenKonkret: 'Antragstellende warten weiter sechs Wochen auf ihren Bescheid, ein Drittel der Fälle braucht eine Rückfrage.', vzae: '2', laeuft: LAEUFT[1], endeBis: '2027-03', leitung: 'nominiert', bmWarum: 'Der Livegang hängt an der Reihenfolge mit der Registeranbindung, BM begleitet die Strecke eng.', haengtAn: [{ typ: 'v', id: 'v2' }] },
       { name: 'Registeranbindung Meldewesen', ziel: 'Der neue Standard', referat: 'X II 1', veraenderung: 'Die Fachverfahren beziehen Meldedaten automatisch, niemand reicht mehr Meldebescheinigungen ein.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[1], pflichtKonkret: 'Gesetzliche Anbindungsfrist Ende März 2027.', vzae: '1,5', laeuft: LAEUFT[1], endeBis: '2027-03', leitung: 'keine', haengtAn: [{ typ: 'x', id: 'x1' }] },
-      { name: 'Interner KI-Leitfaden', ziel: 'Besser KI', referat: 'X I 3', veraenderung: 'Referate nutzen die freigegebenen KI-Werkzeuge für Entwürfe, ohne die Zulässigkeit jedes Mal neu zu prüfen.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[3], chanceKonkret: 'Weniger Schatten-KI: die Freigabe-Anfragen an den Datenschutz sinken, weil der Leitfaden die Standardfälle klärt.', vzae: '0,5', laeuft: LAEUFT[1], endeBis: '2026-12', leitung: 'keine' },
-      { name: 'Datenkooperation mit den Ländern', ziel: 'Der neue Standard', referat: 'X II 1', veraenderung: 'Bund und Länder tauschen Verfahrensdaten über eine gemeinsame Schnittstelle statt über Listen per Mail.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[2], schadenKonkret: 'Die Länder schicken Verfahrensdaten weiter als Listen per Mail, jede Auswertung kostet Wochen.', vzae: '2', laeuft: LAEUFT[2], startAb: '2026-11', endeBis: '2027-10', leitung: 'regelmaessig', bmWarum: 'Das Betriebsmodell der Schnittstelle ist zwischen Bund und Ländern strittig, ohne Klärung mit BM startet nichts.', entscheidung: 'wartet', bedingung: 'Wird aktiv, sobald die Schnittstellen-Stelle nachbesetzt ist.' },
-      { name: 'Ausstellungsfläche Digitalprojekte im Foyer', ziel: OHNE_ZIEL, referat: 'X I 3', veraenderung: 'Besuchergruppen sehen im Foyer laufende Digitalprojekte des Hauses.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[4], vzae: '1', laeuft: LAEUFT[1], endeBis: '2026-10', leitung: 'keine' },
-      { name: 'Cloud-Pilot Fachverfahren', ziel: 'Einfach Digital', veraenderung: 'Ein Fachverfahren läuft produktiv in der Verwaltungscloud, Betriebserfahrung liegt vor.', ruhen: RUHEN[5], vzae: '1', laeuft: LAEUFT[2], leitung: 'offen' },
-      { name: 'Servicestandard für Förderanträge', ziel: 'Die große Entlastung', referat: 'X II 2', veraenderung: 'Antragstellende erhalten in allen Förderprogrammen dieselbe Rückmeldefrist und denselben Statusverlauf.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], chanceKonkret: 'Die Zahl der Nachfragen zum Bearbeitungsstand sinkt messbar, weil der Status sichtbar ist.', vzae: '1,5', laeuft: LAEUFT[2], startAb: '2026-10', endeBis: '2027-06', leitung: 'gelegentlich', bmWarum: 'Der Standard braucht vor Veröffentlichung eine Freigabe durch BM.', haengtAn: [{ typ: 'v', id: 'v4' }] },
-      { name: 'Evaluierung Beteiligungsplattform', ziel: 'Schlanker, bürgernaher Staat', referat: 'X I 3', veraenderung: 'Das Haus weiß belastbar, ob die Plattform genutzt wird und ob sich der Betrieb lohnt.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[3], chanceKonkret: 'Die Entscheidung über Weiterbetrieb oder Abschaltung wird belegbar statt Bauchgefühl.', vzae: '0,5', laeuft: LAEUFT[2], startAb: '2027-01', endeBis: '2027-04', leitung: 'keine' },
-      { name: 'Bundesweites Förderportal', ziel: 'Einfach Digital', referat: 'X II 1', veraenderung: 'Antragstellende finden Förderprogramme, reichen Unterlagen ein und sehen den Bearbeitungsstand an einer Stelle.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[3], chanceKonkret: 'Förderanträge kommen vollständiger an, und Antragstellende fragen seltener nach dem Bearbeitungsstand.', vzae: '1', laeuft: LAEUFT[2], startAb: '2027-01', endeBis: '2028-12', leitung: 'keine', haengtAn: [{ typ: 'v', id: 'v2' }, { typ: 'v', id: 'v4' }] }
+      { name: 'Interner KI-Leitfaden', ziel: 'Besser KI', referat: 'X I 3', veraenderung: 'Referate nutzen die freigegebenen KI-Werkzeuge für Entwürfe, ohne die Zulässigkeit jedes Mal neu zu prüfen.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[4], chanceKonkret: 'Weniger Schatten-KI: die Freigabe-Anfragen an den Datenschutz sinken, weil der Leitfaden die Standardfälle klärt.', vzae: '0,5', laeuft: LAEUFT[1], endeBis: '2026-12', leitung: 'keine' },
+      { name: 'Datenkooperation mit den Ländern', ziel: 'Der neue Standard', referat: 'X II 1', veraenderung: 'Bund und Länder tauschen Verfahrensdaten über eine gemeinsame Schnittstelle statt über Listen per Mail.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[3], schadenKonkret: 'Die Länder schicken Verfahrensdaten weiter als Listen per Mail, jede Auswertung kostet Wochen.', vzae: '2', laeuft: LAEUFT[2], startAb: '2026-11', endeBis: '2027-10', leitung: 'nominiert', bmWarum: 'Das Betriebsmodell der Schnittstelle ist zwischen Bund und Ländern strittig, ohne Klärung mit BM startet nichts.', entscheidung: 'wartet', bedingung: 'Wird aktiv, sobald die Schnittstellen-Stelle nachbesetzt ist.' },
+      { name: 'Ausstellungsfläche Digitalprojekte im Foyer', ziel: OHNE_ZIEL, referat: 'X I 3', veraenderung: 'Besuchergruppen sehen im Foyer laufende Digitalprojekte des Hauses.', reichweite: REICHWEITE[3], wirkungAb: WIRKUNG_AB[1], ruhen: RUHEN[5], vzae: '1', laeuft: LAEUFT[1], endeBis: '2026-10', leitung: 'keine' },
+      { name: 'Cloud-Pilot Fachverfahren', ziel: 'Einfach Digital', veraenderung: 'Ein Fachverfahren läuft produktiv in der Verwaltungscloud, Betriebserfahrung liegt vor.', ruhen: RUHEN[6], vzae: '1', laeuft: LAEUFT[2], leitung: 'offen' },
+      { name: 'Servicestandard für Förderanträge', ziel: 'Die große Entlastung', referat: 'X II 2', veraenderung: 'Antragstellende erhalten in allen Förderprogrammen dieselbe Rückmeldefrist und denselben Statusverlauf.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[4], chanceKonkret: 'Die Zahl der Nachfragen zum Bearbeitungsstand sinkt messbar, weil der Status sichtbar ist.', vzae: '1,5', laeuft: LAEUFT[2], startAb: '2026-10', endeBis: '2027-06', leitung: 'keine', hinweis: 'Bisherige BM-Begründung: Der Standard braucht vor Veröffentlichung eine Freigabe durch BM.', haengtAn: [{ typ: 'v', id: 'v4' }] },
+      { name: 'Evaluierung Beteiligungsplattform', ziel: 'Schlanker, bürgernaher Staat', referat: 'X I 3', veraenderung: 'Das Haus weiß belastbar, ob die Plattform genutzt wird und ob sich der Betrieb lohnt.', reichweite: REICHWEITE[2], wirkungAb: WIRKUNG_AB[2], ruhen: RUHEN[4], chanceKonkret: 'Die Entscheidung über Weiterbetrieb oder Abschaltung wird belegbar statt Bauchgefühl.', vzae: '0,5', laeuft: LAEUFT[2], startAb: '2027-01', endeBis: '2027-04', leitung: 'keine' },
+      { name: 'Bundesweites Förderportal', ziel: 'Einfach Digital', referat: 'X II 1', veraenderung: 'Antragstellende finden Förderprogramme, reichen Unterlagen ein und sehen den Bearbeitungsstand an einer Stelle.', reichweite: REICHWEITE[4], wirkungAb: WIRKUNG_AB[3], ruhen: RUHEN[4], chanceKonkret: 'Förderanträge kommen vollständiger an, und Antragstellende fragen seltener nach dem Bearbeitungsstand.', vzae: '1', laeuft: LAEUFT[2], startAb: '2027-01', endeBis: '2028-12', leitung: 'keine', haengtAn: [{ typ: 'v', id: 'v2' }, { typ: 'v', id: 'v4' }] }
     ];
     return {
       v: 3,
       abteilung: 'Abteilung X',
       verfuegbar: '5',
-      // Externe Abhängigkeiten leben einmal im Register, Vorhaben verweisen darauf
+      // Altformat im Beispielstand: laden() migriert diesen Eintrag sofort zu
+      // einem leeren Vorhaben und entfernt das Register.
       externe: [{ id: 'x1', name: 'Registermodernisierung des Bundes' }],
       vorhaben: roh.map((teil, i) => Object.assign(neuesVorhaben('v' + (i + 1), teil.name), teil))
     };
@@ -1352,7 +1454,7 @@
   // entsprechen, was man beim Einstieg sieht. abhAktivId ist bewusst vom
   // Entscheidungspanel getrennt: eine Kachel im Portfolio zeigt Beziehungen,
   // sie fordert keine Eingabe an und verändert die Scrollposition nicht.
-  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, abhAktivId = null, ziehId = null, klickNachZugId = null, quittung = null, quittungUhr = null, naechste = 1, naechsteExtern = 1, lzReferat = 'alle';
+  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, abhAktivId = null, ziehId = null, klickNachZugId = null, quittung = null, quittungUhr = null, naechste = 1, lzReferat = 'alle';
 
   function laden() {
     try {
@@ -1364,32 +1466,11 @@
         if (daten && Array.isArray(daten.vorhaben) && (daten.v === 2 || daten.v === 3)) {
           S = daten;
           S.v = 3;
-          if (!Array.isArray(S.externe)) S.externe = [];
           S.vorhaben = S.vorhaben.map(v => Object.assign(neuesVorhaben(v.id, v.name), v));
-          // Gespeicherte Staende aus der Fassung mit "zur Kenntnis" auf "keine" ziehen
-          S.vorhaben.forEach(v => { if (v.leitung === 'kenntnis') v.leitung = 'keine'; });
-          // Die Leitungsfall-Achse ist seit dem Sparring 11.08. die BM-Einbindung.
-          // "Entscheidung der Hausleitung" war die schwächere der beiden alten
-          // Antworten, "hausweiter Konflikt" die stärkere, also wandern sie auf
-          // gelegentlich und regelmaessig. Die alte Frage an die Leitung ist die
-          // Begründung von heute. Termin, Zuständigkeit und Folge haben kein Feld
-          // mehr; sie stillschweigend wegzuwerfen wäre Datenverlust, deshalb
-          // hängen sie an den Hinweis für die Runde an.
-          S.vorhaben.forEach(v => {
-            if (v.leitung === 'entscheidung') v.leitung = 'gelegentlich';
-            else if (v.leitung === 'konflikt') v.leitung = 'regelmaessig';
-            if (!v.bmWarum.trim() && String(v.lfFrage || '').trim()) v.bmWarum = String(v.lfFrage).trim();
-            const reste = [
-              String(v.lfTermin || '').trim() ? 'Termin: ' + String(v.lfTermin).trim() : '',
-              String(v.lfWer || '').trim() ? 'Entscheidet: ' + String(v.lfWer).trim() : '',
-              String(v.lfFolge || '').trim() ? 'Ohne Entscheidung: ' + String(v.lfFolge).trim() : ''
-            ].filter(Boolean).join(' · ');
-            if (reste && !v.hinweis.includes(reste)) {
-              v.hinweis = (v.hinweis.trim() ? v.hinweis.trim() + ' · ' : '') + reste;
-            }
-            if (v.hinweis.length > 240) v.hinweis = v.hinweis.slice(0, 240);
-            delete v.lfFrage; delete v.lfTermin; delete v.lfWer; delete v.lfFolge;
-          });
+          // Entscheidung 73 und 78 vom 13.08.: alte Leitungs- und BM-Stufen
+          // wandern in die Nominierung, Reste in den Hinweis.
+          S.vorhaben.forEach(migriereNominierung);
+          migriereExterneAbhaengigkeiten(S);
           // Die fiktive Abteilung heißt seit 11.08. schlicht "Abteilung X".
           // Nur die exakten Beispielwerte wandern mit, eigene Eingaben nicht.
           if (S.abteilung === 'Abteilung Z (fiktive Beispieldaten)') S.abteilung = 'Abteilung X';
@@ -1400,18 +1481,16 @@
       }
     } catch (fehler) { S = null; }
     if (!S) S = beispieldaten();
+    migriereExterneAbhaengigkeiten(S);
     S.vorhaben.forEach(v => {
       const nummer = parseInt(String(v.id).replace(/\D/g, ''), 10);
       if (Number.isFinite(nummer) && nummer >= naechste) naechste = nummer + 1;
-    });
-    (S.externe || []).forEach(x => {
-      const nummer = parseInt(String(x.id).replace(/\D/g, ''), 10);
-      if (Number.isFinite(nummer) && nummer >= naechsteExtern) naechsteExtern = nummer + 1;
     });
     // Schritt 1 startet ohne geöffneten Steckbrief: Wer ankommt, sieht erst die
     // Vorhaben der Abteilung und den Weg, eins einzutragen. Ein vorausgewähltes
     // Vorhaben behauptet, dieses sei das erste, um das es geht.
     offenId = null;
+    speichern();
   }
   function speichern() {
     try { localStorage.setItem(SPEICHER, JSON.stringify(S)); } catch (fehler) { /* Privatmodus */ }
@@ -1473,11 +1552,12 @@
   // ohne Entscheidungswort. Die Empfehlung selbst steht im Entscheidungspanel
   // in Schritt 2, dort, wo entschieden wird.
   function abwaegung(v) {
-    const e = empfehlung(v);
+    const e = empfehlung(v, S.vorhaben);
     if (e.wert === 'offen') return { wort: 'noch unvollständig', satz: e.regel, offen: true };
     if (v.ruhen === RUHEN[1]) return { wort: 'Aufschub verletzt eine Frist', satz: 'Laut Steckbrief platzt beim Ruhenlassen eine Frist oder rechtliche Pflicht.' };
-    if (v.ruhen === RUHEN[2]) return { wort: 'Aufschub kritisch', satz: 'Laut Steckbrief richtet Ruhenlassen spürbaren Schaden an oder Wirkung geht verloren.' };
-    if (v.ruhen === RUHEN[3]) return { wort: 'Aufschub kostet eine Chance', satz: 'Laut Steckbrief verschiebt sich beim Ruhenlassen eine benannte Chance.' };
+    if (v.ruhen === RUHEN[2]) return { wort: 'Aufschub bricht eine Zusage', satz: 'Laut Steckbrief kann beim Ruhenlassen eine politische Zusage nicht eingehalten werden.' };
+    if (v.ruhen === RUHEN[3]) return { wort: 'Aufschub kritisch', satz: 'Laut Steckbrief richtet Ruhenlassen spürbaren Schaden an oder Wirkung geht verloren.' };
+    if (v.ruhen === RUHEN[4]) return { wort: 'Aufschub kostet eine Chance', satz: 'Laut Steckbrief verschiebt sich beim Ruhenlassen eine benannte Chance.' };
     return { wort: 'Aufschub unkritisch', satz: 'Laut Steckbrief würde das Vorhaben auch dauerhaft kaum fehlen.' };
   }
 
@@ -1487,34 +1567,38 @@
   // Erfassung braucht.
   function ablesungHtml(v) {
     const a = abwaegung(v);
+    const knoten = gewaehlt(v, S.vorhaben) === 'nicht' && verknuepfungsZahl(v, S.vorhaben) >= 3
+      ? `<p class="empf-regel">${esc(verknuepfungsRegeltext(v, S.vorhaben))} Prüft in der Runde, ob das eingestellt bleiben soll.</p>`
+      : '';
     return `<div class="ab-feld">
         <p class="empf-label">Hinweis für die Abwägung</p>
         <p class="ab-wort ${a.offen ? 'offen' : ''}">${esc(a.wort)}</p>
         <p class="empf-regel">${esc(a.satz)}</p>
+        ${knoten}
       </div>`;
   }
 
   function abhChips(v) {
     const chips = (v.haengtAn || []).map((a, i) => {
-      const name = abhName(a, S.vorhaben, S.externe);
+      const name = abhName(a, S.vorhaben);
       if (!name) return '';
-      return `<span class="abh-chip">${esc(name)}<button type="button" data-abh-weg="${i}" aria-label="Abhängigkeit entfernen">&times;</button></span>`;
+      return `<span class="abh-chip">${esc(name)}<button type="button" data-abh-weg="${i}" aria-label="Verknüpfung entfernen">&times;</button></span>`;
     }).join('');
     return chips ? `<div class="abh-chips">${chips}</div>` : '';
   }
 
   function abhVorschlaege(v) {
     const schon = new Set((v.haengtAn || []).map(a => a.typ + a.id));
-    const namen = S.vorhaben.filter(x => x.id !== v.id && !schon.has('v' + x.id)).map(x => x.name)
-      .concat((S.externe || []).filter(e => !schon.has('x' + e.id)).map(e => e.name));
+    const namen = S.vorhaben.filter(x => x.id !== v.id && !schon.has('v' + x.id)).map(x => x.name);
     return namen.map(n => `<option value="${esc(n)}"></option>`).join('');
   }
 
   function feldFolge(v, feld, frage, hinweisText) {
+    const wert = String(v[feld] || '');
     return `<div class="feld">
       <label for="${feld}-${v.id}">${esc(frage)}</label>
-      <input type="text" id="${feld}-${v.id}" data-id="${v.id}" data-feld="${feld}" maxlength="240" value="${esc(v[feld])}">
-      ${v[feld].trim() ? '' : `<p class="fehlt">${esc(hinweisText)}</p>`}
+      <input type="text" id="${feld}-${v.id}" data-id="${v.id}" data-feld="${feld}" maxlength="240" value="${esc(wert)}">
+      ${wert.trim() ? '' : `<p class="fehlt">${esc(hinweisText)}</p>`}
     </div>`;
   }
 
@@ -1558,7 +1642,7 @@
   // Welches Feld die erste Lücke ist. Hinführen heißt: nicht suchen lassen.
   const LUECKE_FELD = {
     'Ziel': 'ziel', 'Veränderung': 'veraenderung', 'Folgen': 'ruhen',
-    'Leitungsbedarf': 'leitung', 'BM-Begründung': 'bmWarum'
+    'Nominierung': 'leitung'
   };
   function zumSteckbrief(id) {
     offenId = id;
@@ -1569,10 +1653,12 @@
     const v = nachId(id);
     if (!v) return;
     const erste = luecken(v)[0];
-    // Chance und Frist sind Folgefelder, ihre IDs tragen die Vorhaben-ID (feldFolge)
+    // Die Folgefelder tragen die Vorhaben-ID (feldFolge).
     let feld = LUECKE_FELD[erste] ? document.getElementById(LUECKE_FELD[erste]) : null;
+    if (erste === 'Nominierung' && v.leitung === 'nominiert') feld = document.getElementById('bmWarum');
     if (!feld && erste === 'Chance') feld = document.getElementById('chanceKonkret-' + id);
     if (!feld && erste === 'Frist') feld = document.getElementById('pflichtKonkret-' + id);
+    if (!feld && erste === 'Zusage') feld = document.getElementById('zusageKonkret-' + id);
     if (!feld && erste === 'Schaden') feld = document.getElementById('schadenKonkret-' + id);
     (feld || document.getElementById('steckbrief')).scrollIntoView({ behavior: 'smooth', block: 'center' });
     if (feld) feld.focus({ preventScroll: true });
@@ -1636,9 +1722,7 @@
       wurzel.innerHTML = steckbriefLeer();
       return;
     }
-    // Beide BM-Stufen verlangen dieselbe eine Begründung, nur "selbst steuern"
-    // und "noch offen" fragen nichts (Sparring 11.08.).
-    const bm = BM_EINGEBUNDEN(v.leitung);
+    const nominiert = IST_NOMINIERT(v.leitung);
 
     wurzel.innerHTML = `<div class="steckbrief">
       <div class="sb-kopf">
@@ -1705,9 +1789,10 @@
           <div class="feld">
             <select id="ruhen" data-id="${v.id}" data-feld="ruhen">${optionen(RUHEN, v.ruhen)}</select>
           </div>
-          ${v.ruhen === RUHEN[3] ? feldFolge(v, 'chanceKonkret', 'Welche Chance, und woran würde man in einem Jahr merken, dass sie genutzt ist?', 'Chance ist noch nicht benannt.') : ''}
+          ${v.ruhen === RUHEN[4] ? feldFolge(v, 'chanceKonkret', 'Welche Chance, und woran würde man in einem Jahr merken, dass sie genutzt ist?', 'Chance ist noch nicht benannt.') : ''}
           ${v.ruhen === RUHEN[1] ? feldFolge(v, 'pflichtKonkret', 'Welche Frist oder Vorgabe?', 'Frist oder Vorgabe ist noch nicht benannt.') : ''}
-          ${v.ruhen === RUHEN[2] ? feldFolge(v, 'schadenKonkret', 'Welcher Schaden, und wen trifft er?', 'Schaden ist noch nicht benannt.') : ''}
+          ${v.ruhen === RUHEN[2] ? feldFolge(v, 'zusageKonkret', 'Welche politische Zusage, gegenüber wem und gegebenenfalls bis wann?', 'Politische Zusage ist noch nicht benannt.') : ''}
+          ${v.ruhen === RUHEN[3] ? feldFolge(v, 'schadenKonkret', 'Welcher Schaden, und wen trifft er?', 'Schaden ist noch nicht benannt.') : ''}
         </div>
       </div>
 
@@ -1752,15 +1837,15 @@
       <div class="block">
         <span class="block-nr">5</span>
         <div>
-          <span class="frage">Wie ist BM eingebunden?</span>
-          <p class="hilfe">Nicht "ist es wichtig": Braucht das Vorhaben Rücksprachen oder Freigaben durch BM? Alles andere steuert die Abteilung selbst.</p>
+          <span class="frage">Für Leitung nominieren?</span>
+          <p class="hilfe">Nominiert nur Vorhaben, die für das ganze Haus strategisch wichtig sind.</p>
           <div class="feld">
             <select id="leitung" data-id="${v.id}" data-feld="leitung">
               ${LEITUNG.map(o => `<option value="${o.wert}" ${o.wert === v.leitung ? 'selected' : ''}>${esc(o.text)}</option>`).join('')}
             </select>
           </div>
-        ${bm ? `<div class="feld">
-            <label for="bmWarum">Warum braucht dieses Vorhaben Rücksprache oder Freigabe durch BM?</label>
+        ${nominiert ? `<div class="feld">
+            <label for="bmWarum">Warum ist dieses Vorhaben für das Haus strategisch wichtig?</label>
             <input type="text" id="bmWarum" data-id="${v.id}" data-feld="bmWarum" maxlength="240" value="${esc(v.bmWarum)}">
             ${v.bmWarum.trim() ? '' : '<p class="fehlt">Begründung fehlt noch.</p>'}
           </div>` : ''}
@@ -1772,11 +1857,11 @@
         <div>
           <span class="frage">Was muss die Runde noch wissen?</span>
           <div class="feld">
-            <label for="abhNeu">Hängt ab von</label>
-            <p class="feld-hilfe">Beim Tippen erscheinen die Vorhaben der Abteilung. Ein unbekannter Name wird als externe Voraussetzung gemerkt, nicht als neues Vorhaben.</p>
+            <label for="abhNeu">Hängt zusammen mit</label>
+            <p class="feld-hilfe">Beim Tippen erscheinen die Vorhaben der Abteilung. Ein unbekannter Name legt ein leeres Vorhaben der Abteilung an. Verknüpfungen haben keine Richtung.</p>
             ${abhChips(v)}
             <div class="abh-zeile">
-              <input type="text" id="abhNeu" list="abhListe" maxlength="90" placeholder="Vorhaben oder externe Voraussetzung ..." autocomplete="off">
+              <input type="text" id="abhNeu" list="abhListe" maxlength="90" placeholder="Vorhaben der Abteilung ..." autocomplete="off">
               <button class="btn leise" type="button" id="abhAdd">Hinzufügen</button>
               <datalist id="abhListe">${abhVorschlaege(v)}</datalist>
             </div>
@@ -1828,15 +1913,11 @@
     });
     const abhFeld = document.getElementById('abhNeu');
     const abhUebernehmen = () => {
-      const treffer = abhAufloesen(abhFeld.value, S.vorhaben, S.externe, v.id);
+      const vorherLaenge = S.vorhaben.length;
+      const treffer = abhAufloesen(abhFeld.value, S.vorhaben, null, v.id, 'v' + naechste);
       if (!treffer) { abhFeld.focus(); return; }
-      let eintrag = treffer;
-      if (treffer.typ === 'neu') {
-        const x = { id: 'x' + (naechsteExtern++), name: treffer.name };
-        S.externe.push(x);
-        eintrag = { typ: 'x', id: x.id };
-      }
-      if (!(v.haengtAn || []).some(a => a.typ === eintrag.typ && a.id === eintrag.id)) v.haengtAn.push(eintrag);
+      if (S.vorhaben.length > vorherLaenge) naechste += 1;
+      if (!(v.haengtAn || []).some(a => a.typ === treffer.typ && a.id === treffer.id)) v.haengtAn.push(treffer);
       speichern();
       renderErfassen();
       const neu = document.getElementById('abhNeu');
@@ -1942,18 +2023,21 @@
   // Die Kachel nennt Zustand und Korb. In der Portfolio-Sicht bleibt der Korb
   // weg, dort steht er schon als Name der Bahn und wäre reine Wiederholung.
   function kachel(v, ohneKorb, abhRolle) {
-    const wahl = gewaehlt(v);
+    const wahl = gewaehlt(v, S.vorhaben);
     const vzae = vzaeWert(v);
-    const lf = IST_LEITUNGSFALL(v.leitung) && wahl !== 'nicht';
-    const korb = PORTFOLIO[portfolio(v).wert];
+    const nominiert = IST_NOMINIERT(v.leitung) && wahl !== 'nicht';
+    const korb = PORTFOLIO[portfolio(v, S.vorhaben).wert];
     // Der hohle Punkt ist dasselbe Zeichen wie in der Namensliste von Schritt 1:
     // gefüllt heißt "die Runde kann damit arbeiten", hohl heißt "da fehlt noch
     // etwas". Hier steht er für die offene Pflicht an einer Entscheidung.
-    const pflicht = offenePflicht(v);
-    return `<button class="pt ${wahl} ${lf ? 'lf' : ''} ${v.id === aktivId ? 'aktiv' : ''}" type="button" data-kachel="${v.id}" title="${esc(korb)}${pflicht ? ' · ' + OFFENE_PFLICHT[pflicht].kurz : ''}">
+    const pflicht = offenePflicht(v, S.vorhaben);
+    const zentralHinweis = wahl === 'nicht' && verknuepfungsZahl(v, S.vorhaben) >= 3
+      ? verknuepfungsRegeltext(v, S.vorhaben)
+      : '';
+    return `<button class="pt ${wahl} ${nominiert ? 'lf' : ''} ${v.id === aktivId ? 'aktiv' : ''}" type="button" data-kachel="${v.id}" title="${esc(korb)}${pflicht ? ' · ' + OFFENE_PFLICHT[pflicht].kurz : ''}">
       <span class="pt-name">${esc(v.name)}${pflicht ? `<i class="pt-offen" aria-hidden="true"></i><span class="nur-vorlesen">, ${esc(OFFENE_PFLICHT[pflicht].kurz)}</span>` : ''}</span>
-      ${abhRolle ? `<span class="abh-rolle">${esc(abhRolle)}</span>` : ''}
-      ${lf ? '<span class="nur-vorlesen">Leitungsfall</span>' : ''}
+      ${zentralHinweis ? `<span class="pt-hinweis">${esc(zentralHinweis)}</span>` : ''}
+      ${nominiert ? '<span class="nur-vorlesen">Nominiert für Leitung</span>' : ''}
       ${ohneKorb ? '' : `<span class="pt-korb">${esc(korb)}</span>`}
       <span class="pt-foot">
         <span class="pt-state">${esc(ENTSCHEIDUNG[wahl])}</span>
@@ -1962,65 +2046,14 @@
     </button>`;
   }
 
-  // Innerhalb einer Bahn zuerst das Laufende, darin die Leitungsfälle nach vorn
+  // Innerhalb einer Bahn zuerst das Laufende, darin die Nominierungen nach vorn
   const RANG = { prio: 0, wartet: 1, offen: 2, nicht: 3 };
   function sortiert(liste) {
     return liste.slice().sort((a, b) => {
-      const stufe = RANG[gewaehlt(a)] - RANG[gewaehlt(b)];
+      const stufe = RANG[gewaehlt(a, S.vorhaben)] - RANG[gewaehlt(b, S.vorhaben)];
       if (stufe) return stufe;
-      return (IST_LEITUNGSFALL(b.leitung) ? 1 : 0) - (IST_LEITUNGSFALL(a.leitung) ? 1 : 0);
+      return (IST_NOMINIERT(b.leitung) ? 1 : 0) - (IST_NOMINIERT(a.leitung) ? 1 : 0);
     });
-  }
-
-  function renderMatrix() {
-    const wurzel = document.getElementById('bildKoerper');
-    const offen = S.vorhaben.filter(v => !mxEinsortierbar(v));
-    // Wie viele der Vorhaben in der Zone tatsächlich ins Leitungsportfolio gehen.
-    // Die Zone selbst kommt nur aus den zwei Achsen, das Landen hängt zusätzlich
-    // an der Entscheidung. Deshalb heißt sie Kandidaten und nicht Leitungsportfolio.
-    const inZone = S.vorhaben.filter(v => mxEinsortierbar(v) && IST_LEITUNGSFALL(v.leitung)
-      && (v.ruhen === RUHEN[1] || v.ruhen === RUHEN[2]));
-    const drin = inZone.filter(v => portfolio(v).wert === 'haus');
-
-    const zellen = MX_ZEILEN.map((zeile, zi) => {
-      const felder = MX_SPALTEN.map((spalte, si) => {
-        const inhalt = sortiert(S.vorhaben.filter(v => v.ruhen === spalte.wert && v.leitung === zeile.wert));
-        // Oben rechts: BM ist regelmäßig dran und Ruhenlassen kostet etwas.
-        // Die Zeile wird nicht mehr über ihren Index bestimmt, sondern über
-        // IST_LEITUNGSFALL: sonst müsste die Markierung jedes Mal nachgezogen
-        // werden, wenn sich die Zahl der Zeilen ändert (Sparring 11.08.).
-        const haus = IST_LEITUNGSFALL(zeile.wert) && si >= 2;
-        // Jede Zelle steht explizit im Raster. Die Zone unten ist ein eigenes
-        // Rasterfeld, und ein fest platziertes Feld würde die automatische
-        // Verteilung sonst verschieben.
-        return `<div class="mx-zelle ${haus ? 'haus' : ''}" role="cell" style="grid-column:${si + 2}; grid-row:${zi + 2}">${inhalt.map(v => kachel(v)).join('')}</div>`;
-      }).join('');
-      return `<div class="mx-reihe" role="row"><div class="mx-zeile" role="rowheader" style="grid-column:1; grid-row:${zi + 2}">${esc(zeile.kopf)}</div>${felder}</div>`;
-    }).join('');
-
-    const zonenSatz = inZone.length === 0
-      ? 'Zurzeit liegt dort kein Vorhaben.'
-      : drin.length === inZone.length
-        ? `Alle ${inZone.length} sind eingeplant und gehen damit als Leitungsfall ins Leitungsportfolio.`
-        : `${drin.length} von ${inZone.length} sind eingeplant und gehen damit ins Leitungsportfolio, der Rest wartet oder ist eingestellt.`;
-
-    wurzel.innerHTML = `
-      <p class="mx-achse-x">Folgen des Ruhenlassens &rarr;</p>
-      <div class="mx-scroll">
-        <div class="matrix" role="table" aria-label="Vorhaben nach Kosten des Ruhenlassens und Einbindung von BM">
-          <div class="mx-reihe" role="row">
-            <div class="mx-kopf leer" role="columnheader" style="grid-column:1; grid-row:1">Wie ist BM eingebunden?</div>
-            ${MX_SPALTEN.map((s, si) => `<div class="mx-kopf" role="columnheader" style="grid-column:${si + 2}; grid-row:1">${esc(s.kopf)}</div>`).join('')}
-          </div>
-          ${zellen}
-          <div class="mx-zone" aria-hidden="true"><span>Kandidaten fürs Leitungsportfolio</span></div>
-        </div>
-      </div>
-      <p class="mx-lese"><strong>So liest sich das Bild:</strong> Auf der Diagonale von oben rechts nach unten links passt beides zusammen. Im umrandeten Feld ist BM regelmäßig dran und Liegenlassen kostet etwas, das sind die Kandidaten fürs Leitungsportfolio. ${esc(zonenSatz)} Unten links braucht es BM nicht, und es würde auch dauerhaft kaum fehlen. Die Fragen stecken in den anderen zwei Ecken: Oben links ist BM regelmäßig eingebunden, obwohl Ruhenlassen kaum auffallen würde. Unten rechts trägt die Abteilung eine Frist oder einen Schaden allein.</p>
-      ${offen.length ? `<div class="mx-offen">
-        <p class="mx-offen-kopf">Noch nicht einsortierbar · ${offen.length}</p>
-        <div class="mx-offen-body">${sortiert(offen).map(v => kachel(v)).join('')}</div>
-      </div>` : ''}`;
   }
 
   function renderLanes() {
@@ -2040,12 +2073,12 @@
     }).join('');
   }
 
-  // Die Portfolio-Sicht ist die gefaltete Schwester der Matrix (Entscheidung
+  // Die Portfolio-Sicht ist ein verdichtetes Raster (Entscheidung
   // 46): gleiche Grammatik, keine künstlichen Zellen. "Wartet" und "eingestellt"
-  // führen unabhängig vom Leitungsbedarf in ihren Korb, ihre Zellen
+  // führen unabhängig von der Nominierung in ihren Korb, ihre Zellen
   // überspannen deshalb beide Zeilen. Nur "eingeplant" teilt sich danach, wer
-  // steuert. Die Verbindlichkeit steigt nach rechts, wie in der Matrix die
-  // Folgen: der Aufmerksamkeitsort oben rechts ist das Leitungsportfolio.
+  // steuert. Die Verbindlichkeit steigt nach rechts, der Aufmerksamkeitsort
+  // oben rechts ist das Leitungsportfolio.
   const PF_SPALTEN = [
     { wahl: 'nicht', sub: 'wird nicht weiterverfolgt' },
     { wahl: 'wartet', sub: 'wird aktiv, wenn die benannte Bedingung eintritt' },
@@ -2058,57 +2091,45 @@
     return zitiert.slice(0, -1).join(', ') + ' und ' + zitiert[zitiert.length - 1];
   }
 
-  // Direkte Kanten in beide Richtungen. Der Pfeil zeigt immer vom abhängigen
-  // Vorhaben auf seine Voraussetzung. Externe Voraussetzungen bleiben im Text,
-  // weil es für sie im Portfolio keine Kachel und damit keinen Linienanker gibt.
+  // Direkte Verknüpfungen in beide Richtungen. Die gespeicherte Richtung ist
+  // nur technische Herkunft, die Portfolio-Linse zeigt ungerichtete Paare.
   function abhaengigkeitsFokus(id) {
     const auswahl = id ? nachId(id) : null;
     if (!auswahl) return null;
     const ausgehend = [];
-    const externe = [];
     (auswahl.haengtAn || []).forEach(ref => {
       if (ref.typ === 'v') {
         const ziel = nachId(ref.id);
         if (ziel) ausgehend.push(ziel);
-      } else {
-        const ziel = (S.externe || []).find(e => e.id === ref.id);
-        if (ziel) externe.push(ziel);
       }
     });
     const eingehend = S.vorhaben.filter(v => v.id !== auswahl.id
       && (v.haengtAn || []).some(ref => ref.typ === 'v' && ref.id === auswahl.id));
     const verbunden = new Set([auswahl.id]);
-    const rollen = new Map([[auswahl.id, 'Auswahl']]);
     ausgehend.forEach(v => {
       verbunden.add(v.id);
-      rollen.set(v.id, 'Voraussetzung');
     });
     eingehend.forEach(v => {
       verbunden.add(v.id);
-      rollen.set(v.id, rollen.has(v.id) ? 'beidseitig verbunden' : 'hängt daran');
     });
     const kanten = [];
     const gesehen = new Set();
     const merke = (von, zu) => {
-      const schluessel = `${von}>${zu}`;
+      const schluessel = [von, zu].sort().join('|');
       if (gesehen.has(schluessel)) return;
       gesehen.add(schluessel);
       kanten.push({ von, zu });
     };
     ausgehend.forEach(v => merke(auswahl.id, v.id));
     eingehend.forEach(v => merke(v.id, auswahl.id));
-    return { auswahl, ausgehend, eingehend, externe, verbunden, rollen, kanten };
+    return { auswahl, ausgehend, eingehend, verbunden, kanten };
   }
 
   function abhaengigkeitsSatz(fokus) {
-    const teile = [];
-    if (fokus.ausgehend.length) teile.push(`${fokus.auswahl.name} hängt an ${namensListe(fokus.ausgehend.map(v => v.name))}.`);
-    if (fokus.externe.length) teile.push(`${fokus.auswahl.name} hat die externe Voraussetzung ${namensListe(fokus.externe.map(v => v.name))}.`);
-    if (fokus.eingehend.length) {
-      const namen = namensListe(fokus.eingehend.map(v => v.name));
-      teile.push(`${namen} ${fokus.eingehend.length === 1 ? 'hängt' : 'hängen'} an ${fokus.auswahl.name}.`);
-    }
-    return teile.join(' ') || 'Keine Abhängigkeit zu einem anderen Vorhaben erfasst.';
+    const namen = [...fokus.verbunden].filter(id => id !== fokus.auswahl.id)
+      .map(id => nachId(id)).filter(Boolean).map(v => v.name);
+    if (!namen.length) return 'Keine Verknüpfung zu einem anderen Vorhaben erfasst.';
+    return `${fokus.auswahl.name} hängt zusammen mit ${namensListe(namen)}.`;
   }
 
   function kartenRand(von, zu, bezug) {
@@ -2152,11 +2173,10 @@
       const d = waagerecht
         ? `M ${p.sx} ${p.sy} C ${p.sx + dx * .46} ${p.sy}, ${p.tx - dx * .46} ${p.ty}, ${p.tx} ${p.ty}`
         : `M ${p.sx} ${p.sy} C ${p.sx} ${p.sy + dy * .46}, ${p.tx} ${p.ty - dy * .46}, ${p.tx} ${p.ty}`;
-      return `<path class="abh-linie-halo" d="${d}"></path><path class="abh-linie" d="${d}" marker-end="url(#abhPfeil)"></path>`;
+      return `<path class="abh-linie-halo" d="${d}"></path><path class="abh-linie" d="${d}"></path>`;
     }).join('');
     if (!pfade) return;
     matrix.insertAdjacentHTML('beforeend', `<svg class="abh-netz" viewBox="0 0 ${Math.ceil(bezug.width)} ${Math.ceil(bezug.height)}" aria-hidden="true">
-      <defs><marker id="abhPfeil" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path class="abh-pfeil" d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>
       ${pfade}
     </svg>`);
   }
@@ -2176,7 +2196,7 @@
   function renderPortfolio() {
     let fokus = abhaengigkeitsFokus(abhAktivId);
     if (abhAktivId && !fokus) abhAktivId = null;
-    const imKorb = korb => sortiert(S.vorhaben.filter(v => portfolio(v).wert === korb));
+    const imKorb = korb => sortiert(S.vorhaben.filter(v => portfolio(v, S.vorhaben).wert === korb));
     const vzaeSumme = liste => liste.reduce((wert, v) => wert + vzaeWert(v), 0);
     const zelle = (korb, spalte, zeile, spannt, label) => {
       const drin = imKorb(korb);
@@ -2186,15 +2206,15 @@
       // Entscheidung, die man treffen darf (Entscheidung 48).
       const wahl = korb === 'haus' || korb === 'fach' ? 'prio' : (korb === 'warte' ? 'wartet' : 'nicht');
       // Die zwei Zonen der Eingeplant-Spalte sind eigene Ziele: Ablegen dort
-      // setzt zusätzlich den Leitungsbedarf (Entscheidung 60).
+      // setzt zusätzlich die Nominierung (Entscheidung 78).
       const zone = korb === 'haus' ? 'haus' : (korb === 'fach' ? 'fach' : '');
       return `<div class="mx-zelle ${spalte === 3 ? 'pf-gebunden' : ''}" role="cell" data-wahl="${wahl}"${zone ? ` data-zone="${zone}"` : ''}${spannt ? ' aria-rowspan="2"' : ''} style="grid-column:${spalte}; grid-row:${zeile}${spannt ? ' / span 2' : ''}">
         ${label ? `<span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))}</span>` : '<span class="pf-korb-leer" aria-hidden="true"></span>'}
-        ${drin.map(v => kachel(v, true, fokus ? fokus.rollen.get(v.id) : '')).join('')}</div>`;
+        ${drin.map(v => kachel(v, true, '')).join('')}</div>`;
     };
 
     const koepfe = PF_SPALTEN.map((spalte, si) => {
-      const summe = vzaeSumme(S.vorhaben.filter(v => gewaehlt(v) === spalte.wahl));
+      const summe = vzaeSumme(S.vorhaben.filter(v => gewaehlt(v, S.vorhaben) === spalte.wahl));
       return `<div class="mx-kopf ${spalte.gebunden ? 'pf-gebunden' : ''}" role="columnheader" style="grid-column:${si + 1}; grid-row:1">
         ${esc(ENTSCHEIDUNG[spalte.wahl])} <span class="pf-vzae">${zahlText(summe)} VZÄ</span>
         <small>${esc(spalte.sub)}</small></div>`;
@@ -2205,8 +2225,8 @@
       <!-- Die Achsenüberschrift "Entscheidung der Abteilung" ist raus (Sparring
            11.08.): die Spaltenköpfe erklären die Ansicht bereits selbst. -->
       <p class="abh-info" aria-live="polite">
-        <span>${fokus ? esc(abhaengigkeitsSatz(fokus)) : '<strong>Abhängigkeiten:</strong> Ein Vorhaben anklicken, um seine direkten Verbindungen zu sehen.'}</span>
-        <span class="abh-info-meta">${fokus ? 'Erneut anklicken setzt die Auswahl zurück.' : 'Pfeile zeigen auf die Voraussetzung.'}</span>
+        <span>${fokus ? esc(abhaengigkeitsSatz(fokus)) : '<strong>Verknüpfungen:</strong> Ein Vorhaben anklicken, um seine direkten Verbindungen zu sehen.'}</span>
+        <span class="abh-info-meta">${fokus ? 'Erneut anklicken setzt die Auswahl zurück.' : 'Linien zeigen verknüpfte Vorhaben ohne Richtung.'}</span>
       </p>
       <div class="mx-scroll">
         <div class="matrix pf${sicht === 'portfolio' ? ' ziehbar' : ''}" role="table" aria-label="Vorhaben nach Entscheidung der Abteilung">
@@ -2221,18 +2241,17 @@
           </div>
         </div>
       </div>
-      <p class="mx-lese"><strong>So liest sich das Bild:</strong> Der Korb wird nicht gewählt, er fällt aus der Entscheidung und dem Leitungsbedarf heraus. Nur die Eingeplant-Spalte teilt sich: oben das Leitungsportfolio, das ans Haus geht, unten das Abteilungsportfolio.</p>
+      <p class="mx-lese"><strong>So liest sich das Bild:</strong> Der Korb wird nicht gewählt, er fällt aus der Entscheidung und der Nominierung heraus. Nur die Eingeplant-Spalte teilt sich: oben das Leitungsportfolio, das ans Haus geht, unten das Abteilungsportfolio.</p>
       ${offen.length ? `<div class="mx-offen">
         <p class="mx-offen-kopf">${esc(PORTFOLIO.offen)} · ${offen.length}</p>
         <p class="lane-sub">Noch kein Korb, es fehlen Antworten im Steckbrief.</p>
-        <div class="mx-offen-body">${offen.map(v => kachel(v, true, fokus ? fokus.rollen.get(v.id) : '')).join('')}</div>
+        <div class="mx-offen-body">${offen.map(v => kachel(v, true, '')).join('')}</div>
       </div>` : ''}`;
     markiereAbhaengigkeiten(fokus);
   }
 
-  // Drei Sichten zeigen dasselbe Portfolio anders angeordnet, deshalb tragen sie
-  // denselben Titel. "Steuerung prüfen" ist keine vierte Anordnung, sondern eine
-  // Frage an die Daten, also stellt die Überschrift sie (Entscheidung 65).
+  // Drei Sichten zeigen dasselbe Portfolio anders angeordnet, deshalb tragen
+  // Portfolio und Ziele denselben Titel.
   /* ---------- Sicht: Laufzeiten (Sparring 11.08.) ---------- */
 
   // Der Horizont beginnt im aktuellen Monat und zeigt 24 Monate. Das ist die
@@ -2270,7 +2289,7 @@
 
     const zeile = e => {
       const { v, z } = e;
-      const wahl = gewaehlt(v);
+      const wahl = gewaehlt(v, S.vorhaben);
       const von = z.art === 'laufend' ? 0 : Math.max(0, Math.min(z.start - h0, LZ_MONATE - 1));
       const bisRoh = z.ende - h0 + 1;
       const bis = Math.max(von + 1, Math.min(bisRoh, LZ_MONATE));
@@ -2319,15 +2338,13 @@
   }
 
   const SICHT_TITEL = {
-    matrix: 'Passen Leitungsbedarf und Folgen zusammen?',
     laufzeiten: 'Welche Vorhaben laufen wann?'
   };
   const TITEL_STANDARD = 'Das Portfolio der Abteilung <span class="einheit">Zahlen in Vollzeitäquivalenten</span>';
 
   function renderBild() {
     document.getElementById('bildTitel').innerHTML = SICHT_TITEL[sicht] || TITEL_STANDARD;
-    if (sicht === 'matrix') renderMatrix();
-    else if (sicht === 'portfolio') renderPortfolio();
+    if (sicht === 'portfolio') renderPortfolio();
     else if (sicht === 'laufzeiten') renderLaufzeiten();
     else renderLanes();
     document.querySelectorAll('.sichten button').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.sicht === sicht)));
@@ -2345,14 +2362,12 @@
       renderPriorisieren();
     }));
     if (sicht === 'portfolio') verdrahteZiehen();
-    if (sicht === 'matrix') verdrahteZiehVersuch();
   }
 
   /* ---------- Ziehen (Entscheidung 48) ---------- */
 
   // Nur in der Portfolio-Sicht und nur waagerecht: die Spalte ist die
-  // Entscheidung, die man treffen darf. Die Zeile ist der Leitungsbedarf,
-  // der braucht seine Begründung und ist keine Zieh-Geste.
+  // Entscheidung, die man treffen darf. Die Zone ist die Nominierung.
   // Bedingungs- und Begründungspflicht laufen weiter über das Panel, das
   // Ziehen ist nur ein schnellerer Weg zum selben Feld. Tastatur und Panel
   // bleiben der vollwertige Weg ohne Maus.
@@ -2403,12 +2418,11 @@
     ziehId = null;
     if (!v) return;
     v.entscheidung = wahl;
-    // Wer in die obere Zone zieht, meldet einen Leitungsfall, also die
-    // regelmäßige Einbindung von BM. Wer in die untere Zone zieht, nimmt die
-    // Meldung zurück; die Begründung bleibt gespeichert, ein Zug zurück stellt
-    // sie wieder her.
-    if (zone === 'haus' && !IST_LEITUNGSFALL(v.leitung)) v.leitung = 'regelmaessig';
-    if (zone === 'fach' && IST_LEITUNGSFALL(v.leitung)) v.leitung = 'keine';
+    // Wer in die obere Zone zieht, nominiert fuer Leitung. Wer in die untere
+    // Zone zieht, nimmt die Nominierung zurück. Die Begruendung bleibt
+    // gespeichert, ein Zug zurück stellt sie wieder her.
+    if (zone === 'haus' && !IST_NOMINIERT(v.leitung)) v.leitung = 'nominiert';
+    if (zone === 'fach' && IST_NOMINIERT(v.leitung)) v.leitung = 'keine';
     speichern();
     quittungFuer(v.id);
     mitFlug(renderPriorisieren);
@@ -2425,26 +2439,6 @@
       const box = document.getElementById('quittung');
       if (box) box.innerHTML = '';
     }, 7000);
-  }
-
-  // In der Matrix kommt die Position aus zwei Sachantworten, dort wird nicht
-  // geschoben (Entscheidungen 21 und 36). Der Versuch bekommt eine Erklärung
-  // statt stummer Verweigerung.
-  function verdrahteZiehVersuch() {
-    document.getElementById('bildKoerper').querySelectorAll('[data-kachel]').forEach(el => {
-      el.setAttribute('draggable', 'true');
-      el.addEventListener('dragstart', e => {
-        e.preventDefault();
-        if (document.getElementById('mxZiehHinweis')) return;
-        const p = document.createElement('p');
-        p.id = 'mxZiehHinweis';
-        p.className = 'mx-zieh-hinweis';
-        p.setAttribute('role', 'status');
-        p.textContent = 'Die Position kommt aus zwei Antworten im Steckbrief. Verschieben geht in der Portfolio-Sicht.';
-        document.querySelector('.mx-scroll').before(p);
-        setTimeout(() => p.remove(), 5000);
-      });
-    });
   }
 
   // FLIP: alte Positionen messen, neu zeichnen, Kacheln von der alten Stelle
@@ -2489,9 +2483,12 @@
       wurzel.innerHTML = '';
       return;
     }
-    const e = empfehlung(v);
-    const wahl = gewaehlt(v);
-    const abweichend = weichtAb(v);
+    const e = empfehlung(v, S.vorhaben);
+    const wahl = gewaehlt(v, S.vorhaben);
+    const abweichend = weichtAb(v, S.vorhaben);
+    const zentralHinweis = wahl === 'nicht' && verknuepfungsZahl(v, S.vorhaben) >= 3
+      ? `<p class="pn-empf">${esc(verknuepfungsRegeltext(v, S.vorhaben))} Prüft in der Runde, ob das eingestellt bleiben soll.</p>`
+      : '';
     const knopf = (wert, titel, unter) => `<button type="button" data-wahl="${wert}" aria-pressed="${wahl === wert}">${esc(titel)}<small>${esc(unter)}</small></button>`;
 
     wurzel.innerHTML = `<div class="panel">
@@ -2500,6 +2497,7 @@
         <button class="textbtn blau" type="button" id="zumSteckbrief">Steckbrief öffnen</button>
       </div>
       <p class="pn-empf">Empfehlung: <strong>${esc(ENTSCHEIDUNG[e.wert])}</strong>. ${esc(e.regel)}</p>
+      ${zentralHinweis}
       <div class="pn-wert">${balkenHtml(v)}</div>
       <div class="wahl">
         ${knopf('prio', 'Eingeplant', 'wird im nächsten Halbjahr gemacht und bekommt Kapazität')}
@@ -2507,7 +2505,7 @@
         ${knopf('nicht', 'Eingestellt', 'wird nicht weiterverfolgt')}
       </div>
       <!-- Ohne Artikel formuliert, sonst hieße es "im Warteliste" -->
-      <p class="pn-landet">Landet damit hier: <strong>${esc(PORTFOLIO[portfolio(v).wert])}</strong>. ${esc(portfolio(v).satz)}</p>
+      <p class="pn-landet">Landet damit hier: <strong>${esc(PORTFOLIO[portfolio(v, S.vorhaben).wert])}</strong>. ${esc(portfolio(v, S.vorhaben).satz)}</p>
       ${abweichend ? `<div class="pn-feld">
         <label for="begruendung">Ihr weicht von der Empfehlung ab. Warum, in einem Satz?</label>
         <input type="text" id="begruendung" data-res="begruendung" maxlength="240" value="${esc(v.begruendung)}">
@@ -2603,26 +2601,21 @@
   }
 
   function renderLeitungsfaelle() {
-    const faelle = leitungsfaelle(S.vorhaben);
-    // Ein Eintrag ist Name plus Begründung, mehr nicht: Termin, Zuständigkeit
-    // und die Folge des Nichtentscheidens sind mit dem Sparring vom 11.08.
-    // entfallen, sie wurden selten gefüllt und trugen die Meldung nicht.
-    // Der einordnende Satz ist die erste Zeile der Arbeitsfläche, nicht ein
-    // Vorspann darüber: sonst begänne die rechte Fläche tiefer als die linke.
-    const intro = '<p class="lf-intro">Aus den Leitungsfällen aller Abteilungen wählt das Haus sein Portfolio.</p>';
-    // Leitungsfälle, die nicht eingeplant sind, gehen nicht ans Haus. Sie
+    const faelle = nominierungen(S.vorhaben);
+    const intro = '<p class="lf-intro">Aus den Nominierungen aller Abteilungen wählen StS und BM 8 bis 10 Vorhaben aus, die BM in regelmäßigen Rücksprachen begleitet. Die übrigen Nominierungen gehen in das AL-Reporting an die Abteilungsleitungen, insgesamt etwa 40 Vorhaben einschließlich der 8 bis 10.</p>';
+    // Nominierungen, die nicht eingeplant sind, gehen nicht ans Haus. Sie
     // verschwinden aber auch nicht: hier steht, welche es sind und warum.
-    const zurueck = leitungsfaelleZurueck(S.vorhaben);
+    const zurueck = nominierungenZurueck(S.vorhaben);
     const html = intro + (faelle.length
       ? faelle.map(v => `<div class="lf-eintrag">
           <p class="lf-name">${esc(v.name)}</p>
           <p class="lf-frage">${v.bmWarum.trim() ? esc(v.bmWarum) : '<span style="color:var(--kirsche-text)">Begründung fehlt noch.</span>'}</p>
         </div>`).join('')
-      : '<p class="ruhig">Kein Leitungsfall gemeldet. Die Abteilung steuert ihr Portfolio in diesem Halbjahr allein.</p>')
+      : '<p class="ruhig">Keine Nominierung gemeldet. Die Abteilung steuert ihr Portfolio in diesem Halbjahr allein.</p>')
       + (zurueck.length
         ? `<div class="lf-zurueck">
             <p class="lf-zurueck-kopf">Nicht gemeldet · ${zurueck.length}</p>
-            ${zurueck.map(v => `<p class="lf-meta">${esc(v.name)}: ${esc(ENTSCHEIDUNG[gewaehlt(v)])}, geht damit nicht ins Leitungsportfolio.</p>`).join('')}
+            ${zurueck.map(v => `<p class="lf-meta">${esc(v.name)}: ${esc(ENTSCHEIDUNG[gewaehlt(v, S.vorhaben)])}, geht damit nicht ins Leitungsportfolio.</p>`).join('')}
           </div>`
         : '');
     // Dieselbe Meldeliste in beiden Ansichten (Sparring 11.08.): in Schritt 2
@@ -2640,11 +2633,11 @@
     if (!box) return;
     const v = quittung ? nachId(quittung) : null;
     if (!v || sicht !== 'portfolio') { box.innerHTML = ''; return; }
-    const pflicht = offenePflicht(v);
+    const pflicht = offenePflicht(v, S.vorhaben);
     // Was der Zug kostet, steht in der Leiste, die jetzt stehen bleibt. Die
     // Quittung sagt nur noch, was gilt und was daran fehlt.
     box.innerHTML = `<p class="quittung">
-      <span class="qt-satz"><strong>${esc(v.name)}</strong> steht jetzt auf ${esc(ENTSCHEIDUNG[gewaehlt(v)])}${IST_LEITUNGSFALL(v.leitung) && gewaehlt(v) === 'prio' ? ' im Leitungsportfolio' : ''}.</span>
+      <span class="qt-satz"><strong>${esc(v.name)}</strong> steht jetzt auf ${esc(ENTSCHEIDUNG[gewaehlt(v, S.vorhaben)])}${IST_NOMINIERT(v.leitung) && gewaehlt(v, S.vorhaben) === 'prio' ? ' im Leitungsportfolio und ist für Leitung nominiert' : ''}.</span>
       ${pflicht ? `<button class="textbtn blau qt-tun" type="button" data-quittung="${v.id}">${esc(OFFENE_PFLICHT[pflicht].kurz.replace(' fehlt', ' ergänzen'))}</button>` : ''}
     </p>`;
     const knopf = box.querySelector('[data-quittung]');
@@ -2661,7 +2654,7 @@
   // Fragen, sondern als eigene Zeile darunter (Entscheidung 59).
   function renderOffenePflichten() {
     const block = document.getElementById('offenBlock');
-    const liste = S.vorhaben.map(v => ({ v, pflicht: offenePflicht(v) })).filter(x => x.pflicht);
+    const liste = S.vorhaben.map(v => ({ v, pflicht: offenePflicht(v, S.vorhaben) })).filter(x => x.pflicht);
     block.classList.toggle('verborgen', liste.length === 0);
     document.getElementById('offenZahl').textContent = liste.length ? ' · ' + liste.length : '';
     const html = liste.map(({ v, pflicht }) => `<div class="of-zeile">
@@ -2694,7 +2687,7 @@
 
   // Die Ansicht baut sich bei jedem Aufruf frisch aus dem Zustand auf, wie die
   // anderen render-Funktionen auch. Eigene Inhalte hat sie keine: Kopf, Fragen,
-  // Leitungsfälle und lose Enden lesen dieselben Funktionen wie Schritt 2.
+  // Nominierungen und lose Enden lesen dieselben Funktionen wie Schritt 2.
   function renderVorbereiten() {
     renderVorbereitenKopf();
     renderKonflikte();
@@ -2770,6 +2763,7 @@
     document.getElementById('reset').addEventListener('click', () => {
       if (!confirm('Alle Eingaben verwerfen und die Beispieldaten wiederherstellen?')) return;
       S = beispieldaten();
+      migriereExterneAbhaengigkeiten(S);
       offenId = null;
       aktivId = null;
       abhAktivId = null;
@@ -2783,7 +2777,7 @@
     });
     // Der alte Abhängigkeiten-Direktlink bleibt als Weiterleitung erhalten.
     // Die Funktion lebt jetzt in der Portfolio-Sicht und hat keinen eigenen Tab.
-    const sprung = { '#entscheiden': null, '#portfolio': 'portfolio', '#matrix': 'matrix', '#abhaengig': 'portfolio', '#laufzeiten': 'laufzeiten' };
+    const sprung = { '#entscheiden': null, '#portfolio': 'portfolio', '#matrix': 'portfolio', '#abhaengig': 'portfolio', '#laufzeiten': 'laufzeiten' };
     // Die Vorbereiten-Sicht ist kein Bild von Schritt 2, sondern eine eigene
     // Ansicht. Deshalb steht sie neben der Tabelle, nicht darin (Sparring 11.08.).
     if (location.hash === '#vorbereiten') {
@@ -2815,7 +2809,7 @@
   }
 
   function kopieren() {
-    const text = tsv(S.abteilung, S.vorhaben, S.externe);
+    const text = tsv(S.abteilung, S.vorhaben);
     const knopf = document.getElementById('copy');
     const fertig = () => { knopf.textContent = 'Kopiert'; setTimeout(() => { knopf.textContent = 'Als Tabelle kopieren'; }, 1600); };
     if (navigator.clipboard && navigator.clipboard.writeText) {
