@@ -990,6 +990,13 @@
     if (v.ruhen === RUHEN[4]) {
       return { wert: 'wartet', regel: 'Es würde dauerhaft kaum fehlen. Dann muss es in diesem Halbjahr nicht eingeplant werden.' };
     }
+    // Ohne Zielbezug trägt auch eine verschobene Chance keine Einplanung: das
+    // spiegelt die Kaum-fehlen-Regeln, bei denen erst das Ziel zwischen wartet
+    // und eingestellt unterscheidet. Vorher lief dieser Fall in die letzte
+    // Regel und bekam "eingeplant" mit einem Regeltext, der ein Ziel behauptete.
+    if (v.ziel === OHNE_ZIEL) {
+      return { wert: 'wartet', regel: 'Eine Chance verschiebt sich, aber das Vorhaben zahlt auf kein Ziel des Hauses ein. Dann muss es in diesem Halbjahr nicht eingeplant werden.' };
+    }
     return { wert: 'prio', regel: 'Eine Chance verschiebt sich, und das Vorhaben zahlt auf ein Ziel des Hauses ein.' };
   }
 
