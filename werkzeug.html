@@ -203,6 +203,9 @@
      als ihr eigenes Label. */
   .feld > label { display: block; font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg); margin-bottom: 2px; }
   .feld-hilfe { color: var(--fg-muted); font-size: 13px; margin-bottom: 6px; }
+  .pflichtzeichen { color: var(--kirsche-text); margin-left: .16em; }
+  .pflicht-legende { color: var(--fg-muted); font-size: 12.5px; margin: 24px 0 0 34px; }
+  .pflicht-legende .pflichtzeichen { font-weight: 800; margin: 0 .28em 0 0; }
   /* Der Wirkungsversprechen-Verweis steht unter dem Feld, nicht darüber */
   .wv-hinweis { margin: 5px 0 0; }
   .wv-hinweis a { color: var(--blau); font-weight: 600; }
@@ -221,6 +224,7 @@
   .pn-feld input:focus, .navfoot input:focus {
     outline: 2px solid var(--blau); outline-offset: 1px; border-color: var(--blau);
   }
+  .steckbrief input::placeholder, .steckbrief textarea::placeholder { color: var(--fg-muted); opacity: 1; }
   .steckbrief select { cursor: pointer; min-height: 42px; }
   .steckbrief textarea { min-height: 76px; resize: vertical; }
   input.kurz { max-width: 130px !important; }
@@ -452,7 +456,7 @@
      volle Höhe eine Unterscheidung, die es in zwei von drei Spalten nicht gibt,
      und jede erste Kachel dort klebte optisch an dieser Zeile. */
   .matrix.pf { position: relative; grid-template-columns: repeat(3, minmax(200px, 1fr)); min-width: 660px; }
-  .matrix.pf .pt { z-index: 3; }
+  .matrix.pf .pt-wrap { z-index: 3; }
   /* Das Achsenwort führt, die Zahl stützt (Kleinigkeiten-Notiz 06.08.:
      VZÄ war dominanter als die Entscheidungswörter) */
   /* Die drei getönten Flächen der Ansicht bilden eine Tonleiter: Kapazitätsband
@@ -491,10 +495,17 @@
   .lane-leer { color: var(--fg-muted); font-size: 13px; padding: 6px 0; }
   @media (max-width: 720px) { .lane { grid-template-columns: 1fr; gap: 6px; } }
 
-  .pt { position: relative; background: var(--weiss); border: 1.5px solid var(--blau-20); border-radius: 6px; cursor: pointer; text-align: left; padding: 9px 12px 8px; width: 214px; display: flex; flex-direction: column; gap: 5px; transition: transform .18s var(--ease), box-shadow .18s var(--ease); }
+  .pt-wrap { position: relative; width: 214px; flex: 0 0 214px; align-self: flex-start; }
+  .pt { position: relative; background: var(--weiss); border: 1.5px solid var(--blau-20); border-radius: 6px; cursor: pointer; text-align: left; padding: 9px 12px 8px; width: 100%; display: flex; flex-direction: column; gap: 5px; transition: transform .18s var(--ease), box-shadow .18s var(--ease); }
   .pt:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(13,12,43,.09); }
   .pt.aktiv { box-shadow: 0 0 0 2px var(--blau); border-color: var(--blau); }
-  .pt-name { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg); line-height: 1.28; }
+  .pt-name { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg); line-height: 1.28; padding-right: 26px; }
+  .pt-lupe { position: absolute; z-index: 4; top: 5px; right: 5px; width: 29px; height: 29px; display: grid; place-items: center; border: 0; border-radius: 5px; background: transparent; color: var(--blau); cursor: pointer; transition: background .18s var(--ease), transform .18s var(--ease); }
+  .pt-lupe:hover { background: var(--blau-10); transform: translateY(-1px); }
+  .pt-lupe:active { transform: translateY(1px); }
+  .pt-lupe:focus-visible { outline: 2px solid var(--blau); outline-offset: 1px; }
+  .pt-lupe svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+  .pt.abh-zurueck + .pt-lupe { opacity: .2; }
   /* Der hohle Punkt an der Kachel: dasselbe Zeichen wie der Reife-Punkt in der
      Namensliste von Schritt 1. Gefüllt heißt "die Runde kann damit arbeiten",
      hohl heißt "da fehlt noch etwas". Er sitzt in der Namenszeile, also weder
@@ -540,6 +551,28 @@
   .panel { background: var(--blau-10); border-radius: 6px; padding: clamp(16px, 2.2vw, 22px) clamp(16px, 2.4vw, 24px); margin-top: 16px; }
   .pn-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 3px; }
   .pn-kopf h3 { font-size: 18px; }
+
+  /* Sekundärblick aus jeder Kachel: eine seitliche Vorschau hält das
+     Portfoliobild sichtbar. Der Kartenklick behält seine jeweilige Hauptaktion. */
+  .vorschau-dialog { position: fixed; inset: 0 0 0 auto; width: min(460px, 100%); height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; background: var(--weiss); color: var(--fg); box-shadow: -20px 0 56px rgba(13,12,43,.18); overflow: auto; }
+  .vorschau-dialog::backdrop { background: rgba(13,12,43,.28); }
+  .vs-inhalt { min-height: 100%; padding: clamp(22px, 4vw, 38px); }
+  .vs-kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+  .vs-kopf h2 { font-size: clamp(20px, 3vw, 26px); line-height: 1.15; text-wrap: balance; }
+  .vs-schliessen { flex: none; width: 34px; height: 34px; border: 0; border-radius: 6px; background: var(--blau-10); color: var(--blau); cursor: pointer; font-size: 22px; line-height: 1; }
+  .vs-schliessen:hover { background: var(--lavendel); }
+  .vs-schliessen:focus-visible { outline: 2px solid var(--blau); outline-offset: 2px; }
+  .vs-status { display: flex; flex-wrap: wrap; gap: 7px; margin: 16px 0 4px; }
+  .vs-status span { background: var(--blau-10); border-radius: 4px; padding: 5px 8px; color: var(--fg-2); font-size: 12.5px; }
+  .vs-block { padding: 20px 0; border-bottom: 1px solid var(--line); }
+  .vs-block h3 { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 7px; }
+  .vs-block p { color: var(--fg-2); font-size: 14.5px; line-height: 1.5; text-wrap: pretty; }
+  .vs-block p + p { margin-top: 6px; }
+  .vs-leer { color: var(--fg-muted) !important; }
+  .vs-fuss { display: flex; justify-content: flex-end; padding-top: 24px; }
+  @media (max-width: 560px) {
+    .vorschau-dialog { width: 100%; }
+  }
   .pn-empf { color: var(--fg-2); font-size: 14px; margin-bottom: 12px; }
   .pn-wert { margin-bottom: 16px; }
   .pn-wert .sb-summe { font-size: 14px; }
@@ -831,6 +864,10 @@
     </div>
   </section>
 
+  <dialog class="vorschau-dialog" id="vorschauDialog" aria-labelledby="vorschauTitel">
+    <div id="vorschauInhalt"></div>
+  </dialog>
+
   <!-- Ansicht "Steuerungsrunde vorbereiten" (Sparring 11.08.). Sie steht im
        Markup hinter Schritt 2, obwohl sie davor bedient wird: sichtbar ist immer
        nur eine Ansicht, und so bleibt die erste Fundstelle jeder gemeinsam
@@ -1061,6 +1098,30 @@
     return verbunden;
   }
 
+  // Fachlich ist die Verknüpfung ungerichtet. Gespeichert bleibt sie an genau
+  // einem der beiden Steckbriefe; gelesen wird sie an beiden. Die Reihenfolge
+  // folgt der Vorhabenliste, damit Chips und Export stabil bleiben.
+  function verknuepfteVorhaben(v, liste) {
+    const ids = verknuepfteIds(v, liste);
+    return (liste || []).filter(x => ids.has(x.id));
+  }
+
+  // Entfernt das fachliche Paar unabhängig davon, an welchem Ende es technisch
+  // gespeichert wurde. Reziproke Alt-Dubletten werden im selben Zug bereinigt;
+  // die beiden Vorhaben selbst bleiben selbstverständlich erhalten.
+  function verknuepfungEntfernen(liste, ersteId, zweiteId) {
+    if (!Array.isArray(liste) || !ersteId || !zweiteId || ersteId === zweiteId) return false;
+    let geaendert = false;
+    liste.forEach(v => {
+      if (v.id !== ersteId && v.id !== zweiteId) return;
+      const partnerId = v.id === ersteId ? zweiteId : ersteId;
+      const vorher = (v.haengtAn || []).length;
+      v.haengtAn = (v.haengtAn || []).filter(a => !(a && a.typ === 'v' && a.id === partnerId));
+      if (v.haengtAn.length !== vorher) geaendert = true;
+    });
+    return geaendert;
+  }
+
   const verknuepfungsZahl = (v, liste) => verknuepfteIds(v, liste).size;
   const verknuepfungsRegeltext = (v, liste) => {
     const zahl = verknuepfungsZahl(v, liste);
@@ -1135,7 +1196,7 @@
   function empfehlung(v, liste) {
     let ergebnis;
     if (!v.veraenderung.trim()) {
-      ergebnis = { wert: 'offen', regel: 'Beschreibung und angestrebte Veränderung fehlen noch. Ohne sie kann niemand priorisieren.' };
+      ergebnis = { wert: 'offen', regel: 'Die angestrebte Veränderung fehlt noch. Ohne sie kann niemand priorisieren.' };
     } else if (v.ruhen === WAEHLEN || v.ruhen === RUHEN[6]) {
       ergebnis = { wert: 'offen', regel: 'Die Folgen des Ruhenlassens sind noch offen. Erst klären, dann entscheiden.' };
     } else if (v.ruhen === RUHEN[1]) {
@@ -1339,7 +1400,7 @@
   // Mit Artikel und im Nominativ, damit der Satz "Bei X fehlen ..." trägt.
   const LUECKE_LANG = {
     'Ziel': 'das Portfolioziel',
-    'Veränderung': 'die Beschreibung und angestrebte Veränderung',
+    'Veränderung': 'die angestrebte Veränderung',
     'Folgen': 'die Folgen des Ruhenlassens',
     'Chance': 'die konkrete Chance',
     'Zusage': 'die politische Zusage',
@@ -1489,7 +1550,7 @@
     return v;
   }
 
-  const SCHEMAVERSION = '1';
+  const SCHEMAVERSION = '2';
 
   function exportDatum(zeitpunkt) {
     const datum = zeitpunkt === undefined ? new Date() : new Date(zeitpunkt);
@@ -1570,14 +1631,14 @@
     // Metadaten stehen in jeder Datenzeile, damit Power Query mehrere Dateien
     // ohne Vorspann zusammenführen kann.
     const meta = exportMetadaten(abteilung, zeitpunkt);
-    const kopf = ['Abteilung', 'Berichtszeitraum', 'Exportzeitpunkt', 'Schemaversion', 'Vorhaben-ID', 'Vorhaben', 'Referat', 'Ziel', 'Beschreibung und angestrebte Veränderung', 'Wer profitiert', 'Erste Wirkung in', 'Folgen des Ruhenlassens', 'Konkretisierung', 'VZÄ', 'Davon gedeckt (VZÄ)', 'Stand', 'Geplanter Start', 'Voraussichtliches Ende', 'Nominierung', 'Begründung Nominierung', 'Hängt zusammen mit', 'Fehlende Rollen oder Fähigkeiten', 'Punkte Folgen (0 bis 3)', 'Punkte Nominierung (0 bis 1)', 'Punkte Ziel (0 bis 1)', 'Steuerungsbedarf (0 bis 5)', 'Empfehlung', 'Regel', 'Entscheidung der Abteilung', 'Portfolio (abgeleitet)', 'Begründung bei Abweichung', 'Bedingung', 'Hinweis für die Runde'];
+    const kopf = ['Abteilung', 'Berichtszeitraum', 'Exportzeitpunkt', 'Schemaversion', 'Vorhaben-ID', 'Vorhaben', 'Referat', 'Ziel', 'Angestrebte Veränderung', 'Wer profitiert', 'Erste Wirkung in', 'Folgen des Ruhenlassens', 'Konkretisierung', 'VZÄ', 'Davon gedeckt (VZÄ)', 'Stand', 'Geplanter Start', 'Voraussichtliches Ende', 'Nominierung', 'Begründung Nominierung', 'Hängt zusammen mit', 'Fehlende Rollen oder Fähigkeiten', 'Punkte Folgen (0 bis 3)', 'Punkte Nominierung (0 bis 1)', 'Punkte Ziel (0 bis 1)', 'Steuerungsbedarf (0 bis 5)', 'Empfehlung', 'Regel', 'Entscheidung der Abteilung', 'Portfolio (abgeleitet)', 'Begründung bei Abweichung', 'Bedingung', 'Hinweis für die Runde'];
     const zeilen = liste.map(v => {
       const e = empfehlung(v, liste);
       const s = steuerungsbedarf(v);
       const punkt = i => s.teile[i].wert === undefined ? '' : s.teile[i].wert;
       const konkret = v.ruhen === RUHEN[4] ? v.chanceKonkret : v.ruhen === RUHEN[1] ? v.pflichtKonkret : v.ruhen === RUHEN[2] ? v.zusageKonkret : v.ruhen === RUHEN[3] ? v.schadenKonkret : '';
       const lb = (LEITUNG.find(o => o.wert === v.leitung) || {}).text;
-      const haengt = (v.haengtAn || []).map(a => abhName(a, liste, externe)).filter(Boolean).join('; ');
+      const haengt = verknuepfteVorhaben(v, liste).map(x => x.name).join('; ');
       return [meta.abteilung, meta.berichtszeitraum, meta.exportzeitpunkt, meta.schemaversion, v.id,
         v.name, v.referat, v.ziel === WAEHLEN ? '' : v.ziel, v.veraenderung,
         v.reichweite === WAEHLEN ? '' : v.reichweite, v.wirkungAb === WAEHLEN ? '' : v.wirkungAb,
@@ -1693,7 +1754,7 @@
     }));
     // Der Zähler steht seit Entscheidung 53 auf der freien Fläche, hier bliebe
     // er doppelt. Was der Punkt bedeutet, sagt die Legende weiter.
-    document.getElementById('reifeLegende').textContent = 'Gefüllter Punkt heißt: die Runde kann damit arbeiten.';
+    document.getElementById('reifeLegende').textContent = 'Gefüllter Punkt heißt: Steckbrief vollständig.';
   }
 
   // Der Balken zeigt Bestandteile und Summe in einem. Die Zahl steht nie allein
@@ -1749,10 +1810,8 @@
   }
 
   function abhChips(v) {
-    const chips = (v.haengtAn || []).map((a, i) => {
-      const name = abhName(a, S.vorhaben);
-      if (!name) return '';
-      return `<span class="abh-chip">${esc(name)}<button type="button" data-abh-weg="${i}" aria-label="Verknüpfung entfernen">&times;</button></span>`;
+    const chips = verknuepfteVorhaben(v, S.vorhaben).map(partner => {
+      return `<span class="abh-chip">${esc(partner.name)}<button type="button" data-abh-ziel="${esc(partner.id)}" aria-label="Verknüpfung mit ${esc(partner.name)} entfernen">&times;</button></span>`;
     }).join('');
     return chips ? `<div class="abh-chips">${chips}</div>` : '';
   }
@@ -1766,8 +1825,8 @@
   function feldFolge(v, feld, frage, hinweisText) {
     const wert = String(v[feld] || '');
     return `<div class="feld">
-      <label for="${feld}-${v.id}">${esc(frage)}</label>
-      <input type="text" id="${feld}-${v.id}" data-id="${v.id}" data-feld="${feld}" maxlength="240" value="${esc(wert)}">
+      <label for="${feld}-${v.id}">${esc(frage)}<span class="pflichtzeichen" aria-hidden="true">*</span></label>
+      <input type="text" id="${feld}-${v.id}" data-id="${v.id}" data-feld="${feld}" required aria-required="true" maxlength="240" placeholder="Kurz und konkret benennen" value="${esc(wert)}">
       ${wert.trim() ? '' : `<p class="fehlt">${esc(hinweisText)}</p>`}
     </div>`;
   }
@@ -1801,10 +1860,10 @@
     const rest = offen - 1;
     const fuss = offen
       ? `<button class="z-fuss" type="button" data-oeffne="${erstes.id}">Bei "${esc(erstes.name)}" ${lueckenVerb(erstes)} ${esc(lueckenText(erstes))}.${rest ? ` Und bei ${rest === 1 ? 'einem weiteren Vorhaben' : rest + ' weiteren Vorhaben'} noch etwas.` : ''}</button>`
-      : '<p class="z-fuss" style="cursor:default">Die Runde kann mit jedem Steckbrief arbeiten.</p>';
+      : '<p class="z-fuss" style="cursor:default">Alle Steckbriefe sind vollständig.</p>';
     return `<p class="z-kopf">Stand der Erfassung</p>
       <div class="z-reihe"><span class="z-t">Vorhaben in der Abteilung</span><span class="z-w">${e.gesamt}</span></div>
-      <div class="z-reihe"><span class="z-t">einsatzbereit für die Runde</span><span class="z-w">${e.reif}</span></div>
+      <div class="z-reihe"><span class="z-t">vollständige Steckbriefe</span><span class="z-w">${e.reif}</span></div>
       <div class="z-reihe"><span class="z-t">noch unvollständig</span><span class="z-w">${offen}</span></div>
       ${fuss}`;
   }
@@ -1913,21 +1972,18 @@
                Laufzeitenansicht ist danach filterbar. -->
           <div class="feld">
             <label for="referat">Federführendes Referat</label>
-            <input type="text" class="mittel" id="referat" data-id="${v.id}" data-feld="referat" maxlength="40" list="referatListe" autocomplete="off" value="${esc(v.referat)}">
+            <input type="text" class="mittel" id="referat" data-id="${v.id}" data-feld="referat" maxlength="40" list="referatListe" placeholder="Referat auswählen oder eintragen" autocomplete="off" value="${esc(v.referat)}">
             <datalist id="referatListe">${[...new Set(S.vorhaben.map(x => x.referat.trim()).filter(Boolean))].map(r => `<option value="${esc(r)}"></option>`).join('')}</datalist>
           </div>
           <div class="feld">
-            <label for="ziel">Ziel des Hauses</label>
-            <p class="feld-hilfe">"Kein Ziel erkennbar" ist eine zulässige Antwort.</p>
-            <select id="ziel" data-id="${v.id}" data-feld="ziel">${optionen(ZIEL_OPTIONEN, v.ziel)}</select>
+            <label for="ziel">Ziel des Hauses<span class="pflichtzeichen" aria-hidden="true">*</span></label>
+            <select id="ziel" data-id="${v.id}" data-feld="ziel" required aria-required="true">${optionen(ZIEL_OPTIONEN, v.ziel)}</select>
           </div>
           <div class="feld">
-            <!-- "für wen" fragt seit v3 Block 2, hier stand es doppelt.
-                 Seit 11.08. fragt das Feld Beschreibung und Veränderung zusammen:
-                 im Sparring war unklar, wo das Worum-geht-es hingehört. -->
-            <label for="veraenderung">Beschreibung und angestrebte Veränderung</label>
-            <p class="feld-hilfe">Worum geht es, und was machen oder erleben Menschen dadurch künftig anders?</p>
-            <textarea id="veraenderung" data-id="${v.id}" data-feld="veraenderung" maxlength="240">${esc(v.veraenderung)}</textarea>
+            <!-- Der Titel benennt das Vorhaben; dieses Feld zwingt den Blick auf
+                 das gewünschte Danach. So verlockt es nicht zur Projektbeschreibung. -->
+            <label for="veraenderung">Beschreibe die angestrebte Veränderung<span class="pflichtzeichen" aria-hidden="true">*</span></label>
+            <textarea id="veraenderung" data-id="${v.id}" data-feld="veraenderung" required aria-required="true" maxlength="240" placeholder="Was machen oder erleben Menschen dadurch künftig anders?">${esc(v.veraenderung)}</textarea>
             ${v.veraenderung.trim() ? '' : `<p class="feld-hilfe wv-hinweis">Neues Vorhaben? Das Denkwerkzeug <a href="https://julelabs.github.io/wirkungswerkstatt/wirkungsversprechen.html" target="_blank" rel="noopener">Wirkungsversprechen</a> zeigt die Logik hinter dieser Frage. Es ist ein ungetesteter Prototyp, keine abgestimmte Vorgabe des Hauses.</p>`}
           </div>
         </div>
@@ -1937,14 +1993,13 @@
         <span class="block-nr">2</span>
         <div>
           <span class="frage">Wen erreicht es, und ab wann?</span>
-          <p class="hilfe">Beide Angaben informieren die Runde. Sie bewerten das Vorhaben nicht.</p>
           <div class="zeile2">
             <div class="feld">
               <label for="reichweite">Wer profitiert vor allem</label>
               <select id="reichweite" data-id="${v.id}" data-feld="reichweite">${optionen(REICHWEITE, v.reichweite)}</select>
             </div>
             <div class="feld">
-              <label for="wirkungAb">Erste spürbare Wirkung in</label>
+              <label for="wirkungAb">Erste spürbare Wirkung in (ab heute gerechnet)</label>
               <select id="wirkungAb" data-id="${v.id}" data-feld="wirkungAb">${optionen(WIRKUNG_AB, v.wirkungAb)}</select>
             </div>
           </div>
@@ -1954,10 +2009,10 @@
       <div class="block">
         <span class="block-nr">3</span>
         <div>
-          <span class="frage">Was passiert, wenn das Haus es sechs Monate ruhen lässt?</span>
+          <label class="frage" for="ruhen">Was passiert, wenn die Abteilung es sechs Monate ruhen lässt?<span class="pflichtzeichen" aria-hidden="true">*</span></label>
           <p class="hilfe">Wen würde es treffen, und wie schnell? Bei Innovationsvorhaben kann auch eine entgangene Chance ausschlaggebend sein, ein konkreter Schaden muss nicht vorliegen.</p>
           <div class="feld">
-            <select id="ruhen" data-id="${v.id}" data-feld="ruhen">${optionen(RUHEN, v.ruhen)}</select>
+            <select id="ruhen" data-id="${v.id}" data-feld="ruhen" required aria-required="true">${optionen(RUHEN, v.ruhen)}</select>
           </div>
           ${v.ruhen === RUHEN[4] ? feldFolge(v, 'chanceKonkret', 'Welche Chance, und woran würde man in einem Jahr merken, dass sie genutzt ist?', 'Chance ist noch nicht benannt.') : ''}
           ${v.ruhen === RUHEN[1] ? feldFolge(v, 'pflichtKonkret', 'Welche Frist oder Vorgabe?', 'Frist oder Vorgabe ist noch nicht benannt.') : ''}
@@ -1969,26 +2024,22 @@
       <div class="block">
         <span class="block-nr">4</span>
         <div>
-          <span class="block-thema">Ressourcen</span>
           <span class="frage">Welche Ressourcen braucht das Vorhaben?</span>
           <div class="zeile2">
-            <div>
-              <div class="feld">
-                <label for="vzae">Personalbedarf in den nächsten sechs Monaten (VZÄ)</label>
-                <p class="feld-hilfe">Grob geschätzt genügt.</p>
-                <input type="text" inputmode="decimal" class="kurz" id="vzae" data-id="${v.id}" data-feld="vzae" maxlength="6" value="${esc(v.vzae)}">
-              </div>
-              <div class="feld">
-                <label for="vzaeGedeckt">Davon durch Personal der Abteilung gedeckt (VZÄ)</label>
-                <input type="text" inputmode="decimal" class="kurz" id="vzaeGedeckt" data-id="${v.id}" data-feld="vzaeGedeckt" maxlength="6" value="${esc(v.vzaeGedeckt)}">
-              </div>
-              <p class="deckung-rechnung ${deckung(v).ueberdeckt ? 'ueber' : deckung(v).luecke > 0 ? 'luecke' : ''}" id="deckungRechnung" aria-live="polite">${esc(deckungText(v))}</p>
+            <div class="feld">
+              <label for="vzae">Personalbedarf in den nächsten sechs Monaten (VZÄ)</label>
+              <input type="text" inputmode="decimal" class="kurz" id="vzae" data-id="${v.id}" data-feld="vzae" maxlength="6" placeholder="z. B. 2,5" value="${esc(v.vzae)}">
             </div>
             <div class="feld">
-              <label for="laeuft">Läuft es bereits?</label>
-              <p class="feld-hilfe">Nur was heute läuft, kann durch eine Absage frei werden.</p>
-              <select id="laeuft" data-id="${v.id}" data-feld="laeuft">${optionen(LAEUFT, v.laeuft)}</select>
+              <label for="vzaeGedeckt">Davon durch Personal der Abteilung gedeckt (VZÄ)</label>
+              <input type="text" inputmode="decimal" class="kurz" id="vzaeGedeckt" data-id="${v.id}" data-feld="vzaeGedeckt" maxlength="6" placeholder="z. B. 1,5" value="${esc(v.vzaeGedeckt)}">
             </div>
+          </div>
+          <p class="deckung-rechnung ${deckung(v).ueberdeckt ? 'ueber' : deckung(v).luecke > 0 ? 'luecke' : ''}" id="deckungRechnung" aria-live="polite">${esc(deckungText(v))}</p>
+          <div class="feld">
+            <label for="laeuft">Läuft es bereits?</label>
+            <p class="feld-hilfe">Nur laufende Arbeit kann beim Einstellen Kapazität freigeben.</p>
+            <select id="laeuft" data-id="${v.id}" data-feld="laeuft">${optionen(LAEUFT, v.laeuft)}</select>
           </div>
           <!-- Die Zeitangaben folgen dem Stand (Sparring 11.08.): Laufendes
                erfasst nur das voraussichtliche Ende, ein historischer Start
@@ -2006,7 +2057,6 @@
           </div>` : ''}
           ${v.laeuft === LAEUFT[1] ? `<div class="feld">
             <label for="endeBis">Voraussichtliches Ende (Monat)</label>
-            <p class="feld-hilfe">Grob geschätzt genügt, die Laufzeitenansicht liest daraus den Balken.</p>
             <input type="month" class="mittel" id="endeBis" data-id="${v.id}" data-feld="endeBis" value="${esc(v.endeBis)}">
           </div>` : ''}
         </div>
@@ -2015,16 +2065,16 @@
       <div class="block">
         <span class="block-nr">5</span>
         <div>
-          <span class="frage">Für Leitung nominieren?</span>
+          <label class="frage" for="leitung">Für Leitung nominieren?<span class="pflichtzeichen" aria-hidden="true">*</span></label>
           <p class="hilfe">Nominiert nur Vorhaben, die für das ganze Haus strategisch wichtig sind.</p>
           <div class="feld">
-            <select id="leitung" data-id="${v.id}" data-feld="leitung">
+            <select id="leitung" data-id="${v.id}" data-feld="leitung" required aria-required="true">
               ${LEITUNG.map(o => `<option value="${o.wert}" ${o.wert === v.leitung ? 'selected' : ''}>${esc(o.text)}</option>`).join('')}
             </select>
           </div>
         ${nominiert ? `<div class="feld">
-            <label for="bmWarum">Warum ist dieses Vorhaben für das Haus strategisch wichtig?</label>
-            <input type="text" id="bmWarum" data-id="${v.id}" data-feld="bmWarum" maxlength="240" value="${esc(v.bmWarum)}">
+            <label for="bmWarum">Warum ist dieses Vorhaben für das Haus strategisch wichtig?<span class="pflichtzeichen" aria-hidden="true">*</span></label>
+            <input type="text" id="bmWarum" data-id="${v.id}" data-feld="bmWarum" required aria-required="true" maxlength="240" placeholder="Strategische Bedeutung kurz begründen" value="${esc(v.bmWarum)}">
             ${v.bmWarum.trim() ? '' : '<p class="fehlt">Begründung fehlt noch.</p>'}
           </div>` : ''}
         </div>
@@ -2033,24 +2083,25 @@
       <div class="block">
         <span class="block-nr">6</span>
         <div>
-          <span class="frage">Was muss die Runde noch wissen?</span>
+          <span class="frage">Welche Informationen sind für die Priorisierungsentscheidung noch wichtig?</span>
           <div class="feld">
             <label for="abhNeu">Hängt zusammen mit</label>
-            <p class="feld-hilfe">Beim Tippen erscheinen die Vorhaben der Abteilung. Ein unbekannter Name legt ein leeres Vorhaben der Abteilung an. Verknüpfungen haben keine Richtung.</p>
+            <p class="feld-hilfe" id="abhNeu-status">Bestehendes Vorhaben auswählen oder einen neuen Namen eintragen. Verknüpfungen gelten in beide Richtungen.</p>
             ${abhChips(v)}
             <div class="abh-zeile">
-              <input type="text" id="abhNeu" list="abhListe" maxlength="90" placeholder="Vorhaben der Abteilung ..." autocomplete="off">
+              <input type="text" id="abhNeu" list="abhListe" aria-describedby="abhNeu-status" maxlength="90" placeholder="Vorhaben der Abteilung ..." autocomplete="off">
               <button class="btn leise" type="button" id="abhAdd">Hinzufügen</button>
               <datalist id="abhListe">${abhVorschlaege(v)}</datalist>
             </div>
           </div>
           <div class="feld">
-            <label for="hinweis">Hinweis für die Runde</label>
-            <p class="feld-hilfe">Ein Zielkonflikt, eine Bedingung. Kein Statusbericht.</p>
-            <textarea id="hinweis" data-id="${v.id}" data-feld="hinweis" maxlength="240">${esc(v.hinweis)}</textarea>
+            <label for="hinweis">Weitere wichtige Information</label>
+            <textarea id="hinweis" data-id="${v.id}" data-feld="hinweis" maxlength="240" placeholder="z. B. Zielkonflikt oder Bedingung, kein Statusbericht">${esc(v.hinweis)}</textarea>
           </div>
         </div>
       </div>
+
+      <p class="pflicht-legende"><span class="pflichtzeichen" aria-hidden="true">*</span>Pflichtangabe</p>
 
       <div class="ablesung">${ablesungHtml(v)}</div>
 
@@ -2095,7 +2146,7 @@
       const treffer = abhAufloesen(abhFeld.value, S.vorhaben, null, v.id, 'v' + naechste);
       if (!treffer) { abhFeld.focus(); return; }
       if (S.vorhaben.length > vorherLaenge) naechste += 1;
-      if (!(v.haengtAn || []).some(a => a.typ === treffer.typ && a.id === treffer.id)) v.haengtAn.push(treffer);
+      if (!verknuepfteIds(v, S.vorhaben).has(treffer.id)) v.haengtAn.push(treffer);
       speichern();
       renderErfassen();
       const neu = document.getElementById('abhNeu');
@@ -2105,8 +2156,8 @@
     abhFeld.addEventListener('keydown', event => {
       if (event.key === 'Enter') { event.preventDefault(); abhUebernehmen(); }
     });
-    wurzel.querySelectorAll('[data-abh-weg]').forEach(el => el.addEventListener('click', () => {
-      v.haengtAn.splice(Number(el.dataset.abhWeg), 1);
+    wurzel.querySelectorAll('[data-abh-ziel]').forEach(el => el.addEventListener('click', () => {
+      verknuepfungEntfernen(S.vorhaben, v.id, el.dataset.abhZiel);
       speichern();
       renderErfassen();
     }));
@@ -2229,16 +2280,84 @@
     const zentralHinweis = wahl === 'nicht' && verknuepfungsZahl(v, S.vorhaben) >= 3
       ? verknuepfungsRegeltext(v, S.vorhaben)
       : '';
-    return `<button class="pt ${wahl} ${nominiert ? 'lf' : ''} ${v.id === aktivId ? 'aktiv' : ''}" type="button" data-kachel="${v.id}" title="${esc(korb)}${pflicht ? ' · ' + OFFENE_PFLICHT[pflicht].kurz : ''}">
-      <span class="pt-name">${esc(v.name)}${pflicht ? `<i class="pt-offen" aria-hidden="true"></i><span class="nur-vorlesen">, ${esc(OFFENE_PFLICHT[pflicht].kurz)}</span>` : ''}</span>
-      ${zentralHinweis ? `<span class="pt-hinweis">${esc(zentralHinweis)}</span>` : ''}
-      ${nominiert ? '<span class="nur-vorlesen">Nominiert für Leitung</span>' : ''}
-      ${ohneKorb ? '' : `<span class="pt-korb">${esc(korb)}</span>`}
-      <span class="pt-foot">
-        <span class="pt-state">${esc(ENTSCHEIDUNG[wahl])}</span>
-        <span>${vzae ? zahlText(vzae) : '?'}</span>
-      </span>
-    </button>`;
+    return `<div class="pt-wrap">
+      <button class="pt ${wahl} ${nominiert ? 'lf' : ''} ${v.id === aktivId ? 'aktiv' : ''}" type="button" data-kachel="${v.id}" title="${esc(korb)}${pflicht ? ' · ' + OFFENE_PFLICHT[pflicht].kurz : ''}">
+        <span class="pt-name">${esc(v.name)}${pflicht ? `<i class="pt-offen" aria-hidden="true"></i><span class="nur-vorlesen">, ${esc(OFFENE_PFLICHT[pflicht].kurz)}</span>` : ''}</span>
+        ${zentralHinweis ? `<span class="pt-hinweis">${esc(zentralHinweis)}</span>` : ''}
+        ${nominiert ? '<span class="nur-vorlesen">Nominiert für Leitung</span>' : ''}
+        ${ohneKorb ? '' : `<span class="pt-korb">${esc(korb)}</span>`}
+        <span class="pt-foot">
+          <span class="pt-state">${esc(ENTSCHEIDUNG[wahl])}</span>
+          <span>${vzae ? zahlText(vzae) : '?'}</span>
+        </span>
+      </button>
+      <button class="pt-lupe" type="button" data-vorschau="${v.id}" aria-label="${esc(v.name)} kurz ansehen" title="Kurz ansehen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 5 5"></path></svg>
+      </button>
+    </div>`;
+  }
+
+  function konkretisierung(v) {
+    if (v.ruhen === RUHEN[4]) return String(v.chanceKonkret || '').trim();
+    if (v.ruhen === RUHEN[1]) return String(v.pflichtKonkret || '').trim();
+    if (v.ruhen === RUHEN[2]) return String(v.zusageKonkret || '').trim();
+    if (v.ruhen === RUHEN[3]) return String(v.schadenKonkret || '').trim();
+    return '';
+  }
+
+  function vorschauOeffnen(id) {
+    const v = nachId(id);
+    const dialog = document.getElementById('vorschauDialog');
+    const wurzel = document.getElementById('vorschauInhalt');
+    if (!v || !dialog || !wurzel) return;
+    const e = empfehlung(v, S.vorhaben);
+    const wahl = gewaehlt(v, S.vorhaben);
+    const konkret = konkretisierung(v);
+    const bedarf = vzaeWert(v);
+    const nominierung = v.leitung === 'offen'
+      ? 'Nominierung noch offen.'
+      : IST_NOMINIERT(v.leitung)
+        ? 'Für das Leitungsportfolio nominiert.'
+        : 'Nicht nominiert, die Abteilung steuert selbst.';
+    wurzel.innerHTML = `<div class="vs-inhalt">
+      <div class="vs-kopf">
+        <h2 id="vorschauTitel">${esc(v.name)}</h2>
+        <button class="vs-schliessen" type="button" aria-label="Vorschau schließen">&times;</button>
+      </div>
+      <div class="vs-status">
+        <span>${esc(ENTSCHEIDUNG[wahl])}</span>
+        <span>${bedarf ? zahlText(bedarf) + ' VZÄ Bedarf' : 'Personalbedarf offen'}</span>
+        ${v.ziel && v.ziel !== WAEHLEN ? `<span>${esc(v.ziel)}</span>` : ''}
+      </div>
+      <section class="vs-block">
+        <h3>Veränderung</h3>
+        <p class="${v.veraenderung.trim() ? '' : 'vs-leer'}">${v.veraenderung.trim() ? esc(v.veraenderung) : 'Noch nicht beschrieben.'}</p>
+      </section>
+      <section class="vs-block">
+        <h3>Folgen des Ruhenlassens</h3>
+        <p class="${v.ruhen === WAEHLEN ? 'vs-leer' : ''}">${esc(v.ruhen === WAEHLEN ? 'Noch nicht beantwortet.' : v.ruhen)}</p>
+        ${konkret ? `<p>${esc(konkret)}</p>` : ''}
+      </section>
+      <section class="vs-block">
+        <h3>Empfehlung</h3>
+        <p><strong>${esc(ENTSCHEIDUNG[e.wert])}</strong>. ${esc(e.regel)}</p>
+      </section>
+      <section class="vs-block">
+        <h3>Nominierung und Kapazität</h3>
+        <p>${esc(nominierung)}</p>
+        ${IST_NOMINIERT(v.leitung) && v.bmWarum.trim() ? `<p>${esc(v.bmWarum)}</p>` : ''}
+        <p>${bedarf ? esc(deckungText(v) || 'Personaldeckung noch nicht angegeben.') : 'Personalbedarf noch nicht angegeben.'}</p>
+      </section>
+      <div class="vs-fuss"><button class="btn primary" type="button" id="vorschauSteckbrief">Steckbrief öffnen</button></div>
+    </div>`;
+    wurzel.querySelector('.vs-schliessen').addEventListener('click', () => dialog.close());
+    document.getElementById('vorschauSteckbrief').addEventListener('click', () => {
+      dialog.close();
+      offenId = v.id;
+      wechsle('erfassen');
+    });
+    dialog.onclick = event => { if (event.target === dialog) dialog.close(); };
+    if (!dialog.open) dialog.showModal();
   }
 
   // Innerhalb einer Bahn zuerst das Laufende, darin die Nominierungen nach vorn
@@ -2380,9 +2499,10 @@
     const wurzel = document.getElementById('bildKoerper');
     wurzel.querySelectorAll('[data-kachel]').forEach(el => {
       const verbunden = !!fokus && fokus.verbunden.has(el.dataset.kachel);
-      el.classList.toggle('abh-vorn', verbunden);
-      el.classList.toggle('abh-zurueck', !!fokus && !verbunden);
-      el.classList.toggle('abh-auswahl', !!fokus && fokus.auswahl.id === el.dataset.kachel);
+      const karte = el.closest('.pt-wrap') || el;
+      karte.classList.toggle('abh-vorn', verbunden);
+      karte.classList.toggle('abh-zurueck', !!fokus && !verbunden);
+      karte.classList.toggle('abh-auswahl', !!fokus && fokus.auswahl.id === el.dataset.kachel);
       el.setAttribute('aria-pressed', String(!!fokus && fokus.auswahl.id === el.dataset.kachel));
     });
     zeichneAbhaengigkeitsLinien(fokus);
@@ -2543,6 +2663,10 @@
     else if (sicht === 'laufzeiten') renderLaufzeiten();
     else renderLanes();
     document.querySelectorAll('.sichten button').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.sicht === sicht)));
+    document.getElementById('bildKoerper').querySelectorAll('[data-vorschau]').forEach(el => el.addEventListener('click', event => {
+      event.stopPropagation();
+      vorschauOeffnen(el.dataset.vorschau);
+    }));
     document.getElementById('bildKoerper').querySelectorAll('[data-kachel]').forEach(el => el.addEventListener('click', () => {
       if (klickNachZugId === el.dataset.kachel) return;
       if (sicht === 'portfolio') {
