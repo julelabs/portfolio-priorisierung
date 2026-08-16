@@ -415,9 +415,11 @@
   .mx-offen-kopf { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 8px; }
   .mx-offen-body { display: flex; flex-wrap: wrap; gap: 7px; }
 
-  /* Abhängigkeiten sind eine Linse in der Portfolio-Sicht. Der Hinweis belegt
-     immer denselben Raum, damit das Bild beim Auswählen nicht nach unten rückt. */
-  .abh-info { display: flex; align-items: baseline; justify-content: space-between; gap: 10px 24px; min-height: 46px; padding: 8px 0 10px; color: var(--fg-2); font-size: 13.5px; }
+  /* Abhängigkeiten sind eine Linse in der Portfolio-Sicht. Der Hinweis steht
+     seit Entscheidung 94 unter dem Raster: über dem Bild kostete er 46 px,
+     bevor überhaupt etwas zu sehen war. Er belegt weiterhin immer denselben
+     Raum, damit das Bild beim Auswählen nicht springt. */
+  .abh-info { display: flex; align-items: baseline; justify-content: space-between; gap: 10px 24px; min-height: 42px; padding: 12px 0 0; color: var(--fg-muted); font-size: 13px; }
   .abh-info strong { font-family: var(--display); color: var(--fg); }
   .abh-info-meta { flex: 0 0 auto; color: var(--fg-muted); font-size: 12.5px; }
   #bildKoerper .abh-zurueck { opacity: .16; }
@@ -500,7 +502,14 @@
   .pt:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(13,12,43,.09); }
   .pt.aktiv { box-shadow: 0 0 0 2px var(--blau); border-color: var(--blau); }
   .pt-name { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg); line-height: 1.28; padding-right: 26px; }
-  .pt-lupe { position: absolute; z-index: 4; top: 5px; right: 5px; width: 29px; height: 29px; display: grid; place-items: center; border: 0; border-radius: 5px; background: transparent; color: var(--blau); cursor: pointer; transition: background .18s var(--ease), transform .18s var(--ease); }
+  /* Die Lupe ist ein Zweitblick und liegt seit Entscheidung 94 nicht mehr
+     dauerhaft auf jeder Kachel: sie kommt beim Zeigen und bei Tastaturfokus.
+     Nicht display: none, damit sie erreichbar und vorlesbar bleibt. Der Platz
+     für sie bleibt reserviert, der Name rückt also nicht. */
+  .pt-lupe { position: absolute; z-index: 4; top: 5px; right: 5px; width: 29px; height: 29px; display: grid; place-items: center; border: 0; border-radius: 5px; background: transparent; color: var(--blau); cursor: pointer; opacity: 0; transition: opacity .14s var(--ease), background .18s var(--ease), transform .18s var(--ease); }
+  .pt-wrap:hover .pt-lupe, .pt-lupe:focus-visible { opacity: 1; }
+  /* Ohne Zeigegerät gibt es kein Zeigen, dort bleibt sie stehen. */
+  @media (hover: none) { .pt-lupe { opacity: 1; } }
   .pt-lupe:hover { background: var(--blau-10); transform: translateY(-1px); }
   .pt-lupe:active { transform: translateY(1px); }
   .pt-lupe:focus-visible { outline: 2px solid var(--blau); outline-offset: 1px; }
@@ -527,6 +536,9 @@
   .vb-rollen input:focus { outline: 2px solid var(--blau); outline-offset: 1px; border-color: var(--blau); }
   .pt-korb { font-size: 11.5px; color: var(--fg-muted); }
   .pt-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--fg-muted); }
+  /* Ohne Statuswort trägt die Fußzeile nur noch die Zahl, die rückt dann nach
+     rechts an ihren gewohnten Platz (Entscheidung 94). */
+  .pt-foot.nur-zahl { justify-content: flex-end; }
   .pt-state { font-family: var(--display); font-weight: 800; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
   /* Die Kachel ist das konstante Objekt, die Sicht nur die Linse (Entscheidung
      46). Deshalb sieht derselbe Status in allen Sichten gleich aus: ruhige
@@ -774,10 +786,11 @@
 
   <!-- Ansicht 2 -->
   <section id="ansicht-priorisieren" class="verborgen">
-    <div class="anriss">
-      <h1>Was tragen wir im nächsten Halbjahr wirklich?</h1>
-      <p>Alle Vorhaben liegen nebeneinander. Ihr entscheidet je Vorhaben: eingeplant, wartet oder eingestellt. Die Kapazitätslinie oben zeigt, was dabei nicht mehr hineinpasst.</p>
-    </div>
+    <!-- Kein Anriss mehr (Entscheidung 94): Überschrift und Erklärabsatz standen
+         vor dem Bild und sagten, was die Spaltenköpfe zeigen. Zusammen mit
+         Bildtitel, Legende und Verknüpfungshinweis lagen 561 px Text vor der
+         ersten Kachel. Damit erledigt sich auch B-04, die Frage nach einer
+         belegbasierten Überschrift: es gibt hier keine mehr. -->
 
     <!-- Das Briefing steht vor der Werkbank und ist einklappbar (Entscheidung 63).
          Der Klappzustand ist der Moduswechsel: aufgeklappt für eine Runde, die
@@ -813,10 +826,15 @@
       </div>
       <div class="fl-teil">
         <div id="bdStand"></div>
-        <div class="bild-kopf">
+        <!-- Titel und Legende tragen nur dort, wo die Sicht keine Spaltenköpfe
+             hat (Entscheidung 94). In der Portfolio-Sicht benennen die drei
+             Köpfe die Zustände bereits, deshalb sind beide dort verborgen.
+             Der Titel bleibt im Markup, in der Laufzeiten-Sicht sagt er
+             "Welche Vorhaben laufen wann?" und wird dort auch geprüft. -->
+        <div class="bild-kopf" id="bildKopf">
           <h2 id="bildTitel">Das Portfolio der Abteilung <span class="einheit">Zahlen in Vollzeitäquivalenten</span></h2>
         </div>
-        <div class="bild-kopf">
+        <div class="bild-kopf" id="legendeKopf">
           <div class="legende">
             <span class="lg lg-status"><i class="prio"></i>eingeplant</span>
             <span class="lg lg-status"><i class="wartet"></i>wartet</span>
@@ -2266,9 +2284,15 @@
     });
   }
 
-  // Die Kachel nennt Zustand und Korb. In der Portfolio-Sicht bleibt der Korb
-  // weg, dort steht er schon als Name der Bahn und wäre reine Wiederholung.
-  function kachel(v, ohneKorb, abhRolle) {
+  // Die Kachel nennt Zustand und Korb. In der Portfolio-Sicht bleiben beide
+  // weg: Der Korb steht dort als Name der Bahn, und das Statuswort steht als
+  // Spaltenkopf über der Kachel. Beides wäre reine Wiederholung, und beides
+  // folgt derselben Regel, deshalb steuert ein Parameter sie gemeinsam
+  // (Entscheidung 94). Die Kachel bleibt dabei in Form, Farbe und Aufbau
+  // konstant, sie wiederholt nur nicht, was ihre Spalte schon benennt.
+  // Weggelassen wird das Element, nicht nur seine Anzeige: Was der Spaltenkopf
+  // trägt, muss der Screenreader nicht auf jeder Kachel erneut hören.
+  function kachel(v, ohneWiederholung) {
     const wahl = gewaehlt(v, S.vorhaben);
     const vzae = vzaeWert(v);
     const nominiert = IST_NOMINIERT(v.leitung) && wahl !== 'nicht';
@@ -2285,9 +2309,9 @@
         <span class="pt-name">${esc(v.name)}${pflicht ? `<i class="pt-offen" aria-hidden="true"></i><span class="nur-vorlesen">, ${esc(OFFENE_PFLICHT[pflicht].kurz)}</span>` : ''}</span>
         ${zentralHinweis ? `<span class="pt-hinweis">${esc(zentralHinweis)}</span>` : ''}
         ${nominiert ? '<span class="nur-vorlesen">Nominiert für Leitung</span>' : ''}
-        ${ohneKorb ? '' : `<span class="pt-korb">${esc(korb)}</span>`}
-        <span class="pt-foot">
-          <span class="pt-state">${esc(ENTSCHEIDUNG[wahl])}</span>
+        ${ohneWiederholung ? '' : `<span class="pt-korb">${esc(korb)}</span>`}
+        <span class="pt-foot${ohneWiederholung ? ' nur-zahl' : ''}">
+          ${ohneWiederholung ? '' : `<span class="pt-state">${esc(ENTSCHEIDUNG[wahl])}</span>`}
           <span>${vzae ? zahlText(vzae) : '?'}</span>
         </span>
       </button>
@@ -2525,7 +2549,7 @@
       const zone = korb === 'haus' ? 'haus' : (korb === 'fach' ? 'fach' : '');
       return `<div class="mx-zelle ${spalte === 3 ? 'pf-gebunden' : ''}" role="cell" data-wahl="${wahl}"${zone ? ` data-zone="${zone}"` : ''}${spannt ? ' aria-rowspan="2"' : ''} style="grid-column:${spalte}; grid-row:${zeile}${spannt ? ' / span 2' : ''}">
         ${label ? `<span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))}</span>` : '<span class="pf-korb-leer" aria-hidden="true"></span>'}
-        ${drin.map(v => kachel(v, true, '')).join('')}</div>`;
+        ${drin.map(v => kachel(v, true)).join('')}</div>`;
     };
 
     const koepfe = PF_SPALTEN.map((spalte, si) => {
@@ -2539,10 +2563,6 @@
     document.getElementById('bildKoerper').innerHTML = `
       <!-- Die Achsenüberschrift "Entscheidung der Abteilung" ist raus (Sparring
            11.08.): die Spaltenköpfe erklären die Ansicht bereits selbst. -->
-      <p class="abh-info" aria-live="polite">
-        <span>${fokus ? esc(abhaengigkeitsSatz(fokus)) : '<strong>Verknüpfungen:</strong> Ein Vorhaben anklicken, um seine direkten Verbindungen zu sehen.'}</span>
-        <span class="abh-info-meta">${fokus ? 'Erneut anklicken setzt die Auswahl zurück.' : 'Linien zeigen verknüpfte Vorhaben ohne Richtung.'}</span>
-      </p>
       <div class="mx-scroll">
         <div class="matrix pf${sicht === 'portfolio' ? ' ziehbar' : ''}" role="table" aria-label="Vorhaben nach Entscheidung der Abteilung">
           <div class="mx-reihe" role="row">${koepfe}</div>
@@ -2556,11 +2576,14 @@
           </div>
         </div>
       </div>
-      <p class="mx-lese"><strong>So liest sich das Bild:</strong> Der Korb wird nicht gewählt, er fällt aus der Entscheidung und der Nominierung heraus. Nur die Eingeplant-Spalte teilt sich: oben das Leitungsportfolio, das ans Haus geht, unten das Abteilungsportfolio.</p>
+      <p class="abh-info" aria-live="polite">
+        <span>${fokus ? esc(abhaengigkeitsSatz(fokus)) + ' Erneut anklicken setzt die Auswahl zurück.' : 'Kachel anklicken zeigt verknüpfte Vorhaben.'}</span>
+        <span class="abh-info-meta">Zahlen sind Vollzeitäquivalente.</span>
+      </p>
       ${offen.length ? `<div class="mx-offen">
         <p class="mx-offen-kopf">${esc(PORTFOLIO.offen)} · ${offen.length}</p>
         <p class="lane-sub">Noch kein Korb, es fehlen Antworten im Steckbrief.</p>
-        <div class="mx-offen-body">${offen.map(v => kachel(v, true, '')).join('')}</div>
+        <div class="mx-offen-body">${offen.map(v => kachel(v, true)).join('')}</div>
       </div>` : ''}`;
     markiereAbhaengigkeiten(fokus);
   }
@@ -2659,6 +2682,12 @@
 
   function renderBild() {
     document.getElementById('bildTitel').innerHTML = SICHT_TITEL[sicht] || TITEL_STANDARD;
+    // Entscheidung 94: In der Portfolio-Sicht sagen die Spaltenköpfe schon,
+    // was Titel und Legende sagen würden. In Laufzeiten und Zielen gibt es
+    // diese Köpfe nicht, dort bleiben beide stehen.
+    const imRaster = sicht === 'portfolio';
+    document.getElementById('bildKopf').classList.toggle('verborgen', imRaster);
+    document.getElementById('legendeKopf').classList.toggle('verborgen', imRaster);
     if (sicht === 'portfolio') renderPortfolio();
     else if (sicht === 'laufzeiten') renderLaufzeiten();
     else renderLanes();
