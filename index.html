@@ -44,9 +44,6 @@
   nav.top .links a.tool:hover { color: var(--dunkel); filter: brightness(1.06); }
 
   /* ---------- Hero ---------- */
-  /* Entscheidungsboard frontal, gross und crisp neben der Copy. Die dunklen
-     Pixel des Fotos verschmelzen per Blend mit dem blaueren Hero-Grund,
-     dadurch keine Bildkante und der Bleistift ragt frei in den Grund. */
   header.hero {
     position: relative; isolation: isolate; overflow: hidden;
     min-height: min(620px, calc(100dvh - 56px));
@@ -55,17 +52,19 @@
     padding: clamp(36px,4vw,56px) clamp(18px,3vw,48px) clamp(48px,5.5vw,80px);
   }
   .hero .wrap { width: min(1760px, 94vw); }
-  .hero-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(40px,4vw,80px); align-items: center; }
-  .hero-copy { min-width: 0; max-width: 620px; }
-  .hero-motiv { min-width: 0; }
-  .motiv-rahmen img { width: 100%; height: auto; display: block; mix-blend-mode: lighten; }
-  .hero-fuss { margin-top: 14px; font-size: 12.5px; color: var(--blau-40); font-family: var(--display); }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(40px,4vw,80px); }
+  /* Beide Spalten gleich hoch (Grid-Stretch) und als Flex-Spalte mit
+     space-between, damit CTA-Zeile und Trustline auf derselben Höhe liegen,
+     unabhängig davon, wie lang Headline oder Board gerade sind. */
+  .hero-copy { min-width: 0; max-width: 620px; display: flex; flex-direction: column; justify-content: space-between; }
+  .hero-motiv { min-width: 0; display: flex; flex-direction: column; justify-content: space-between; }
   .hero .kicker { font-family: var(--display); font-weight: 700; font-size: 13.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--minze); margin-bottom: 18px; }
   .hero h1 { font-size: clamp(40px,5.2vw,66px); max-width: 13ch; letter-spacing: -0.04em; line-height: 1.04; text-wrap: balance; }
   .hero h1 .hl { color: var(--minze); }
   .hero p.sub { margin-top: 24px; max-width: 48ch; font-size: clamp(16px,1.8vw,19.5px); color: var(--blau-20); text-wrap: pretty; }
   .hero .ctas { margin-top: 36px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
   .btn { display: inline-block; font-family: var(--display); font-weight: 800; font-size: 15.5px; text-decoration: none; border-radius: 999px; padding: 13px 26px; }
+  .btn[hidden], .quiet-link[hidden] { display: none; }
   .btn.minze { background: var(--minze); color: var(--dunkel); }
   .btn.minze:hover { filter: brightness(1.06); }
   .quiet-link { font-family: var(--display); font-weight: 700; font-size: 14.5px; color: var(--blau-20); text-decoration: none; border-bottom: 1px solid rgba(197,196,234,0.4); padding-bottom: 3px; }
@@ -88,6 +87,107 @@
   }
   @media (max-width: 480px) {
     .hero .ctas { align-items: flex-start; flex-direction: column; gap: 16px; }
+  }
+
+  /* ---------- Hero-Motiv: Portfolio-Board, ein Steckbrief morpht zu seiner Kachel ---------- */
+  /* Das Board bleibt im Layout stabil. Der Steckbrief liegt als freigestelltes
+     Arbeitsstück darüber und verdichtet sich per Transform/Opacity in seinen
+     reservierten Zielplatz, ein eingeplantes Vorhaben unter gleichen. */
+  .field-map { position: relative; width: 100%; max-width: 760px; min-width: 0; }
+  .field-map figcaption { font-family: var(--display); font-size: 13.5px; font-weight: 600; color: var(--blau-20); }
+  .field {
+    position: relative; margin-top: 30px; padding-bottom: 14px; min-height: 336px;
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(18px, 2.4vw, 38px);
+    align-items: start;
+  }
+  .field::before {
+    content: ""; position: absolute; inset: 30px -16px 8px; z-index: 0; opacity: .9;
+    background-image: radial-gradient(circle at center, rgba(197,196,234,.22) 1px, transparent 1.5px);
+    background-size: 24px 24px;
+    -webkit-mask-image: radial-gradient(118% 92% at 58% 40%, #000 30%, transparent 82%);
+    mask-image: radial-gradient(118% 92% at 58% 40%, #000 30%, transparent 82%);
+  }
+  .field::after {
+    content: ""; position: absolute; right: -10%; top: -4%; width: 56%; height: 94%; z-index: 0;
+    background: radial-gradient(56% 50% at 52% 46%, rgba(77,255,176,.19), transparent 70%);
+    pointer-events: none;
+  }
+  .lane { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 15px; }
+  .lane-label { font-family: var(--display); font-size: 10.5px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; color: var(--blau-20); margin-bottom: 7px; }
+  .mark {
+    position: relative; padding: 13px 14px 13px; border-radius: 7px; height: 68px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    background: var(--weiss); color: var(--dunkel);
+    border: 1px solid rgba(54,52,157,.30);
+    box-shadow: 0 13px 28px rgba(4,4,22,.46);
+    font-family: var(--display); font-size: 11.5px; font-weight: 600; line-height: 1.25;
+  }
+  .mark .meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 11px; }
+  .mark .meta i { display: block; height: 3px; border-radius: 2px; background: rgba(54,52,157,.34); }
+  .mark .meta i:first-child { width: 46%; }
+  .mark .meta i:last-child { width: 13%; }
+  .lane[data-status="eingeplant"] .mark { border: 2px solid var(--blau); }
+  .lane[data-status="eingestellt"] .mark { opacity: .5; }
+  .lane[data-status="eingestellt"] .meta i:last-child { display: none; }
+
+  .morph-target { visibility: hidden; }
+  .morph-target::before, .morph-actor::before {
+    content: ""; position: absolute; left: 8px; top: 8px; bottom: 8px; width: 4px; border-radius: 2px; background: var(--minze);
+  }
+  .morph-origin { position: absolute; left: 0; top: 42px; width: 64%; height: 132px; pointer-events: none; visibility: hidden; }
+  .morph-actor {
+    position: absolute; z-index: 5; overflow: hidden; visibility: hidden;
+    padding: 17px 20px 15px 24px; border-radius: 8px;
+    background: var(--weiss); color: var(--dunkel);
+    border: 1px solid rgba(54,52,157,.30);
+    box-shadow: 0 18px 38px rgba(4,4,22,.46);
+    transform-origin: top left; will-change: transform, opacity;
+    font-family: var(--display);
+  }
+  .morph-actor-kicker { font-size: 11.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--blau); margin-bottom: 7px; }
+  .morph-actor-title { display: block; font-size: 17px; line-height: 1.2; }
+  .morph-actor-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(54,52,157,.16); }
+  .morph-actor-fields span { min-width: 0; font-size: 10.5px; font-weight: 600; line-height: 1.25; }
+  .morph-actor-fields small { display: block; margin-bottom: 3px; font-size: 8.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); }
+
+  @keyframes einrasten {
+    from { opacity: 0; transform: translate(var(--dx, 0), var(--dy, 0)) rotate(var(--rot, 0deg)) scale(.95); }
+    to   { opacity: 1; transform: translateX(var(--tx-end, 0)) rotate(var(--rot-end, 0deg)) scale(1); }
+  }
+  @keyframes leiseAuf { from { opacity: 0; } to { opacity: 1; } }
+  .field-map.play .mark { animation: einrasten .66s cubic-bezier(.2,.78,.24,1) backwards; animation-delay: var(--d, 0s); }
+  .field-map.play .lane-label { animation: leiseAuf .5s ease-out backwards; animation-delay: 1.05s; }
+  .field-map.play .field::before { animation: leiseAuf .9s ease-out backwards; animation-delay: .70s; }
+  .field-map.play .field::after { animation: leiseAuf 1.1s ease-out backwards; animation-delay: 1.45s; }
+  .field-map.play .morph-target { animation: none; }
+  .field-map.play figcaption { animation: leiseAuf .55s ease-out 1.75s backwards; }
+  @media (prefers-reduced-motion: reduce) {
+    .field-map.play .mark, .field-map.play .lane-label,
+    .field-map.play .field::before, .field-map.play .field::after,
+    .field-map.play figcaption { animation: none; }
+  }
+
+  .hero-trustline {
+    border-top: 1px solid rgba(197,196,234,.24); margin-top: 20px; padding: 17px 0 3px;
+    display: flex; flex-wrap: wrap; gap: 6px 26px;
+    font-family: var(--display); font-size: 13px; color: var(--blau-20);
+  }
+
+  @media (max-width: 700px) {
+    .field { margin-top: 22px; padding-bottom: 12px; gap: 11px; min-height: 238px; }
+    .field .mark { padding: 11px 11px 11px; border-radius: 6px; font-size: 10.5px; }
+    .field .mark .meta { margin-top: 9px; }
+    .field .mark .meta i { height: 2px; }
+    .lane { gap: 11px; }
+    .lane-label { font-size: 9px; letter-spacing: .07em; }
+    .lane[data-status="eingeplant"] .mark:nth-of-type(3) { display: none; }
+    .field .morph-target { padding-left: 18px; }
+    .morph-origin { top: 34px; width: 82%; height: 118px; }
+    .morph-actor { padding: 13px 14px 12px 19px; }
+    .morph-actor-title { font-size: 13px; }
+    .morph-actor-fields { gap: 9px; margin-top: 11px; }
+    .morph-actor-fields span { font-size: 8.5px; }
+    .morph-actor-fields small { font-size: 7px; }
   }
 
   /* ---------- Abschnitte ---------- */
@@ -158,19 +258,65 @@
 <header class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
-      <div class="kicker">Für Abteilungen mit mehr Ideen als Leuten</div>
-      <h1>Was tragen wir <span class="hl">wirklich?</span></h1>
-      <p class="sub">Die Portfolio-Priorisierung bringt eure Vorhaben immer wieder zur ehrlichen Entscheidung: ein Steckbrief pro Vorhaben, transparente Wenn-dann-Regeln und eine Kapazitätslinie, die den Schnitt erzwingt, den keine Rangliste schafft.</p>
+      <div class="kicker">Portfolio gemeinsam steuern</div>
+      <h1>Aus Vorhaben wird ein gemeinsames Bild.</h1>
+      <p class="sub">Die Abteilung legt fest, welche Vorhaben jetzt Fokus bekommen, was wartet und welche Kapazität dafür gebunden ist.</p>
       <div class="ctas">
-        <a class="btn minze" href="werkzeug.html#portfolio">Das Portfolio ansehen</a>
-        <a class="quiet-link" href="werkzeug.html">Direkt ein Vorhaben eintragen →</a>
+        <a class="btn minze" data-cta="first-main" href="werkzeug.html">Vorhaben eintragen</a>
+        <a class="quiet-link" data-cta="first-link" href="werkzeug.html#portfolio">Beispielportfolio ansehen →</a>
+        <a class="btn minze" data-cta="own-main" href="werkzeug.html#portfolio" hidden>Eigenes Portfolio öffnen</a>
+        <a class="quiet-link" data-cta="own-link" href="werkzeug.html" hidden>Vorhaben eintragen →</a>
       </div>
+      <script>
+      (function () {
+        // Wer schon ein eigenes Portfolio angelegt hat (Speicherschlüssel existiert),
+        // bekommt CTAs für den Wiedereinstieg statt für den Erstkontakt.
+        var hatEigeneDaten = false;
+        try {
+          hatEigeneDaten = !!(localStorage.getItem('portfolio-prio-v3') || localStorage.getItem('portfolio-prio-v2'));
+        } catch (fehler) { /* Privatmodus: Erstkontakt-CTAs bleiben stehen */ }
+        if (hatEigeneDaten) {
+          document.querySelectorAll('[data-cta^="first-"]').forEach(function (el) { el.hidden = true; });
+          document.querySelectorAll('[data-cta^="own-"]').forEach(function (el) { el.hidden = false; });
+        }
+      })();
+      </script>
     </div>
     <div class="hero-motiv">
-      <div class="motiv-rahmen">
-        <img src="assets/hero-entscheidungsboard-ausschnitt.jpg" width="1172" height="941" alt="Entscheidungsboard aus Papier mit den Spalten Eingeplant, Wartet und Eingestellt, unten eine Kapazitätslinie, rechts ein Bleistift">
+      <figure class="field-map morph" role="img" aria-label="Ein Steckbrief mit Veränderung, Folgen und Ressourcen verdichtet sich zu einer Kachel und liegt danach mit fünf weiteren Vorhaben in den drei Bahnen eingestellt, wartet und eingeplant.">
+        <figcaption>Ein Steckbrief je Vorhaben, ein Bild für alle</figcaption>
+        <div class="field" aria-hidden="true">
+          <div class="morph-origin"></div>
+          <div class="lane" data-status="eingestellt">
+            <span class="lane-label">Eingestellt</span>
+            <div class="mark" style="--dx:-72px;--dy:88px;--rot:-6deg;--d:1.06s">Ausstellungsfläche<span class="meta"><i></i><i></i></span></div>
+          </div>
+          <div class="lane" data-status="wartet">
+            <span class="lane-label">Wartet</span>
+            <div class="mark" style="--dx:-124px;--dy:-58px;--rot:5deg;--d:.92s">Datenkooperation Länder<span class="meta"><i></i><i></i></span></div>
+            <div class="mark" style="--dx:-58px;--dy:112px;--rot:-4deg;--d:1.13s">Archivierung Altverfahren<span class="meta"><i></i><i></i></span></div>
+          </div>
+          <div class="lane" data-status="eingeplant">
+            <span class="lane-label">Eingeplant</span>
+            <div class="mark morph-target">Registeranbindung Meldewesen<span class="meta"><i></i><i></i></span></div>
+            <div class="mark" style="--dx:-168px;--dy:-36px;--rot:7deg;--d:.99s">Bundesweites Förderportal<span class="meta"><i></i><i></i></span></div>
+            <div class="mark" style="--dx:-142px;--dy:124px;--rot:4deg;--d:1.20s">Onlinezugang Antrag<span class="meta"><i></i><i></i></span></div>
+          </div>
+          <div class="morph-actor">
+            <div class="morph-actor-kicker">Steckbrief</div>
+            <strong class="morph-actor-title">Registeranbindung Meldewesen</strong>
+            <div class="morph-actor-fields">
+              <span><small>Veränderung</small>Medienbruch entfällt</span>
+              <span><small>Folgen</small>Rechtliche Frist</span>
+              <span><small>Ressourcen</small>1,5 VZÄ · gedeckt</span>
+            </div>
+          </div>
+        </div>
+      </figure>
+      <div class="hero-trustline">
+        <span>Unter 5 Minuten je Steckbrief</span>
+        <span>Speichert nur in diesem Browser</span>
       </div>
-      <p class="hero-fuss">Kein Score. Jede Empfehlung nennt ihre Regel.</p>
     </div>
   </div>
 </header>
@@ -284,5 +430,84 @@
   </div>
 </footer>
 
+<script>
+  // Der Steckbrief verdichtet sich per Transform/Opacity in seinen reservierten
+  // Zielplatz. Läuft einmal beim Laden, kein Wiederholen und kein Umschalten.
+  (function () {
+    const hero = document.querySelector('.field-map');
+    if (!hero) return;
+    const field = hero.querySelector('.field');
+    const origin = hero.querySelector('.morph-origin');
+    const actor = hero.querySelector('.morph-actor');
+    const target = hero.querySelector('.morph-target');
+    if (!field || !origin || !actor || !target) return;
+
+    function reset() {
+      actor.style.visibility = 'hidden';
+      actor.style.opacity = '0';
+      actor.style.transform = 'none';
+      target.style.visibility = 'visible';
+      target.style.opacity = '1';
+    }
+
+    function play() {
+      reset();
+      const fieldRect = field.getBoundingClientRect();
+      const originRect = origin.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!originRect.width || !targetRect.width || reduceMotion || !actor.animate) { reset(); return; }
+
+      actor.style.left = (originRect.left - fieldRect.left) + 'px';
+      actor.style.top = (originRect.top - fieldRect.top) + 'px';
+      actor.style.width = originRect.width + 'px';
+      actor.style.height = originRect.height + 'px';
+      actor.style.visibility = 'visible';
+      actor.style.opacity = '1';
+      target.style.visibility = 'visible';
+      target.style.opacity = '0';
+
+      const dx = targetRect.left - originRect.left;
+      const dy = targetRect.top - originRect.top;
+      const scaleX = targetRect.width / originRect.width;
+      const scaleY = targetRect.height / originRect.height;
+
+      // Jede Phase bekommt ihre eigene Verzögerung in echten Millisekunden,
+      // keine gemeinsame Easing-Kurve über den ganzen Ablauf.
+      const HALT = 850;
+      const ZUG = 720;
+      const beide = { fill: 'both' };
+
+      actor.animate([
+        { transform: 'translate3d(0,0,0) scale(1,1)' },
+        { transform: 'translate3d(' + dx + 'px,' + dy + 'px,0) scale(' + scaleX + ',' + scaleY + ')' }
+      ], Object.assign({ duration: ZUG, delay: HALT, easing: 'cubic-bezier(.45,.05,.25,1)' }, beide));
+
+      Array.from(actor.querySelectorAll('.morph-actor-kicker, .morph-actor-fields')).forEach((el) =>
+        el.animate([{ opacity: 1 }, { opacity: 0 }],
+          Object.assign({ duration: 260, delay: HALT + 110, easing: 'ease-in' }, beide)));
+      actor.querySelector('.morph-actor-title').animate(
+        [{ opacity: 1 }, { opacity: 0 }],
+        Object.assign({ duration: 240, delay: HALT + 320, easing: 'ease-in' }, beide));
+
+      // Die echte Kachel blendet unter dem noch deckenden Arbeitsstück auf und ist
+      // fertig, wenn die Bewegung endet. Erst danach geht das Arbeitsstück weg,
+      // sonst sind beide gleichzeitig durchsichtig und es entsteht eine Delle.
+      target.animate([{ opacity: 0 }, { opacity: 1 }],
+        Object.assign({ duration: 200, delay: HALT + ZUG - 200, easing: 'linear' }, beide));
+      const actorFade = actor.animate([{ opacity: 1 }, { opacity: 0 }],
+        Object.assign({ duration: 160, delay: HALT + ZUG, easing: 'ease-out' }, beide));
+
+      actorFade.onfinish = () => {
+        target.style.opacity = '1';
+        actor.style.visibility = 'hidden';
+      };
+    }
+
+    void hero.offsetWidth;
+    hero.classList.add('play');
+    play();
+  })();
+</script>
 </body>
 </html>
