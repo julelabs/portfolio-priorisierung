@@ -387,9 +387,11 @@
      Start bis Ende. Der Horizont beginnt heute und zeigt 24 Monate im
      Quartalsraster. Die Balkenfarben folgen der Entscheidungs-Legende oben,
      die Sicht erfindet keine eigene Farbwelt. */
-  .lz-steuer { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 12px; }
-  .lz-steuer label { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); }
-  .lz-steuer select { background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 6px; color: var(--fg); font-family: var(--body); font-size: 14px; padding: 6px 10px; cursor: pointer; }
+  /* Die leise Steuerzeile über dem Bild teilen sich Laufzeiten (Filter) und
+     Portfolio (Referats-Linse, Entscheidung 110). */
+  .lz-steuer, .bild-steuer { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .lz-steuer label, .bild-steuer label { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); }
+  .lz-steuer select, .bild-steuer select { background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 6px; color: var(--fg); font-family: var(--body); font-size: 14px; padding: 6px 10px; cursor: pointer; }
   .lz-zeile { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 16px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
   .lz-achse { border-bottom-width: 2px; padding-bottom: 4px; }
   .lz-heute { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); align-self: end; }
@@ -1839,7 +1841,7 @@
   // entsprechen, was man beim Einstieg sieht. abhAktivId ist bewusst vom
   // Entscheidungspanel getrennt: eine Kachel im Portfolio zeigt Beziehungen,
   // sie fordert keine Eingabe an und verändert die Scrollposition nicht.
-  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, abhAktivId = null, ziehId = null, klickNachZugId = null, quittung = null, quittungUhr = null, naechste = 1, lzReferat = 'alle';
+  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, abhAktivId = null, ziehId = null, klickNachZugId = null, quittung = null, quittungUhr = null, naechste = 1, lzReferat = 'alle', pfReferat = 'alle';
 
   function laden() {
     try {
@@ -2807,15 +2809,27 @@
 
   function markiereAbhaengigkeiten(fokus) {
     const wurzel = document.getElementById('bildKoerper');
-    // Die Tagesgeschäftskarte hat keine Verknüpfungen und tritt in der Linse
-    // immer zurück, sonst stünde sie als einzige hell im gedimmten Bild.
+    // Referats-Linse (Entscheidung 110): dieselbe Grammatik wie die
+    // Verknüpfungslinse. Hervorheben statt ausblenden, damit Spaltensummen
+    // und Kapazitätsleiste ehrlich das Gesamtbild bleiben und niemand nach
+    // Referatsproporz argumentiert, weil der Rest verschwunden wäre.
+    const imReferat = id => {
+      if (pfReferat === 'alle') return true;
+      const v = nachId(id);
+      if (!v) return false;
+      const referat = v.referat.trim();
+      return pfReferat === 'ohne' ? !referat : referat === pfReferat;
+    };
+    // Die Tagesgeschäftskarte hat weder Verknüpfungen noch ein einzelnes
+    // Referat und tritt in beiden Linsen zurück, sonst stünde sie als
+    // einzige hell im gedimmten Bild.
     const tg = wurzel.querySelector('.tg-wrap');
-    if (tg) tg.classList.toggle('abh-zurueck', !!fokus);
+    if (tg) tg.classList.toggle('abh-zurueck', !!fokus || pfReferat !== 'alle');
     wurzel.querySelectorAll('[data-kachel]').forEach(el => {
       const verbunden = !!fokus && fokus.verbunden.has(el.dataset.kachel);
       const karte = el.closest('.pt-wrap') || el;
       karte.classList.toggle('abh-vorn', verbunden);
-      karte.classList.toggle('abh-zurueck', !!fokus && !verbunden);
+      karte.classList.toggle('abh-zurueck', (!!fokus && !verbunden) || !imReferat(el.dataset.kachel));
       karte.classList.toggle('abh-auswahl', !!fokus && fokus.auswahl.id === el.dataset.kachel);
       el.setAttribute('aria-pressed', String(!!fokus && fokus.auswahl.id === el.dataset.kachel));
     });
@@ -2825,6 +2839,19 @@
   function renderPortfolio() {
     let fokus = abhaengigkeitsFokus(abhAktivId);
     if (abhAktivId && !fokus) abhAktivId = null;
+    // Referats-Linse (Entscheidung 110): Voreinstellung ist immer die ganze
+    // Abteilung. Ein echter Filter, der Karten ausblendet, bleibt bewusst der
+    // Stabssicht vorbehalten (Karte N-07).
+    const referate = [...new Set(S.vorhaben.map(v => v.referat.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'de'));
+    if (pfReferat !== 'alle' && pfReferat !== 'ohne' && !referate.includes(pfReferat)) pfReferat = 'alle';
+    const steuer = referate.length ? `<div class="bild-steuer">
+        <label for="pfReferat">Referat</label>
+        <select id="pfReferat">
+          <option value="alle" ${pfReferat === 'alle' ? 'selected' : ''}>alle Referate</option>
+          ${referate.map(r => `<option value="${esc(r)}" ${pfReferat === r ? 'selected' : ''}>${esc(r)}</option>`).join('')}
+          <option value="ohne" ${pfReferat === 'ohne' ? 'selected' : ''}>ohne Referat</option>
+        </select>
+      </div>` : '';
     const imKorb = korb => sortiert(S.vorhaben.filter(v => portfolio(v, S.vorhaben).wert === korb));
     const vzaeSumme = liste => liste.reduce((wert, v) => wert + vzaeWert(v), 0);
     // Die Tagesgeschäftskarte (Entscheidung 100) liegt fest im
@@ -2873,6 +2900,7 @@
     document.getElementById('bildKoerper').innerHTML = `
       <!-- Die Achsenüberschrift "Entscheidung der Abteilung" ist raus (Sparring
            11.08.): die Spaltenköpfe erklären die Ansicht bereits selbst. -->
+      ${steuer}
       <div class="mx-scroll">
         <div class="matrix pf${sicht === 'portfolio' ? ' ziehbar' : ''}" role="table" aria-label="Vorhaben nach Entscheidung der Abteilung">
           <div class="mx-reihe" role="row">${koepfe}</div>
@@ -2897,6 +2925,11 @@
         <p class="lane-sub">Noch nicht zugeordnet, es fehlen Antworten im Steckbrief.</p>
         <div class="mx-offen-body">${offen.map(v => kachel(v, true)).join('')}</div>
       </div>` : ''}`;
+    const pfSelect = document.getElementById('pfReferat');
+    if (pfSelect) pfSelect.addEventListener('change', ev => {
+      pfReferat = ev.target.value;
+      renderBild();
+    });
     markiereAbhaengigkeiten(fokus);
   }
 
