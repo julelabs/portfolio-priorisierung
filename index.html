@@ -62,12 +62,18 @@
   .hero h1 { font-size: clamp(40px,5.2vw,66px); max-width: 13ch; letter-spacing: -0.04em; line-height: 1.04; text-wrap: balance; }
   .hero h1 .hl { color: var(--minze); }
   .hero p.sub { margin-top: 24px; max-width: 48ch; font-size: clamp(16px,1.8vw,19.5px); color: var(--blau-20); text-wrap: pretty; }
-  .hero .ctas { margin-top: 36px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
-  .btn { display: inline-block; font-family: var(--display); font-weight: 800; font-size: 15.5px; text-decoration: none; border-radius: 999px; padding: 13px 26px; }
+  /* 31px heben die Unterstreichung des leisen Links exakt auf die Höhe der
+     Trennlinie über der Vertrauenszeile rechts: Link-Unterkante liegt 11px
+     über dem Spaltenende (mittig neben dem 49px-Knopf), die Linie 42px
+     (21px Textzeile + 17px + 3px Innenabstand + 1px Linie). Beide Werte sind
+     pixelfest, die Ausrichtung hält deshalb in jeder Breite, solange nichts
+     umbricht. */
+  .hero .ctas { margin-top: 36px; margin-bottom: 31px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .btn { display: inline-block; font-family: var(--display); font-weight: 700; font-size: 15px; text-decoration: none; border-radius: 999px; padding: 13px 26px; }
   .btn[hidden], .quiet-link[hidden] { display: none; }
   .btn.minze { background: var(--minze); color: var(--dunkel); }
   .btn.minze:hover { filter: brightness(1.06); }
-  .quiet-link { font-family: var(--display); font-weight: 700; font-size: 14.5px; color: var(--blau-20); text-decoration: none; border-bottom: 1px solid rgba(197,196,234,0.4); padding-bottom: 3px; }
+  .quiet-link { font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--blau-20); text-decoration: none; border-bottom: 1px solid rgba(197,196,234,0.4); padding-bottom: 3px; }
   .quiet-link:hover { color: var(--minze); border-color: var(--minze); }
   a:focus-visible { outline: 3px solid var(--minze); outline-offset: 3px; border-radius: 4px; }
   header.hero a:focus-visible { outline-color: var(--weiss); }
@@ -78,6 +84,8 @@
   }
   @media (max-width: 980px) {
     header.hero { min-height: 0; }
+    /* Einspaltig gibt es keine Linie daneben, die Anhebung entfällt */
+    .hero .ctas { margin-bottom: 0; }
     .hero-grid { grid-template-columns: 1fr; gap: 36px; }
     .hero-motiv { width: min(680px, 100%); }
     .hero-copy { max-width: 620px; }
@@ -170,7 +178,7 @@
   .hero-trustline {
     border-top: 1px solid rgba(197,196,234,.24); margin-top: 20px; padding: 17px 0 3px;
     display: flex; flex-wrap: wrap; gap: 6px 26px;
-    font-family: var(--display); font-size: 13px; color: var(--blau-20);
+    font-family: var(--display); font-size: 13.5px; color: var(--blau-20);
   }
 
   @media (max-width: 700px) {
@@ -223,6 +231,11 @@
   .staffel .stufe p { font-size: 14.5px; color: var(--fg-2); }
   .pill { display: inline-block; font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; background: var(--lavendel); color: var(--fg-2); margin-left: 8px; vertical-align: 2px; }
   .hint { background: var(--weiss); border-left: 4px solid var(--minze); border-radius: 0 10px 10px 0; padding: 14px 18px; font-size: 15px; color: var(--fg-2); margin-top: 30px; max-width: 72ch; }
+  /* Die zwei Kästen stehen nebeneinander, gestapelt wirkten sie wie eine
+     Liste ohne Ende. Schmal fallen sie wieder untereinander. */
+  .hints { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: stretch; margin-top: 30px; }
+  .hints .hint { margin-top: 0; max-width: none; }
+  @media (max-width: 800px) { .hints { grid-template-columns: 1fr; } }
   @media (max-width: 800px) { .staffel { grid-template-columns: 1fr; } }
 
   /* ---------- Prinzipien ---------- */
@@ -395,8 +408,10 @@
         <p>Aus den Einschätzungen entsteht der Vorschlag für das Leitungsportfolio. Die Hausleitung entscheidet, der Stab dokumentiert, die Abteilungen sehen, was aus ihren Vorschlägen geworden ist.</p>
       </div>
     </div>
-    <div class="hint">Aus den Nominierungen aller Abteilungen wählen StS und BM 8 bis 10 Vorhaben aus, die BM in regelmäßigen Rücksprachen begleitet; die übrigen Nominierungen gehen in das AL-Reporting an die Abteilungsleitungen, insgesamt etwa 40 Vorhaben einschließlich der 8 bis 10.</div>
-    <div class="hint">Die Gesamtsicht über alle Abteilungsportfolios ist ein eigenes Arbeitswerkzeug des Stabs und Teil des Ausbaus.<span class="pill">folgt</span></div>
+    <div class="hints">
+      <div class="hint">Aus den Nominierungen aller Abteilungen wählen StS und BM 8 bis 10 Vorhaben aus, die BM in regelmäßigen Rücksprachen begleitet; die übrigen Nominierungen gehen in das AL-Reporting an die Abteilungsleitungen, insgesamt etwa 40 Vorhaben einschließlich der 8 bis 10.</div>
+      <div class="hint">Die Gesamtsicht über alle Abteilungsportfolios ist ein eigenes Arbeitswerkzeug des Stabs und Teil des Ausbaus.<span class="pill">folgt</span></div>
+    </div>
   </div>
 </section>
 
@@ -418,7 +433,7 @@
         <p>Kapazität ist kein Wert und fließt in keine Bewertung ein. Die Kapazitätslinie zeigt, was hineinpasst, und erzwingt den Schnitt, statt Ränge auszuhandeln.</p>
       </div>
     </div>
-    <p class="familie">Alle Regeln im Wortlaut und das Warum dahinter stehen in der <a href="faq.html">FAQ</a>.</p>
+    <p class="familie"><span>Alle Regeln im Wortlaut und das Warum dahinter stehen in der <a href="faq.html">FAQ</a>.</span></p>
     <p class="familie">Aus derselben Werkstatt: das Denkwerkzeug <a href="https://julelabs.github.io/wirkungswerkstatt/wirkungsversprechen.html" target="_blank" rel="noopener">Wirkungsversprechen</a> hilft beim Formulieren der angestrebten Veränderung (ungetesteter Prototyp, keine abgestimmte Vorgabe).</p>
   </div>
 </section>
