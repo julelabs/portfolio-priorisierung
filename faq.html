@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio-Priorisierung · FAQ</title>
+<meta name="description" content="Wie das Werkzeug vorschlägt, was die Abteilung entscheidet und warum die Empfehlung bewusst einfach bleibt.">
+<style>
+  @font-face {
+    font-family: 'Open Sans';
+    src: url('assets/fonts/OpenSans-Variable.ttf') format('truetype');
+    font-weight: 300 800; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'BundesSans';
+    src: url('assets/fonts/BundesSans-Web-Regular.woff2') format('woff2');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  :root {
+    --blau: #36349D; --minze: #4DFFB0; --kirsche: #DB0045;
+    --lavendel: #E3E6F2; --weiss: #FFFFFF; --dunkel: #0D0C2B; --hero-dunkel: #11163B;
+    --blau-10: #EEEEF9; --blau-20: #C5C4EA; --blau-40: #8886CC; --blau-60: #5957B4;
+    --fg: var(--dunkel); --fg-2: #4A4869; --fg-muted: #6E6C99;
+    --line: rgba(54,52,157,0.15);
+    --display: 'Open Sans', system-ui, sans-serif;
+    --body: 'BundesSans', 'Open Sans', system-ui, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+  body { font-family: var(--body); color: var(--fg); background: var(--weiss); line-height: 1.55; }
+  ::selection { background: var(--minze); color: var(--dunkel); }
+  h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
+  a { color: inherit; }
+
+  nav.top { background: var(--hero-dunkel); color: var(--weiss); padding: 15px clamp(16px,4vw,40px); display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  nav.top .brand { font-family: var(--display); font-weight: 800; font-size: 16px; text-decoration: none; }
+  nav.top .links { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+  nav.top .links a { font-family: var(--display); font-size: 13.5px; font-weight: 600; color: var(--blau-20); text-decoration: none; }
+  nav.top .links a:hover { color: var(--weiss); }
+  nav.top .links a.tool { background: var(--minze); color: var(--dunkel); font-weight: 800; padding: 8px 16px; border-radius: 999px; }
+  nav.top .links a.tool:hover { color: var(--dunkel); filter: brightness(1.06); }
+
+  header.kopf { background: var(--hero-dunkel); color: var(--weiss); padding: clamp(40px,6vw,72px) clamp(18px,4vw,48px) clamp(44px,6vw,76px); }
+  header.kopf .wrap { width: min(880px, 92vw); margin: 0 auto; }
+  header.kopf .kicker { font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--minze); margin-bottom: 14px; }
+  header.kopf h1 { font-size: clamp(30px,4.2vw,46px); max-width: 22ch; text-wrap: balance; }
+  header.kopf p { margin-top: 16px; max-width: 62ch; font-size: clamp(15.5px,1.8vw,18px); color: var(--blau-20); text-wrap: pretty; }
+
+  main { padding: clamp(36px,5vw,64px) clamp(18px,4vw,48px) clamp(56px,7vw,92px); }
+  main .wrap { width: min(880px, 92vw); margin: 0 auto; }
+  section.frage { padding: clamp(26px,3.4vw,38px) 0; border-bottom: 1px solid var(--line); }
+  section.frage:last-of-type { border-bottom: 0; }
+  section.frage h2 { font-size: clamp(20px,2.6vw,26px); max-width: 30ch; }
+  section.frage p { margin-top: 12px; max-width: 70ch; font-size: 15.5px; color: var(--fg-2); text-wrap: pretty; }
+  section.frage p strong, section.frage li strong { color: var(--fg); }
+  section.frage ul { margin: 12px 0 0 1.2em; max-width: 68ch; }
+  section.frage li { font-size: 15.5px; color: var(--fg-2); margin-top: 6px; }
+
+  .tabelle { margin-top: 16px; overflow-x: auto; }
+  table { border-collapse: collapse; min-width: 540px; width: 100%; }
+  th, td { text-align: left; font-size: 14.5px; padding: 9px 14px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-family: var(--display); font-size: 12.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-muted); }
+  td { color: var(--fg-2); }
+  td b { font-family: var(--display); color: var(--fg); }
+
+  .merken { background: var(--blau-10); border-radius: 10px; padding: 18px 22px; margin-top: 14px; max-width: 72ch; }
+  .merken p { margin-top: 0; }
+
+  footer.site { background: var(--dunkel); color: var(--blau-20); padding: 26px clamp(18px,4vw,48px); font-size: 13.5px; }
+  footer.site .inner { width: min(1120px, 92vw); margin: 0 auto; display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a class="brand" href="./">Portfolio-Priorisierung</a>
+  <div class="links">
+    <a href="./">Startseite</a>
+    <a class="tool" href="werkzeug.html">Zum Werkzeug</a>
+  </div>
+</nav>
+
+<header class="kopf">
+  <div class="wrap">
+    <div class="kicker">FAQ</div>
+    <h1>Wie das Werkzeug vorschlägt, und was es bewusst nicht tut</h1>
+    <p>Das Werkzeug trifft keine Entscheidung. Es macht für jedes Vorhaben einen nachlesbaren Vorschlag, die Abteilung entscheidet und begründet Abweichungen in einem Satz. Hier stehen die Regeln im Wortlaut und das Warum dahinter.</p>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+<section class="frage">
+  <h2>Was entscheidet das Werkzeug, was entscheidet die Abteilung?</h2>
+  <p>Das Werkzeug schlägt für jedes Vorhaben <strong>eingeplant</strong>, <strong>wartet</strong> oder <strong>eingestellt</strong> vor. Der Vorschlag entsteht im Kern aus zwei Fragen:</p>
+  <ul>
+    <li>Was passiert, wenn das Vorhaben im nächsten Halbjahr ruht?</li>
+    <li>Zahlt es auf ein Ziel des Hauses ein?</li>
+  </ul>
+  <p>Danach kommen zwei getrennte Entscheidungen hinzu, und beide trifft die Abteilung: Sie legt fest, ob das Vorhaben eingeplant wird, wartet oder eingestellt wird. Und bei einem eingeplanten Vorhaben entscheidet die Nominierung, ob es der Leitung zur Auswahl vorgeschlagen wird oder die Abteilung es selbst steuert.</p>
+</section>
+
+<section class="frage">
+  <h2>Nach welchen Regeln entsteht der Vorschlag?</h2>
+  <p>Die Regeln werden in dieser Reihenfolge geprüft:</p>
+  <div class="tabelle">
+    <table>
+      <tr><th>Wenn das Vorhaben ruht ...</th><th>Zielbezug</th><th>Vorschlag</th></tr>
+      <tr><td>eine Frist oder rechtliche Pflicht wird verletzt</td><td>spielt keine Rolle</td><td><b>eingeplant</b></td></tr>
+      <tr><td>eine politische Zusage kann nicht eingehalten werden</td><td>spielt keine Rolle</td><td><b>eingeplant</b></td></tr>
+      <tr><td>spürbarer Schaden entsteht oder Wirkung geht verloren</td><td>spielt keine Rolle</td><td><b>eingeplant</b></td></tr>
+      <tr><td>eine Chance verschiebt sich</td><td>Ziel erkennbar</td><td><b>eingeplant</b></td></tr>
+      <tr><td>eine Chance verschiebt sich</td><td>kein Ziel erkennbar</td><td><b>wartet</b></td></tr>
+      <tr><td>es würde auch dauerhaft kaum auffallen</td><td>Ziel erkennbar</td><td><b>wartet</b></td></tr>
+      <tr><td>es würde auch dauerhaft kaum auffallen</td><td>kein Ziel erkennbar</td><td><b>eingestellt</b></td></tr>
+      <tr><td>die Folgen oder die Veränderung sind noch offen</td><td>egal</td><td><b>noch offen</b></td></tr>
+    </table>
+  </div>
+  <p><strong>„Eingestellt“ braucht immer zwei Gründe zugleich:</strong> Das Vorhaben würde dauerhaft kaum fehlen, und es zahlt auf kein Ziel des Hauses ein. Ehrliches Ausfüllen wird so nicht bestraft.</p>
+  <p><strong>Sonderregel für zentrale Knoten:</strong> Ist ein Vorhaben mit mindestens drei anderen Vorhaben verknüpft, empfiehlt das Werkzeug die Einplanung statt „wartet“. Ein Vorhaben, das nach der Ruhenlassen-Regel eingestellt wäre, bleibt eingestellt; die Runde bekommt den Fall als Frage vorgelegt.</p>
+  <p>Jede Antwort, die zu „eingeplant“ führt, verlangt einen konkreten Beleg: Welche Frist, welche Zusage, welcher Schaden, welche Chance. Ohne Beleg gilt der Steckbrief als unvollständig.</p>
+</section>
+
+<section class="frage">
+  <h2>Warum verrechnet die Empfehlung nicht alle Angaben zu einem Gesamtscore?</h2>
+  <p>Die Auswertung im Werkzeug hat bewusst nur drei Bestandteile, jeder kommt direkt aus einer Antwort: die Folgen des Ruhenlassens (0 bis 3), die Nominierung (0 oder 1) und der Zielbezug (0 oder 1). Nichts ist gewichtet, und die Summe von 0 bis 5 erscheint nie ohne ihre Bestandteile.</p>
+  <p>Ein umfassender Score, der auch Reichweite, Wirkungshorizont oder Ressourcen verrechnet, hätte drei Probleme: Gewichte treten als Mathematik auf, obwohl sie politische Entscheidungen sind. Die Aggregation verwischt, welche Antwort die Zahl bewegt hat. Und Scheinpräzision behandelt 73 gegen 71 als echten Unterschied. Deshalb bleibt die Auswertung grob genug, dass Gleichstände normal sind: Zwei Vorhaben mit 5 sind gleich dringlich, da muss die Runde reden statt der Tabelle zu folgen.</p>
+  <p><strong>Die Zahl entscheidet nichts.</strong> Sie sortiert und eröffnet das Gespräch. Der Vorschlag selbst fällt ausschließlich über die Wenn-dann-Regeln oben.</p>
+  <p>Aus demselben Grund fließen die Ressourcen nicht ein: Kapazität ist ein Preis, kein Wert. Die Auswertung sagt, wie dringlich etwas ist, die Kapazitätslinie sagt, was hineinpasst. Zwei Fragen, zwei Instrumente.</p>
+</section>
+
+<section class="frage">
+  <h2>Wann ist ein Steckbrief entscheidungsreif?</h2>
+  <p>Bevor das Werkzeug ein Vorhaben selbst einordnet, müssen diese Angaben vollständig sein:</p>
+  <ul>
+    <li>ein Portfolioziel oder ausdrücklich „kein Ziel erkennbar“</li>
+    <li>die angestrebte Veränderung</li>
+    <li>die Folgen des Ruhenlassens</li>
+    <li>ein konkreter Beleg, wenn Frist, politische Zusage, Schaden oder Chance gewählt wurde</li>
+    <li>nominieren oder selbst steuern</li>
+    <li>bei einer Nominierung: warum das Vorhaben für das Haus strategisch wichtig ist</li>
+  </ul>
+  <p>„Wissen wir nicht“ gilt bei den Folgen als offen. Ein noch nicht entscheidungsreifer Steckbrief landet unter <strong>Erst klären</strong>. Eine bereits getroffene Entscheidung der Abteilung gilt trotzdem, was fehlt, bleibt als offener Rest sichtbar.</p>
+</section>
+
+<section class="frage">
+  <h2>Wohin kommt ein Vorhaben im Portfolio?</h2>
+  <p>Die Zuordnung wird nicht angekreuzt. Sie ergibt sich aus der Entscheidung der Abteilung und der Nominierung:</p>
+  <div class="tabelle">
+    <table>
+      <tr><th>Entscheidung</th><th>Nominierung</th><th>Zuordnung</th></tr>
+      <tr><td>eingeplant</td><td>als hausweit wichtiges Fokusvorhaben nominiert</td><td><b>Für Leitung nominiert</b></td></tr>
+      <tr><td>eingeplant</td><td>nicht nominiert, die Abteilung steuert selbst</td><td><b>Abteilungsportfolio</b></td></tr>
+      <tr><td>wartet</td><td>egal</td><td><b>Warteliste</b></td></tr>
+      <tr><td>eingestellt</td><td>egal</td><td><b>Eingestellt</b></td></tr>
+      <tr><td>noch kein reifer Steckbrief und keine eigene Entscheidung</td><td>egal</td><td><b>Erst klären</b></td></tr>
+    </table>
+  </div>
+  <p>Die Nominierung ist ein Vorschlag der Abteilung, noch keine Auswahl: Der Stab sichtet die Nominierungen aller Abteilungen, StS und BM wählen daraus aus. Eine Nominierung allein reicht nicht, das Vorhaben muss zugleich eingeplant sein. Eine nominierte, aber wartende oder eingestellte Karte wird deshalb nicht ans Haus gemeldet.</p>
+</section>
+
+<section class="frage">
+  <h2>Wie wirkt die Kapazität?</h2>
+  <p>Kapazität ist eine harte Nebenbedingung, aber kein Bewertungsfaktor:</p>
+  <ul>
+    <li>Der Personalbedarf aller eingeplanten Vorhaben wird mit der verfügbaren Kapazität verglichen.</li>
+    <li>Bei Überbuchung fragt das Werkzeug: Welches Vorhaben wartet stattdessen?</li>
+    <li>Es vergibt keinen Rang innerhalb von „eingeplant“ und verschiebt kein Vorhaben automatisch.</li>
+    <li>Was aus laufender Arbeit durch Warten oder Einstellen frei wird, steht als eigene Zeile unter dem Kapazitätsbalken. Noch nicht gestartete Vorhaben setzen nichts frei, sie binden nur nichts Neues.</li>
+    <li>Die personelle Deckung zeigt, welcher Bedarf noch unbesetzt ist. Sie verändert weder Vorschlag noch Zuordnung.</li>
+  </ul>
+</section>
+
+<section class="frage">
+  <h2>Was zeigt nur etwas an, entscheidet aber nichts?</h2>
+  <p>Ohne Wirkung auf Vorschlag und Zuordnung sind: Reichweite, Wirkungshorizont, Referat, Laufzeit, Stand, Personalbedarf, personelle Deckung, das Tagesgeschäft der Referate und weitere Hinweise. Diese Angaben helfen beim Abwägen, bei Kapazität, Laufzeiten und Umsetzung.</p>
+  <p>Das Werkzeug legt der Runde außerdem Spannungen vor, ohne sie aufzulösen: Überbuchung ohne ein einziges eingestelltes Vorhaben, ein eingeplantes Vorhaben, das mit einem wartenden verknüpft ist, oder ein Portfolio, in dem ausnahmslos alles eingeplant ist. Solche Hinweise verändern keine Entscheidung, sie machen sichtbar, worüber gesprochen werden sollte.</p>
+</section>
+
+<section class="frage">
+  <h2>Der ganze Mechanismus in einem Satz</h2>
+  <div class="merken">
+    <p><strong>Die Folgen des Ruhenlassens und der Zielbezug erzeugen den Vorschlag; die Abteilung entscheidet; die Nominierung bestimmt bei eingeplanten Vorhaben die Zuordnung; die Kapazität erzwingt anschließend den ehrlichen Schnitt.</strong></p>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer class="site">
+  <div class="inner">
+    <div>Interner Prototyp mit fiktiven Beispieldaten. Speichert nur lokal im Browser, keine Übertragung.</div>
+    <div>Portfolio-Priorisierung · Arbeitsstand</div>
+  </div>
+</footer>
+
+</body>
+</html>
