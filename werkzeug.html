@@ -141,6 +141,11 @@
   .vb-fuss { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: clamp(22px, 3vw, 32px); padding-top: 18px; border-top: 1px solid var(--line); }
 
   .buehne { max-width: 1180px; margin: 0 auto; padding: clamp(22px, 3.4vw, 38px) clamp(16px, 4vw, 24px) 80px; }
+  /* Die Entscheidungsansicht nutzt die verfügbare Breite (Entscheidung 98):
+     Der Deckel machte das Bild bei vielen Vorhaben unnötig hoch. Der Deckel
+     fällt für die ganze Ansicht, nicht je Sicht, sonst springt die Breite
+     beim Sichtwechsel. Erfassen und Vorbereiten bleiben Lese-Layouts. */
+  body.breit .buehne { max-width: none; }
   .anriss { max-width: 620px; margin-bottom: clamp(20px, 3vw, 30px); }
   .anriss h1 { font-size: clamp(24px, 3.6vw, 32px); margin-bottom: 8px; }
   .anriss p { color: var(--fg-2); font-size: 15.5px; }
@@ -214,14 +219,14 @@
      über die Kante, im blau-10-Kasten zusätzlich über die Füllung.
      Das Titelfeld ist ausgenommen, es ist die Überschrift der Karte. */
   .steckbrief input[type="text"]:not(.sb-titel), .steckbrief input[type="month"], .steckbrief select, .steckbrief textarea,
-  .pn-feld input, .navfoot input {
+  .pn-feld input, .navfoot input, .tg-zeile input, .tg-neu input {
     width: 100%; background: var(--weiss); border: 1px solid var(--feldkante); border-radius: 6px;
     color: var(--fg); font-family: var(--body); font-size: 15px; padding: 9px 12px;
   }
   .steckbrief input[type="text"]:not(.sb-titel):hover, .steckbrief input[type="month"]:hover, .steckbrief select:hover, .steckbrief textarea:hover,
-  .pn-feld input:hover, .navfoot input:hover { border-color: var(--blau-60); }
+  .pn-feld input:hover, .navfoot input:hover, .tg-zeile input:hover, .tg-neu input:hover { border-color: var(--blau-60); }
   .steckbrief input[type="text"]:not(.sb-titel):focus, .steckbrief input[type="month"]:focus, .steckbrief select:focus, .steckbrief textarea:focus,
-  .pn-feld input:focus, .navfoot input:focus {
+  .pn-feld input:focus, .navfoot input:focus, .tg-zeile input:focus, .tg-neu input:focus {
     outline: 2px solid var(--blau); outline-offset: 1px; border-color: var(--blau);
   }
   .steckbrief input::placeholder, .steckbrief textarea::placeholder { color: var(--fg-muted); opacity: 1; }
@@ -266,7 +271,10 @@
   .sb-label.folgen i { background: var(--blau); }
   .sb-label.nominierung i { background: var(--blau-60); }
   .sb-label.ziel i { background: var(--blau-40); }
-  .sb-summe { font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--fg); }
+  /* Eine Größe an allen drei Orten (Steckbrief, Panel, Lupe): die Auswertung
+     sah vorher an jedem Ort etwas anders aus und wirkte dadurch unruhig
+     (Entscheidung 101). */
+  .sb-summe { font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--fg); }
   .sb-summe span { font-weight: 400; color: var(--fg-muted); font-size: 13.5px; }
   .sb-unklar { color: var(--fg-muted); font-size: 13px; margin-top: 2px; }
   .sb-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
@@ -297,6 +305,9 @@
   /* Reihenfolge in der Zeile: erst der Balken mit seiner Zahl, dann das Feld,
      das sie verändert, dann rechts die Umschaltung. */
   .bd-eingabe { order: 3; }
+  /* Der Einstieg ins Tagesgeschäft steht bei der Kapazitätsangabe
+     (Entscheidung 100): dort wird über dieselbe Größe gesprochen. */
+  .bd-tg { order: 3; font-size: 13px; }
   .bd-steuer { order: 4; margin-left: auto; }
   /* Schmal bricht die Zeile um, statt die Umschaltung an den Rand zu quetschen */
   @media (max-width: 1080px) { .bd-steuer { margin-left: 0; } }
@@ -394,11 +405,16 @@
   .lz-offen-zeile { font-size: 13.5px; color: var(--fg-2); padding: 3px 0; }
   .lz-offen-zeile strong { font-family: var(--display); font-size: 13px; color: var(--fg); }
 
-  /* Sichtwechsel */
-  .sichten { display: flex; gap: 4px; background: var(--blau-10); border-radius: 6px; padding: 3px; }
-  .sichten button { background: transparent; border: 0; border-radius: 4px; cursor: pointer; font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--fg-2); padding: 7px 13px; }
-  .sichten button:hover { color: var(--blau); }
-  .sichten button[aria-pressed="true"] { background: var(--weiss); color: var(--blau); box-shadow: 0 2px 6px rgba(13,12,43,.08); }
+  /* Sichtwechsel. Deutlicher als Tabs (Feedback 17.08.): die aktive Sicht ist
+     eine gefüllte Fläche wie die gedrückten Knöpfe im Entscheidungspanel,
+     nicht nur ein etwas hellerer Grauton. Lavendel als Rahmenfläche statt
+     blau-10, damit sich die Gruppe vom Kapazitätsband abhebt, auf dem sie
+     steht. */
+  .sichten { display: flex; gap: 4px; background: var(--lavendel); border-radius: 8px; padding: 3px; }
+  .sichten button { background: transparent; border: 0; border-radius: 6px; cursor: pointer; font-family: var(--display); font-size: 13.5px; font-weight: 700; color: var(--fg-2); padding: 7px 15px; }
+  .sichten button:hover { color: var(--blau); background: rgba(255,255,255,.6); }
+  .sichten button[aria-pressed="true"] { background: var(--blau); color: var(--weiss); box-shadow: 0 2px 6px rgba(13,12,43,.14); }
+  .sichten button[aria-pressed="true"]:hover { background: var(--blau-60); color: var(--weiss); }
 
   /* Gemeinsames Raster fuer Portfolio und offene Streifen */
   .mx-scroll { overflow-x: auto; padding-bottom: 4px; }
@@ -457,7 +473,11 @@
      Entscheidung 46 beide Zeilen. Die Kopfspalte beschriftete also über die
      volle Höhe eine Unterscheidung, die es in zwei von drei Spalten nicht gibt,
      und jede erste Kachel dort klebte optisch an dieser Zeile. */
-  .matrix.pf { position: relative; grid-template-columns: repeat(3, minmax(200px, 1fr)); min-width: 660px; }
+  /* Eingeplant trägt doppeltes Gewicht (Entscheidung 98): bei vielen Vorhaben
+     steht fast alles rechts, drei gleich breite Spalten stauchten genau die
+     Spalte, die den Platz braucht. Bestätigt am Skalierungstest mit 45
+     Vorhaben (Fassung 4). */
+  .matrix.pf { position: relative; grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(440px, 2fr); min-width: 800px; }
   .matrix.pf .pt-wrap { z-index: 3; }
   /* Das Achsenwort führt, die Zahl stützt (Kleinigkeiten-Notiz 06.08.:
      VZÄ war dominanter als die Entscheidungswörter) */
@@ -501,7 +521,23 @@
   .pt { position: relative; background: var(--weiss); border: 1.5px solid var(--blau-20); border-radius: 6px; cursor: pointer; text-align: left; padding: 9px 12px 8px; width: 100%; display: flex; flex-direction: column; gap: 5px; transition: transform .18s var(--ease), box-shadow .18s var(--ease); }
   .pt:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(13,12,43,.09); }
   .pt.aktiv { box-shadow: 0 0 0 2px var(--blau); border-color: var(--blau); }
-  .pt-name { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg); line-height: 1.28; padding-right: 26px; }
+  /* Alle Kacheln gleich hoch (Julia, 16.08.): Vorher wuchs jede Kachel mit
+     der Länge ihres Namens, dadurch standen zwei- und dreizeilige Karten
+     nebeneinander und die Reihen franste aus. 90 px sind drei Namenszeilen
+     (3 × 13,5 px × 1,28), plus Abstand, Fußzeile und Innenabstand. Es ist
+     eine Mindesthöhe, keine feste: Eine Kachel mit Hinweiszeile darf wachsen,
+     statt ihren Text abzuschneiden. 92 statt 90 px, weil die kräftigere
+     Kante von "eingeplant" zwei Pixel Innenraum kostet und diese Karten
+     sonst als einzige aus der Reihe fallen. */
+  .pt { min-height: 92px; }
+  /* In der Zielsicht trägt die Kachel zusätzlich den Korb, dort liegt die
+     gemeinsame Höhe entsprechend höher. */
+  .lane-body .pt { min-height: 112px; }
+  /* Lange Komposita sind in dieser Domäne die Regel, nicht die Ausnahme.
+     Erst Silbentrennung (das Dokument ist als deutsch ausgezeichnet), und
+     wenn ein Wort auch getrennt nicht passt, bricht es hart um, statt aus
+     der Kachel zu laufen. */
+  .pt-name { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg); line-height: 1.28; padding-right: 26px; hyphens: auto; overflow-wrap: break-word; }
   /* Die Lupe ist ein Zweitblick und liegt seit Entscheidung 94 nicht mehr
      dauerhaft auf jeder Kachel: sie kommt beim Zeigen und bei Tastaturfokus.
      Nicht display: none, damit sie erreichbar und vorlesbar bleibt. Der Platz
@@ -515,11 +551,13 @@
   .pt-lupe:focus-visible { outline: 2px solid var(--blau); outline-offset: 1px; }
   .pt-lupe svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
   .pt.abh-zurueck + .pt-lupe { opacity: .2; }
-  /* Der hohle Punkt an der Kachel: dasselbe Zeichen wie der Reife-Punkt in der
-     Namensliste von Schritt 1. Gefüllt heißt "die Runde kann damit arbeiten",
-     hohl heißt "da fehlt noch etwas". Er sitzt in der Namenszeile, also weder
-     als Fußnote am Rand noch als weitere Kante (Entscheidung 59). */
-  .pt-offen { display: inline-block; vertical-align: 1px; width: 8px; height: 8px; margin-left: 6px; border: 1.5px solid var(--blau-60); border-radius: 50%; }
+  /* Der hohle Punkt an der Kachel ist raus (Feedback 17.08.): ihn hat nie
+     jemand verstanden. Die offene Pflicht bleibt über Titel, Vorlesetext und
+     den Bereich "Noch offen" unter dem Bild sichtbar. Die Fußzeile trägt
+     stattdessen den Stand: links läuft oder geplant, rechts der Bedarf mit
+     Einheit. */
+  .pt-foot-links { display: inline-flex; align-items: baseline; gap: 8px; min-width: 0; }
+  .pt-stand { font-size: 12px; color: var(--fg-muted); }
 
   /* Quittung nach dem Ablegen: steht am Raster, geht nach ein paar Sekunden
      von selbst wieder weg. Der Rest bleibt in der Zeile "Noch offen". */
@@ -536,9 +574,6 @@
   .vb-rollen input:focus { outline: 2px solid var(--blau); outline-offset: 1px; border-color: var(--blau); }
   .pt-korb { font-size: 11.5px; color: var(--fg-muted); }
   .pt-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--fg-muted); }
-  /* Ohne Statuswort trägt die Fußzeile nur noch die Zahl, die rückt dann nach
-     rechts an ihren gewohnten Platz (Entscheidung 94). */
-  .pt-foot.nur-zahl { justify-content: flex-end; }
   .pt-state { font-family: var(--display); font-weight: 800; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
   /* Die Kachel ist das konstante Objekt, die Sicht nur die Linse (Entscheidung
      46). Deshalb sieht derselbe Status in allen Sichten gleich aus: ruhige
@@ -580,14 +615,31 @@
   .vs-block h3 { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 7px; }
   .vs-block p { color: var(--fg-2); font-size: 14.5px; line-height: 1.5; text-wrap: pretty; }
   .vs-block p + p { margin-top: 6px; }
+  /* Der Steuerungsbedarf in der Vorschau: dieselben Bauteile wie im
+     Entscheidungspanel, nur etwas kompakter (Entscheidung 95). */
+  .vs-wert .sb-summe { margin-top: 8px; margin-bottom: 12px; }
   .vs-leer { color: var(--fg-muted) !important; }
   .vs-fuss { display: flex; justify-content: flex-end; padding-top: 24px; }
   @media (max-width: 560px) {
     .vorschau-dialog { width: 100%; }
   }
+  /* Tagesgeschäft (Entscheidung 100): die Erfassung nutzt dieselbe seitliche
+     Dialogfläche wie die Vorschau. Feste Referatszeilen, keine Karten. */
+  .tg-intro { color: var(--fg-2); font-size: 14.5px; line-height: 1.5; margin-top: 16px; }
+  .tg-zeile { padding: 16px 0 18px; border-bottom: 1px solid var(--line); }
+  .tg-zeile .feld:first-of-type { margin-top: 8px; }
+  .tg-referat { font-family: var(--display); font-weight: 700; font-size: 15px; }
+  .tg-neu { display: flex; gap: 8px; margin-top: 18px; }
+  .tg-neu input { flex: 1; }
+  /* Die Summenkarte ist bewusst keine Vorhaben-Kachel: getönte Fläche statt
+     Statuskante, kein Greif-Cursor, kein Kartenklick. Sie liegt fest im
+     Abteilungsportfolio und bewegt sich nicht. */
+  .pt.tg-karte { background: var(--blau-10); border-color: transparent; cursor: default; }
+  .pt.tg-karte:hover { transform: none; box-shadow: none; }
+  .pt.tg-karte .pt-name { color: var(--fg-2); }
+
   .pn-empf { color: var(--fg-2); font-size: 14px; margin-bottom: 12px; }
   .pn-wert { margin-bottom: 16px; }
-  .pn-wert .sb-summe { font-size: 14px; }
   .wahl { display: flex; gap: 8px; flex-wrap: wrap; }
   .wahl button { background: var(--weiss); border: 1.5px solid var(--blau-20); border-radius: 6px; cursor: pointer; font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--fg-2); padding: 10px 16px; text-align: left; }
   .wahl button:hover { border-color: var(--blau-40); color: var(--fg); }
@@ -886,6 +938,13 @@
     <div id="vorschauInhalt"></div>
   </dialog>
 
+  <!-- Tagesgeschäft erfassen (Entscheidung 100): eigener Einstieg an der
+       Kapazitätsangabe, feste Referatszeilen, je Referat ein Pflichtfeld für
+       die gebundenen VZÄ. Dieselbe seitliche Dialogfläche wie die Vorschau. -->
+  <dialog class="vorschau-dialog" id="tgDialog" aria-labelledby="tgTitel">
+    <div id="tgInhalt"></div>
+  </dialog>
+
   <!-- Ansicht "Steuerungsrunde vorbereiten" (Sparring 11.08.). Sie steht im
        Markup hinter Schritt 2, obwohl sie davor bedient wird: sichtbar ist immer
        nur eine Ansicht, und so bleibt die erste Fundstelle jeder gemeinsam
@@ -948,8 +1007,8 @@
       </header>
 
       <section class="druck-block" id="druckLeitung">
-        <h2>Leitungsportfolio</h2>
-        <p class="druck-block-hilfe">Eingeplant und für die Leitung nominiert, mit der Begründung der Abteilung.</p>
+        <h2>Für Leitung nominiert</h2>
+        <p class="druck-block-hilfe">Eingeplant und für die Leitung nominiert, mit der Begründung der Abteilung. Ausgewählt wird im Haus.</p>
         <div id="druckLeitungListe"></div>
       </section>
 
@@ -1289,8 +1348,12 @@
 
   // Wo das Vorhaben landet. Ergibt sich aus zwei getrennten Feldern: der Entscheidung
   // (eingeplant, wartet, eingestellt) und der Nominierung. Niemand wählt das direkt aus.
+  // "Leitungsportfolio" hieß der erste Bereich bis 18.08.: Das Wort gehört
+  // erst der späteren Auswahl durch StS und BM in der Stabs- und Hausansicht.
+  // In der Abteilungsansicht liegen dort nur Nominierungen, und genau das
+  // sagt der Name jetzt (N-03, 17.08.).
   const PORTFOLIO = {
-    haus: 'Leitungsportfolio',
+    haus: 'Für Leitung nominiert',
     fach: 'Abteilungsportfolio',
     warte: 'Warteliste',
     nicht: 'Eingestellt',
@@ -1339,9 +1402,12 @@
   }
 
   // Kapazitaet ehrlich getrennt: was das kommende Halbjahr binden soll, was heute laeuft
-  // und tatsaechlich gestoppt wird, und was gar nicht erst neu gebunden wird.
+  // und durch Warten oder Einstellen tatsaechlich frei wird, und was gar nicht
+  // erst neu gebunden wird. Frei wird nur laufende Arbeit (Entscheidung 99);
+  // bis 18.08. zaehlte hier nur das Einstellen, aber auch ein wartendes
+  // laufendes Vorhaben setzt Kapazitaet frei, es bindet ja niemanden mehr.
   function kapazitaet(liste, verfuegbar) {
-    let gebunden = 0, gestoppt = 0, nichtGebunden = 0, standOffen = 0;
+    let gebunden = 0, wirdFrei = 0, nichtGebunden = 0, standOffen = 0;
     liste.forEach(v => {
       const wert = vzaeWert(v);
       const wahl = gewaehlt(v, liste);
@@ -1350,18 +1416,38 @@
       // Ohne Stand lässt sich nicht sagen, ob hier etwas frei wird oder nur
       // nichts gebunden. Das wird ausgewiesen statt stillschweigend geraten.
       if (v.laeuft === WAEHLEN) { standOffen += wert; return; }
-      const laeuftSchon = v.laeuft === LAEUFT[1];
-      if (laeuftSchon && wahl === 'nicht') gestoppt += wert;
-      else if (!laeuftSchon) nichtGebunden += wert;
+      if (v.laeuft === LAEUFT[1]) wirdFrei += wert;
+      else nichtGebunden += wert;
     });
     return {
       gebunden: runde1(gebunden),
-      gestoppt: runde1(gestoppt),
+      wirdFrei: runde1(wirdFrei),
       nichtGebunden: runde1(nichtGebunden),
       standOffen: runde1(standOffen),
       verfuegbar: runde1(verfuegbar),
       ueber: runde1(Math.max(0, gebunden - verfuegbar))
     };
+  }
+
+  // Tagesgeschäft (Entscheidung 100): jedes Referat meldet einen VZÄ-Wert,
+  // optional die wiederkehrenden Aufgaben, die den größten Teil dieser Zeit
+  // binden. Es ist kein Vorhaben: kein Steckbrief, keine Empfehlung, keine
+  // Entscheidung, und die Summenkarte im Portfolio lässt sich nicht ziehen.
+  function tagesgeschaeftZeilen(stand) {
+    if (!stand || !Array.isArray(stand.tagesgeschaeft)) return [];
+    return stand.tagesgeschaeft
+      .filter(zeile => zeile && String(zeile.referat || '').trim())
+      .map(zeile => ({
+        referat: String(zeile.referat).trim(),
+        vzae: String(zeile.vzae == null ? '' : zeile.vzae),
+        gebundenDurch: String(zeile.gebundenDurch || '')
+      }));
+  }
+  function tagesgeschaeftSumme(zeilen) {
+    return runde1((zeilen || []).reduce((wert, zeile) => {
+      const zahl = parseFloat(String(zeile.vzae || '').replace(',', '.'));
+      return wert + (Number.isFinite(zahl) && zahl > 0 ? zahl : 0);
+    }, 0));
   }
 
   // Der Einstieg in Schritt 1 darf nur behaupten, was aus den Daten folgt
@@ -1568,7 +1654,11 @@
     return v;
   }
 
-  const SCHEMAVERSION = '2';
+  // Version 3 seit 18.08.: Der Wert "Leitungsportfolio" in der Spalte
+  // "Portfolio (abgeleitet)" heißt jetzt "Für Leitung nominiert" (N-03).
+  // Werte dieser Spalte sind Teil des Exportvertrags, deshalb zählt die
+  // Version hoch (gleiche Regel wie beim Spaltennamen, Entscheidung 91).
+  const SCHEMAVERSION = '3';
 
   function exportDatum(zeitpunkt) {
     const datum = zeitpunkt === undefined ? new Date() : new Date(zeitpunkt);
@@ -1731,6 +1821,9 @@
     } catch (fehler) { S = null; }
     if (!S) S = beispieldaten();
     migriereExterneAbhaengigkeiten(S);
+    // Tagesgeschäft (Entscheidung 100): ältere Stände kennen das Feld nicht,
+    // sie starten mit einer leeren Liste.
+    S.tagesgeschaeft = tagesgeschaeftZeilen(S);
     S.vorhaben.forEach(v => {
       const nummer = parseInt(String(v.id).replace(/\D/g, ''), 10);
       if (Number.isFinite(nummer) && nummer >= naechste) naechste = nummer + 1;
@@ -1790,7 +1883,9 @@
         </div>`;
     }).join('');
     const vorlesen = s.teile.map(t => `${t.name} ${t.wert === undefined ? 'offen' : t.wert} von ${t.max}`).join(', ');
-    return `<div class="sb-balken" role="img" aria-label="Steuerungsbedarf ${s.summe} von ${s.max}: ${vorlesen}">${gruppen}</div>
+    // "Steuerungsbedarf" heißt in der Oberfläche seit Entscheidung 101
+    // "Empfehlung"; der interne Name und die Exportspalten bleiben.
+    return `<div class="sb-balken" role="img" aria-label="Empfehlung ${s.summe} von ${s.max} Punkten: ${vorlesen}">${gruppen}</div>
       <p class="sb-summe">${s.summe} <span>von ${s.max}</span></p>
       ${s.vollstaendig ? '' : '<p class="sb-unklar">Noch nicht vollständig, der Wert kann steigen.</p>'}`;
   }
@@ -2252,11 +2347,20 @@
     const standHinweis = kap.standOffen > 0
       ? `<p class="bd-stand"><b>${zahlText(kap.standOffen)} VZÄ ohne Stand.</b> Ob dabei etwas frei wird, ist offen: bei diesen Vorhaben fehlt die Angabe, ob sie schon laufen.</p>`
       : '';
+    // Die Veränderung steht als eigene Zeile unter dem Balken (Entscheidung
+    // 99): Der Balken zeigt die neue Lage zu einem Zeitpunkt, "wird frei" ist
+    // die Veränderung gegenüber dem vorherigen Stand. Beides in einem Stapel
+    // würde zwei Zeitpunkte addieren und bei Entlastung weiter Überbuchung
+    // zeigen.
+    const freiHinweis = kap.wirdFrei > 0
+      ? `<p class="bd-stand">Durch Warten und Einstellen werden <b>${zahlText(kap.wirdFrei)} VZÄ</b> aus laufender Arbeit frei.</p>`
+      : '';
 
     document.getElementById('budget').innerHTML = `
       <div class="bd-kopf">
         <span class="bd-titel">Kapazität im nächsten Halbjahr · Vollzeitäquivalente</span>
         <span class="bd-eingabe">Die Abteilung hat<input type="text" inputmode="decimal" id="verfuegbar" value="${esc(S.verfuegbar)}" maxlength="6" aria-label="Verfügbare Vollzeitäquivalente"></span>
+        <button class="textbtn blau bd-tg" type="button" id="tgOeffnen">Tagesgeschäft erfassen</button>
       </div>
       <div class="bd-skala" role="img" aria-label="Gebunden ${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} Vollzeitäquivalenten${kap.ueber > 0 ? ', ' + zahlText(kap.ueber) + ' über der Grenze' : ''}">
         <div class="bd-gedeckt" style="width:${breiteGedeckt}%"></div>
@@ -2266,7 +2370,7 @@
         <div class="bd-marke ${marke > 88 ? 'rechts' : ''}" style="left:${marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>
       </div>
       `;
-    document.getElementById('bdStand').innerHTML = standHinweis;
+    document.getElementById('bdStand').innerHTML = freiHinweis + standHinweis;
     // Die Kurzfassung trägt die Zahlen, die vorher im Balken standen
     document.getElementById('bdKurz').textContent = kap.ueber > 0
       ? `${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} VZÄ, ${zahlText(kap.ueber)} zu viel`
@@ -2282,6 +2386,133 @@
       neu.focus();
       neu.setSelectionRange(stelle, stelle);
     });
+    document.getElementById('tgOeffnen').addEventListener('click', tgErfassenOeffnen);
+  }
+
+  /* ---------- Tagesgeschäft (Entscheidung 100) ---------- */
+
+  // Feste Zeilen: alle Referate, die in Steckbriefen oder im Tagesgeschäft
+  // schon benannt sind. Ein Referat ohne Vorhaben in diesem Halbjahr hat
+  // trotzdem Tagesgeschäft, deshalb lässt sich unten eines ergänzen.
+  function tgReferate() {
+    const ausVorhaben = S.vorhaben.map(v => v.referat.trim()).filter(Boolean);
+    const ausTg = S.tagesgeschaeft.map(zeile => zeile.referat);
+    return [...new Set([...ausVorhaben, ...ausTg])].sort((a, b) => a.localeCompare(b, 'de'));
+  }
+
+  function tgEintrag(referat) {
+    let zeile = S.tagesgeschaeft.find(z => z.referat === referat);
+    if (!zeile) {
+      zeile = { referat, vzae: '', gebundenDurch: '' };
+      S.tagesgeschaeft.push(zeile);
+    }
+    return zeile;
+  }
+
+  function tgErfassenOeffnen() {
+    const dialog = document.getElementById('tgDialog');
+    const wurzel = document.getElementById('tgInhalt');
+    if (!dialog || !wurzel) return;
+    const referate = tgReferate();
+    // IDs dürfen keine Leerzeichen tragen, Referatsnamen tun es ("X II 1").
+    // Die Felder heißen deshalb nach dem Index, das Referat steht im data-Attribut.
+    const zeilen = referate.map((referat, i) => {
+      const zeile = tgEintrag(referat);
+      return `<div class="tg-zeile">
+        <p class="tg-referat">${esc(referat)}</p>
+        <div class="feld">
+          <label for="tg-vzae-${i}">Im Tagesgeschäft gebundene VZÄ<span class="pflichtzeichen" aria-hidden="true">*</span></label>
+          <input type="text" inputmode="decimal" class="kurz" id="tg-vzae-${i}" data-tg-vzae="${esc(referat)}" required aria-required="true" maxlength="6" placeholder="z. B. 3,5" value="${esc(zeile.vzae)}">
+        </div>
+        <div class="feld">
+          <label for="tg-durch-${i}">Wodurch ist der größte Teil dieser Zeit gebunden?</label>
+          <p class="feld-hilfe">Nennt bis zu drei wiederkehrende Aufgaben oder Pflichten.</p>
+          <input type="text" id="tg-durch-${i}" data-tg-durch="${esc(referat)}" maxlength="240" placeholder="z. B. Anfragen, Gremien, Berichtspflichten" value="${esc(zeile.gebundenDurch)}">
+        </div>
+      </div>`;
+    }).join('');
+    wurzel.innerHTML = `<div class="vs-inhalt">
+      <div class="vs-kopf">
+        <h2 id="tgTitel">Tagesgeschäft erfassen</h2>
+        <button class="vs-schliessen" type="button" aria-label="Erfassung schließen">&times;</button>
+      </div>
+      <p class="tg-intro">Jedes Referat meldet, wie viele VZÄ das Tagesgeschäft bindet. Im Portfolio entsteht daraus eine feste Summenkarte, die sich nicht verschieben lässt.</p>
+      ${zeilen || '<p class="tg-intro">Noch kein Referat benannt. Referate entstehen über die Steckbriefe oder direkt hier.</p>'}
+      <div class="tg-neu">
+        <input type="text" id="tgNeuName" maxlength="40" placeholder="Weiteres Referat ..." autocomplete="off" aria-label="Weiteres Referat ergänzen">
+        <button class="btn leise" type="button" id="tgNeuAdd">Ergänzen</button>
+      </div>
+      <p class="pflicht-legende" style="margin-left:0"><span class="pflichtzeichen" aria-hidden="true">*</span>Pflichtangabe</p>
+      <div class="vs-fuss"><button class="btn primary" type="button" id="tgFertig">Fertig</button></div>
+    </div>`;
+    speichern();
+    wurzel.querySelectorAll('[data-tg-vzae]').forEach(el => el.addEventListener('input', () => {
+      tgEintrag(el.dataset.tgVzae).vzae = el.value;
+      speichern();
+    }));
+    wurzel.querySelectorAll('[data-tg-durch]').forEach(el => el.addEventListener('input', () => {
+      tgEintrag(el.dataset.tgDurch).gebundenDurch = el.value;
+      speichern();
+    }));
+    const neuAufnehmen = () => {
+      const feld = document.getElementById('tgNeuName');
+      const name = feld.value.trim();
+      if (!name) { feld.focus(); return; }
+      tgEintrag(name);
+      speichern();
+      tgErfassenOeffnen();
+      const ziel = document.querySelector(`#tgInhalt [data-tg-vzae="${CSS.escape(name)}"]`);
+      if (ziel) ziel.focus();
+    };
+    document.getElementById('tgNeuAdd').addEventListener('click', neuAufnehmen);
+    document.getElementById('tgNeuName').addEventListener('keydown', event => {
+      if (event.key === 'Enter') { event.preventDefault(); neuAufnehmen(); }
+    });
+    // Beim Schließen zieht das Bild sofort nach: Summenkarte und Leiste lesen
+    // den Stand. Nicht über das close-Event, das feuert asynchron.
+    const zu = () => {
+      dialog.close();
+      if (ansicht === 'priorisieren') renderPriorisieren();
+    };
+    wurzel.querySelector('.vs-schliessen').addEventListener('click', zu);
+    document.getElementById('tgFertig').addEventListener('click', zu);
+    dialog.onclick = event => { if (event.target === dialog) zu(); };
+    dialog.oncancel = () => { setTimeout(() => { if (ansicht === 'priorisieren') renderPriorisieren(); }, 0); };
+    if (!dialog.open) dialog.showModal();
+  }
+
+  function tgVorschauOeffnen() {
+    const dialog = document.getElementById('vorschauDialog');
+    const wurzel = document.getElementById('vorschauInhalt');
+    if (!dialog || !wurzel) return;
+    const zeilen = tagesgeschaeftZeilen(S);
+    const summe = tagesgeschaeftSumme(zeilen);
+    wurzel.innerHTML = `<div class="vs-inhalt">
+      <div class="vs-kopf">
+        <h2 id="vorschauTitel">Tagesgeschäft der Referate</h2>
+        <button class="vs-schliessen" type="button" aria-label="Vorschau schließen">&times;</button>
+      </div>
+      <div class="vs-status">
+        <span>${zeilen.length === 1 ? 'ein Referat' : zeilen.length + ' Referate'}</span>
+        <span>${zahlText(summe)} VZÄ gebunden</span>
+      </div>
+      ${zeilen.map(zeile => `<section class="vs-block">
+        <h3>${esc(zeile.referat)}</h3>
+        <p>${String(zeile.vzae).trim() ? zahlText(parseFloat(String(zeile.vzae).replace(',', '.')) || 0) + ' VZÄ im Tagesgeschäft gebunden' : 'VZÄ noch nicht gemeldet'}</p>
+        ${zeile.gebundenDurch.trim() ? `<p>${esc(zeile.gebundenDurch)}</p>` : ''}
+      </section>`).join('')}
+      <section class="vs-block">
+        <p class="vs-leer">Die Summenkarte zählt noch nicht gegen die Kapazitätsgrenze. Ob die Grenze das Tagesgeschäft einschließt, ist als Bezugsgröße noch offen.</p>
+      </section>
+      <div class="vs-fuss"><button class="btn primary" type="button" id="tgZurErfassung">Tagesgeschäft erfassen</button></div>
+    </div>`;
+    wurzel.querySelector('.vs-schliessen').addEventListener('click', () => dialog.close());
+    document.getElementById('tgZurErfassung').addEventListener('click', () => {
+      dialog.close();
+      tgErfassenOeffnen();
+    });
+    dialog.onclick = event => { if (event.target === dialog) dialog.close(); };
+    if (!dialog.open) dialog.showModal();
   }
 
   // Die Kachel nennt Zustand und Korb. In der Portfolio-Sicht bleiben beide
@@ -2297,22 +2528,26 @@
     const vzae = vzaeWert(v);
     const nominiert = IST_NOMINIERT(v.leitung) && wahl !== 'nicht';
     const korb = PORTFOLIO[portfolio(v, S.vorhaben).wert];
-    // Der hohle Punkt ist dasselbe Zeichen wie in der Namensliste von Schritt 1:
-    // gefüllt heißt "die Runde kann damit arbeiten", hohl heißt "da fehlt noch
-    // etwas". Hier steht er für die offene Pflicht an einer Entscheidung.
     const pflicht = offenePflicht(v, S.vorhaben);
     const zentralHinweis = wahl === 'nicht' && verknuepfungsZahl(v, S.vorhaben) >= 3
       ? verknuepfungsRegeltext(v, S.vorhaben)
       : '';
+    // Der Stand steht kompakt in der Fußzeile (Feedback 17.08.). Er ersetzt
+    // den hohlen Punkt, den nie jemand verstanden hat: die offene Pflicht
+    // bleibt über Titel, Vorlesetext und den Bereich "Noch offen" sichtbar.
+    const stand = v.laeuft === LAEUFT[1] ? 'läuft' : v.laeuft === LAEUFT[2] ? 'geplant' : '';
     return `<div class="pt-wrap">
       <button class="pt ${wahl} ${nominiert ? 'lf' : ''} ${v.id === aktivId ? 'aktiv' : ''}" type="button" data-kachel="${v.id}" title="${esc(korb)}${pflicht ? ' · ' + OFFENE_PFLICHT[pflicht].kurz : ''}">
-        <span class="pt-name">${esc(v.name)}${pflicht ? `<i class="pt-offen" aria-hidden="true"></i><span class="nur-vorlesen">, ${esc(OFFENE_PFLICHT[pflicht].kurz)}</span>` : ''}</span>
+        <span class="pt-name">${esc(v.name)}${pflicht ? `<span class="nur-vorlesen">, ${esc(OFFENE_PFLICHT[pflicht].kurz)}</span>` : ''}</span>
         ${zentralHinweis ? `<span class="pt-hinweis">${esc(zentralHinweis)}</span>` : ''}
         ${nominiert ? '<span class="nur-vorlesen">Nominiert für Leitung</span>' : ''}
         ${ohneWiederholung ? '' : `<span class="pt-korb">${esc(korb)}</span>`}
-        <span class="pt-foot${ohneWiederholung ? ' nur-zahl' : ''}">
-          ${ohneWiederholung ? '' : `<span class="pt-state">${esc(ENTSCHEIDUNG[wahl])}</span>`}
-          <span>${vzae ? zahlText(vzae) : '?'}</span>
+        <span class="pt-foot">
+          <span class="pt-foot-links">
+            ${ohneWiederholung ? '' : `<span class="pt-state">${esc(ENTSCHEIDUNG[wahl])}</span>`}
+            ${stand ? `<span class="pt-stand">${stand}</span>` : ''}
+          </span>
+          <span>${vzae ? zahlText(vzae) + ' VZÄ' : 'VZÄ offen'}</span>
         </span>
       </button>
       <button class="pt-lupe" type="button" data-vorschau="${v.id}" aria-label="${esc(v.name)} kurz ansehen" title="Kurz ansehen">
@@ -2341,7 +2576,7 @@
     const nominierung = v.leitung === 'offen'
       ? 'Nominierung noch offen.'
       : IST_NOMINIERT(v.leitung)
-        ? 'Für das Leitungsportfolio nominiert.'
+        ? 'Für Leitung nominiert. Ausgewählt wird im Haus.'
         : 'Nicht nominiert, die Abteilung steuert selbst.';
     wurzel.innerHTML = `<div class="vs-inhalt">
       <div class="vs-kopf">
@@ -2362,12 +2597,17 @@
         <p class="${v.ruhen === WAEHLEN ? 'vs-leer' : ''}">${esc(v.ruhen === WAEHLEN ? 'Noch nicht beantwortet.' : v.ruhen)}</p>
         ${konkret ? `<p>${esc(konkret)}</p>` : ''}
       </section>
-      <section class="vs-block">
+      <!-- Ein gemeinsamer Empfehlungsblock (Entscheidung 101): Auswertung,
+           empfohlene Zuordnung, Regelbegründung, Nominierung und Kapazität
+           unter einer Überschrift, ohne weitere Zwischenüberschriften. Die
+           Auswertung heißt nicht mehr "Steuerungsbedarf", das wurde als
+           zweiter Score neben der Empfehlung gelesen. Sie steht in der Lupe,
+           weil sie aus der Portfolio-Sicht sonst unerreichbar wäre
+           (Entscheidung 95). -->
+      <section class="vs-block vs-wert">
         <h3>Empfehlung</h3>
+        ${balkenHtml(v)}
         <p><strong>${esc(ENTSCHEIDUNG[e.wert])}</strong>. ${esc(e.regel)}</p>
-      </section>
-      <section class="vs-block">
-        <h3>Nominierung und Kapazität</h3>
         <p>${esc(nominierung)}</p>
         ${IST_NOMINIERT(v.leitung) && v.bmWarum.trim() ? `<p>${esc(v.bmWarum)}</p>` : ''}
         <p>${bedarf ? esc(deckungText(v) || 'Personaldeckung noch nicht angegeben.') : 'Personalbedarf noch nicht angegeben.'}</p>
@@ -2404,7 +2644,7 @@
       return `<div class="lane">
         <div>
           <p class="lane-name">${esc(name)}</p>
-          <p class="lane-meta">${drin.length ? (drin.length === 1 ? 'ein Vorhaben' : drin.length + ' Vorhaben') + ' · ' + zahlText(summe) : 'kein Vorhaben'}</p>
+          <p class="lane-meta">${drin.length ? (drin.length === 1 ? 'ein Vorhaben' : drin.length + ' Vorhaben') + ' · ' + zahlText(summe) + ' VZÄ' : 'kein Vorhaben'}</p>
         </div>
         <div class="lane-body">${drin.map(v => kachel(v)).join('')}</div>
       </div>`;
@@ -2416,7 +2656,7 @@
   // führen unabhängig von der Nominierung in ihren Korb, ihre Zellen
   // überspannen deshalb beide Zeilen. Nur "eingeplant" teilt sich danach, wer
   // steuert. Die Verbindlichkeit steigt nach rechts, der Aufmerksamkeitsort
-  // oben rechts ist das Leitungsportfolio.
+  // oben rechts sind die Nominierungen für die Leitung.
   const PF_SPALTEN = [
     { wahl: 'nicht', sub: 'wird nicht weiterverfolgt' },
     { wahl: 'wartet', sub: 'wird aktiv, wenn die benannte Bedingung eintritt' },
@@ -2521,6 +2761,10 @@
 
   function markiereAbhaengigkeiten(fokus) {
     const wurzel = document.getElementById('bildKoerper');
+    // Die Tagesgeschäftskarte hat keine Verknüpfungen und tritt in der Linse
+    // immer zurück, sonst stünde sie als einzige hell im gedimmten Bild.
+    const tg = wurzel.querySelector('.tg-wrap');
+    if (tg) tg.classList.toggle('abh-zurueck', !!fokus);
     wurzel.querySelectorAll('[data-kachel]').forEach(el => {
       const verbunden = !!fokus && fokus.verbunden.has(el.dataset.kachel);
       const karte = el.closest('.pt-wrap') || el;
@@ -2537,6 +2781,25 @@
     if (abhAktivId && !fokus) abhAktivId = null;
     const imKorb = korb => sortiert(S.vorhaben.filter(v => portfolio(v, S.vorhaben).wert === korb));
     const vzaeSumme = liste => liste.reduce((wert, v) => wert + vzaeWert(v), 0);
+    // Die Tagesgeschäftskarte (Entscheidung 100) liegt fest im
+    // Abteilungsportfolio: kein Vorhaben, nicht ziehbar, die Lupe zeigt die
+    // Aufgliederung nach Referaten. Ihre VZÄ zählen bewusst nicht in die
+    // Spaltensummen und nicht gegen die Grenze, solange die Bezugsgröße der
+    // Kapazität offen ist; die Lupe sagt das dazu.
+    const tgZeilen = tagesgeschaeftZeilen(S);
+    const tgSumme = tagesgeschaeftSumme(tgZeilen);
+    const tgKarte = tgSumme > 0 ? `<div class="pt-wrap tg-wrap">
+      <div class="pt tg-karte" title="Tagesgeschäft, feste Karte">
+        <span class="pt-name">Tagesgeschäft der Referate</span>
+        <span class="pt-foot">
+          <span class="pt-foot-links"><span class="pt-stand">${tgZeilen.length === 1 ? 'ein Referat' : tgZeilen.length + ' Referate'}</span></span>
+          <span>${zahlText(tgSumme)} VZÄ</span>
+        </span>
+      </div>
+      <button class="pt-lupe" type="button" data-tg-vorschau aria-label="Tagesgeschäft kurz ansehen" title="Kurz ansehen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 5 5"></path></svg>
+      </button>
+    </div>` : '';
     const zelle = (korb, spalte, zeile, spannt, label) => {
       const drin = imKorb(korb);
       // Die überspannenden Zellen bekommen einen leeren Platzhalter in Höhe
@@ -2548,7 +2811,8 @@
       // setzt zusätzlich die Nominierung (Entscheidung 78).
       const zone = korb === 'haus' ? 'haus' : (korb === 'fach' ? 'fach' : '');
       return `<div class="mx-zelle ${spalte === 3 ? 'pf-gebunden' : ''}" role="cell" data-wahl="${wahl}"${zone ? ` data-zone="${zone}"` : ''}${spannt ? ' aria-rowspan="2"' : ''} style="grid-column:${spalte}; grid-row:${zeile}${spannt ? ' / span 2' : ''}">
-        ${label ? `<span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))}</span>` : '<span class="pf-korb-leer" aria-hidden="true"></span>'}
+        ${label ? `<span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))} VZÄ</span>` : '<span class="pf-korb-leer" aria-hidden="true"></span>'}
+        ${korb === 'fach' ? tgKarte : ''}
         ${drin.map(v => kachel(v, true)).join('')}</div>`;
     };
 
@@ -2576,13 +2840,15 @@
           </div>
         </div>
       </div>
+      <!-- Der Einheitenzusatz ist raus (Entscheidung 105): jede Zahl im Bild
+           trägt ihre Einheit jetzt selbst, an Kachelfuß, Korb-Band und
+           Spaltenkopf. -->
       <p class="abh-info" aria-live="polite">
         <span>${fokus ? esc(abhaengigkeitsSatz(fokus)) + ' Erneut anklicken setzt die Auswahl zurück.' : 'Kachel anklicken zeigt verknüpfte Vorhaben.'}</span>
-        <span class="abh-info-meta">Zahlen sind Vollzeitäquivalente.</span>
       </p>
       ${offen.length ? `<div class="mx-offen">
         <p class="mx-offen-kopf">${esc(PORTFOLIO.offen)} · ${offen.length}</p>
-        <p class="lane-sub">Noch kein Korb, es fehlen Antworten im Steckbrief.</p>
+        <p class="lane-sub">Noch nicht zugeordnet, es fehlen Antworten im Steckbrief.</p>
         <div class="mx-offen-body">${offen.map(v => kachel(v, true)).join('')}</div>
       </div>` : ''}`;
     markiereAbhaengigkeiten(fokus);
@@ -2695,6 +2961,10 @@
     document.getElementById('bildKoerper').querySelectorAll('[data-vorschau]').forEach(el => el.addEventListener('click', event => {
       event.stopPropagation();
       vorschauOeffnen(el.dataset.vorschau);
+    }));
+    document.getElementById('bildKoerper').querySelectorAll('[data-tg-vorschau]').forEach(el => el.addEventListener('click', event => {
+      event.stopPropagation();
+      tgVorschauOeffnen();
     }));
     document.getElementById('bildKoerper').querySelectorAll('[data-kachel]').forEach(el => el.addEventListener('click', () => {
       if (klickNachZugId === el.dataset.kachel) return;
@@ -2963,7 +3233,7 @@
       + (zurueck.length
         ? `<div class="lf-zurueck">
             <p class="lf-zurueck-kopf">Nicht gemeldet · ${zurueck.length}</p>
-            ${zurueck.map(v => `<p class="lf-meta">${esc(v.name)}: ${esc(ENTSCHEIDUNG[gewaehlt(v, S.vorhaben)])}, geht damit nicht ins Leitungsportfolio.</p>`).join('')}
+            ${zurueck.map(v => `<p class="lf-meta">${esc(v.name)}: ${esc(ENTSCHEIDUNG[gewaehlt(v, S.vorhaben)])}, wird damit nicht ans Haus gemeldet.</p>`).join('')}
           </div>`
         : '');
     // Dieselbe Meldeliste in beiden Ansichten (Sparring 11.08.): in Schritt 2
@@ -2985,7 +3255,7 @@
     // Was der Zug kostet, steht in der Leiste, die jetzt stehen bleibt. Die
     // Quittung sagt nur noch, was gilt und was daran fehlt.
     box.innerHTML = `<p class="quittung">
-      <span class="qt-satz"><strong>${esc(v.name)}</strong> steht jetzt auf ${esc(ENTSCHEIDUNG[gewaehlt(v, S.vorhaben)])}${IST_NOMINIERT(v.leitung) && gewaehlt(v, S.vorhaben) === 'prio' ? ' im Leitungsportfolio und ist für Leitung nominiert' : ''}.</span>
+      <span class="qt-satz"><strong>${esc(v.name)}</strong> steht jetzt auf ${esc(ENTSCHEIDUNG[gewaehlt(v, S.vorhaben)])}${IST_NOMINIERT(v.leitung) && gewaehlt(v, S.vorhaben) === 'prio' ? ' und ist für Leitung nominiert' : ''}.</span>
       ${pflicht ? `<button class="textbtn blau qt-tun" type="button" data-quittung="${v.id}">${esc(OFFENE_PFLICHT[pflicht].kurz.replace(' fehlt', ' ergänzen'))}</button>` : ''}
     </p>`;
     const knopf = box.querySelector('[data-quittung]');
@@ -3101,7 +3371,7 @@
 
     document.getElementById('druckLeitungListe').innerHTML = haus.length
       ? haus.map(druckItemHtml).join('')
-      : '<p class="druck-leer">Keine Nominierung im Leitungsportfolio.</p>';
+      : '<p class="druck-leer">Keine Nominierung gemeldet.</p>';
     document.getElementById('druckFachListe').innerHTML = fach.length
       ? fach.map(druckItemHtml).join('')
       : '<p class="druck-leer">Kein Vorhaben im Abteilungsportfolio.</p>';
@@ -3134,6 +3404,8 @@
   function wechsle(neu) {
     ansicht = neu;
     if (neu !== 'priorisieren') abhAktivId = null;
+    // Volle Breite nur in der Entscheidungsansicht (Entscheidung 98)
+    document.body.classList.toggle('breit', ansicht === 'priorisieren');
     document.querySelectorAll('.schritt').forEach(el => el.setAttribute('aria-current', String(el.dataset.ansicht === ansicht)));
     // Im Einstieg stehen dieselben zwei Wege bereits groß und mit Kontext.
     // Erst danach braucht der Kopf die Navigation als Rückweg. Die
@@ -3211,6 +3483,7 @@
       if (!confirm('Alle Eingaben verwerfen und die Beispieldaten wiederherstellen?')) return;
       S = beispieldaten();
       migriereExterneAbhaengigkeiten(S);
+      S.tagesgeschaeft = tagesgeschaeftZeilen(S);
       offenId = null;
       aktivId = null;
       abhAktivId = null;
