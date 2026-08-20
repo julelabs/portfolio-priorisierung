@@ -8,12 +8,12 @@
 <style>
   @font-face {
     font-family: 'Open Sans';
-    src: url('assets/fonts/OpenSans-Variable.ttf') format('truetype');
+    src: url('../../../Wirkungswerkstatt/site/assets/fonts/OpenSans-Variable.ttf') format('truetype');
     font-weight: 300 800; font-style: normal; font-display: swap;
   }
   @font-face {
     font-family: 'BundesSans';
-    src: url('assets/fonts/BundesSans-Web-Regular.woff2') format('woff2');
+    src: url('../../../Wirkungswerkstatt/site/assets/fonts/BundesSans-Web-Regular.woff2') format('woff2');
     font-weight: 400; font-style: normal; font-display: swap;
   }
   :root {
@@ -156,8 +156,8 @@
   <div class="tabelle">
     <table>
       <tr><th>Entscheidung</th><th>Nominierung</th><th>Zuordnung</th></tr>
-      <tr><td>eingeplant</td><td>als hausweit wichtiges Fokusvorhaben nominiert</td><td><b>Für Leitung nominiert</b></td></tr>
-      <tr><td>eingeplant</td><td>nicht nominiert, die Abteilung steuert selbst</td><td><b>Abteilungsportfolio</b></td></tr>
+      <tr><td>eingeplant</td><td>als hausweit wichtiges Fokusvorhaben nominiert</td><td><b>Für Leitungsportfolio nominiert</b></td></tr>
+      <tr><td>eingeplant</td><td>nicht nominiert, die Abteilung steuert selbst</td><td><b>Restliches Abteilungsportfolio</b></td></tr>
       <tr><td>wartet</td><td>egal</td><td><b>Warteliste</b></td></tr>
       <tr><td>eingestellt</td><td>egal</td><td><b>Eingestellt</b></td></tr>
       <tr><td>noch kein reifer Steckbrief und keine eigene Entscheidung</td><td>egal</td><td><b>Erst klären</b></td></tr>
@@ -167,13 +167,19 @@
 </section>
 
 <section class="frage">
+  <h2>Gibt es Limits oder Richtwerte für Nominierungen?</h2>
+  <p>Limits gibt es bewusst nicht: Nominieren darf jede Abteilung so viel, wie sie für strategisch wichtig hält, nichts wird blockiert. Eine feste Quote würde zum Erfüllen einladen statt zum Entscheiden, und wie viel eine Abteilung warten lassen oder einstellen muss, sagt bereits die Kapazitätsgrenze, härter und passender als jeder Richtwert.</p>
+  <p>Zur Orientierung ein paar Erfahrungswerte aus dem Prozess: StS und BM wählen hausweit 8 bis 10 Vorhaben aus, die BM eng begleitet. Das AL-Reporting umfasst insgesamt rund 40 Vorhaben, einschließlich dieser Auswahl. Wer deutlich mehr nominiert, verwässert vor allem den eigenen Vorschlag; wer gar nichts nominiert, überlässt die Auswahl den anderen Abteilungen.</p>
+</section>
+
+<section class="frage">
   <h2>Wie wirkt die Kapazität?</h2>
   <p>Kapazität ist eine harte Nebenbedingung, aber kein Bewertungsfaktor:</p>
   <ul>
-    <li>Der Personalbedarf aller eingeplanten Vorhaben wird mit der verfügbaren Kapazität verglichen.</li>
+    <li>Die Grenze meint die Gesamtkapazität der Abteilung: Das Tagesgeschäft der Referate liegt als Segment vorn im Kapazitätsbalken, dahinter folgt der Personalbedarf der eingeplanten Vorhaben.</li>
     <li>Bei Überbuchung fragt das Werkzeug: Welches Vorhaben wartet stattdessen?</li>
     <li>Es vergibt keinen Rang innerhalb von „eingeplant“ und verschiebt kein Vorhaben automatisch.</li>
-    <li>Was aus laufender Arbeit durch Warten oder Einstellen frei wird, steht als eigene Zeile unter dem Kapazitätsbalken. Noch nicht gestartete Vorhaben setzen nichts frei, sie binden nur nichts Neues.</li>
+    <li>Was aus laufender Arbeit durch Warten oder Einstellen frei wird, zeigt der hohle Umriss im Balken: Er markiert, wo die Bindung vor diesen Entscheidungen endete. Noch nicht gestartete Vorhaben setzen nichts frei, sie binden nur nichts Neues.</li>
     <li>Die personelle Deckung zeigt, welcher Bedarf noch unbesetzt ist. Sie verändert weder Vorschlag noch Zuordnung.</li>
   </ul>
 </section>

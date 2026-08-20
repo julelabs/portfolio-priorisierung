@@ -23,6 +23,9 @@
     /* Kirsche zweimal: der helle Ton trägt auf dunklem Grund und in Flächen,
        der dunkle trägt als Text auf Weiß (dort hält #E84070 die 4,5:1 nicht). */
     --kirsche-text: #C4003F;
+    /* Minze als Wertfarbe braucht fuer Text eine dunkle Stufe (Entscheidung
+       115): haelt 5,4:1 auf Weiss und 4,7:1 auf Blau-10. */
+    --minze-text: #0B7A4F;
     /* fg-muted eine Stufe dunkler als AA verlangt (5,7:1 auf blau-10): Hilfetexte
        müssen auch über Screenshare und Beamer lesbar bleiben (Monday, 05.08.). */
     --fg: var(--dunkel); --fg-2: #4A4869; --fg-muted: #5B5985;
@@ -130,7 +133,7 @@
   .z-fuss:hover { color: var(--blau-20); text-decoration: underline; text-underline-offset: 3px; }
   .z-leer { font-size: 14.5px; color: var(--blau-20); }
 
-  /* Ansicht "Steuerungsrunde vorbereiten" (Sparring 11.08.): Der Kopf ist
+  /* Ansicht "Portfoliorunde vorbereiten" (Sparring 11.08.): Der Kopf ist
      derselbe dunkle Auftakt wie in Schritt 1, nur mit anderer Leitfrage und mit
      dem Werkzettel rechts. Deshalb trägt er die Auftakt-Klassen und nicht ein
      zweites Farb- und Typosystem. Die Kicker-Zeile ist die Zeile, die im
@@ -347,11 +350,42 @@
   /* Flacher als früher, weil die Leiste jetzt eine Zeile ist. Die Grenzmarke
      bleibt, sie macht aus dem Balken einen Maßstab. Die Zahlen im Balken
      entfallen, sie stehen als Satz daneben (Entscheidung 63). */
+  /* Die Skala wächst mit dem verfügbaren Platz (Julias Review vom 20.08.):
+     Mit Sockel, Marke, Überzug und Umriss braucht die Stückelung Breite,
+     sonst ist hinter der Grenzlinie nichts mehr zu erkennen. */
   .bd-skala { position: relative; height: 12px; border-radius: 4px; background: var(--lavendel);
-    order: 1; margin: 0; flex: 0 1 200px; min-width: 140px; }
+    order: 1; margin: 0; flex: 1 1 240px; min-width: 200px; max-width: 560px; }
   .bd-skala .bd-wert, .bd-marke b { display: none; }
-  .bd-gedeckt { position: absolute; left: 0; top: 0; bottom: 0; background: var(--blau); border-radius: 4px 0 0 4px; transition: width .4s var(--ease); }
-  .bd-ueberhang { position: absolute; top: 0; bottom: 0; background: var(--kirsche-text); border-radius: 0 4px 4px 0; transition: width .4s var(--ease), left .4s var(--ease); }
+  /* Segmente auf einer Zeitachse (Entscheidungen 115 und 116): Tagesgeschäft
+     als Sockel, Eingeplantes, Überzug jenseits der Grenze, Freiraum in Minze.
+     Kanten-Regel vom 20.08.: gerade Kanten an allen Übergängen (die Lücke
+     rechnet kapSegmenteHtml), Rundung nur an den äußeren Balkenenden. */
+  .bd-seg { position: absolute; top: 0; bottom: 0; transition: width .4s var(--ease), left .4s var(--ease); }
+  .bd-seg.tg { background: var(--blau-20); }
+  .bd-seg.gebunden { background: var(--blau); }
+  .bd-seg.zuviel { background: var(--kirsche-text); }
+  .bd-seg.luft { background: var(--minze); }
+  /* Der Umriss ist die Referenzposition vor den Warten- und Einstellen-
+     Entscheidungen (Entscheidung 115), er füllt nicht, er erinnert. Die
+     Mindestbreite hält die hohle Form auch bei kleiner Einsparung lesbar;
+     der genaue Wert steht im Tooltip und im Vorlesetext. */
+  .bd-seg.vorher { background: transparent; border: 1.5px solid var(--blau-60); min-width: 7px; }
+  .bd-seg.bd-start { border-radius: 4px 0 0 4px; }
+  .bd-seg.bd-ende { border-radius: 0 4px 4px 0; }
+  /* Belohnung im Moment der Entscheidung (Entscheidung 115, Variante 5):
+     erscheint nur, wenn ein laufendes Vorhaben eingeplant verlässt, steigt
+     kurz auf und verschwindet. Kein Dauerinventar. */
+  .bd-belohnung { position: absolute; bottom: calc(100% + 6px); transform: translateX(-50%); background: var(--minze); color: var(--dunkel); font-family: var(--display); font-weight: 800; font-size: 12px; padding: 3px 10px; border-radius: 999px; white-space: nowrap; pointer-events: none; opacity: 0; animation: bdBelohnung 2.6s var(--ease) forwards; }
+  @keyframes bdBelohnung {
+    0% { opacity: 0; margin-bottom: -6px; }
+    10% { opacity: 1; margin-bottom: 0; }
+    72% { opacity: 1; margin-bottom: 0; }
+    100% { opacity: 0; margin-bottom: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bd-belohnung { animation: bdBelohnungLeise 2.6s linear forwards; }
+    @keyframes bdBelohnungLeise { 0% { opacity: 0; } 10% { opacity: 1; } 72% { opacity: 1; } 100% { opacity: 0; } }
+  }
   .bd-marke { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--fg); transition: left .4s var(--ease); }
   .bd-marke b { position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%); font-family: var(--display); font-size: 11.5px; font-weight: 800; color: var(--fg); white-space: nowrap; }
   .bd-marke.rechts b { left: auto; right: 0; transform: none; }
@@ -770,6 +804,8 @@
   .druck-kapazitaet { break-inside: avoid; margin-top: 4px; }
   .druck-kap-zeile { font-size: 14px; color: var(--fg-2); margin-bottom: 8px; }
   .druck-kap-zeile strong { font-family: var(--display); color: var(--fg); }
+  /* Einsparung in der Wertfarbe: Minze-Text-Token, hält AA auf Weiß. */
+  .druck-kap-zeile .druck-frei { color: var(--minze-text); font-weight: 600; }
   @media print {
     header.top, .druck-leiste, .no-print { display: none !important; }
     body { background: var(--weiss); }
@@ -785,7 +821,7 @@
     <button class="schritt" type="button" data-ansicht="erfassen">Vorhaben erfassen</button>
     <!-- Die Vorbereitung ist seit dem Sparring 11.08. ein eigener Schritt und
          steht zwischen Erfassen und Entscheiden, weil sie genau dort passiert. -->
-    <button class="schritt" type="button" data-ansicht="vorbereiten">Steuerungsrunde vorbereiten</button>
+    <button class="schritt" type="button" data-ansicht="vorbereiten">Portfoliorunde vorbereiten</button>
     <button class="schritt" type="button" data-ansicht="priorisieren">Portfolio entscheiden</button>
   </nav>
   <div class="top-rechts">
@@ -904,7 +940,7 @@
             <span class="lg lg-status"><i class="wartet"></i>wartet</span>
             <span class="lg lg-status"><i class="nicht"></i>eingestellt</span>
             <span class="lg lg-status"><i class="offen"></i>noch offen</span>
-            <span class="lg"><i class="lf"></i>Nominiert für Leitung</span>
+            <span class="lg"><i class="lf"></i>Für Leitungsportfolio nominiert</span>
           </div>
         </div>
         <div id="quittung" aria-live="polite"></div>
@@ -957,7 +993,7 @@
     <div id="tgInhalt"></div>
   </dialog>
 
-  <!-- Ansicht "Steuerungsrunde vorbereiten" (Sparring 11.08.). Sie steht im
+  <!-- Ansicht "Portfoliorunde vorbereiten" (Sparring 11.08.). Sie steht im
        Markup hinter Schritt 2, obwohl sie davor bedient wird: sichtbar ist immer
        nur eine Ansicht, und so bleibt die erste Fundstelle jeder gemeinsam
        genutzten Klasse (.konflikt, .of-zeile) die der Werkbank.
@@ -1019,13 +1055,13 @@
       </header>
 
       <section class="druck-block" id="druckLeitung">
-        <h2>Für Leitung nominiert</h2>
-        <p class="druck-block-hilfe">Eingeplant und für die Leitung nominiert, mit der Begründung der Abteilung. Ausgewählt wird im Haus.</p>
+        <h2>Für Leitungsportfolio nominiert</h2>
+        <p class="druck-block-hilfe">Eingeplant und für Leitungsportfolio nominiert, mit der Begründung der Abteilung. Ausgewählt wird im Haus.</p>
         <div id="druckLeitungListe"></div>
       </section>
 
       <section class="druck-block" id="druckFach">
-        <h2>Abteilungsportfolio</h2>
+        <h2>Restliches Abteilungsportfolio</h2>
         <p class="druck-block-hilfe">Eingeplant, die Abteilung steuert es selbst.</p>
         <div id="druckFachListe"></div>
       </section>
@@ -1360,13 +1396,12 @@
 
   // Wo das Vorhaben landet. Ergibt sich aus zwei getrennten Feldern: der Entscheidung
   // (eingeplant, wartet, eingestellt) und der Nominierung. Niemand wählt das direkt aus.
-  // "Leitungsportfolio" hieß der erste Bereich bis 18.08.: Das Wort gehört
-  // erst der späteren Auswahl durch StS und BM in der Stabs- und Hausansicht.
-  // In der Abteilungsansicht liegen dort nur Nominierungen, und genau das
-  // sagt der Name jetzt (N-03, 17.08.).
+  // "Leitungsportfolio" allein bleibt der späteren Auswahl durch BM und StS
+  // vorbehalten. "Für Leitungsportfolio nominiert" sagt, wofür nominiert
+  // wurde, ohne die Auswahl zu behaupten (Entscheidung 113, 20.08.).
   const PORTFOLIO = {
-    haus: 'Für Leitung nominiert',
-    fach: 'Abteilungsportfolio',
+    haus: 'Für Leitungsportfolio nominiert',
+    fach: 'Restliches Abteilungsportfolio',
     warte: 'Warteliste',
     nicht: 'Eingestellt',
     offen: 'Erst klären'
@@ -1384,7 +1419,7 @@
     if (wahl === 'wartet') return { wert: 'warte', satz: 'Wartet auf die benannte Bedingung, mit Wiedervorlage.' };
     if (wahl === 'nicht') return { wert: 'nicht', satz: 'Wird nicht weiterverfolgt, sichtbar ausgewiesen.' };
     if (IST_NOMINIERT(v.leitung)) {
-      return { wert: 'haus', satz: 'Eingeplant und für Leitung nominiert. Ausgewählt wird im Haus.' };
+      return { wert: 'haus', satz: 'Eingeplant und für Leitungsportfolio nominiert. Ausgewählt wird im Haus.' };
     }
     return { wert: 'fach', satz: 'Eingeplant, die Abteilung steuert es selbst.' };
   }
@@ -1418,7 +1453,19 @@
   // erst neu gebunden wird. Frei wird nur laufende Arbeit (Entscheidung 99);
   // bis 18.08. zaehlte hier nur das Einstellen, aber auch ein wartendes
   // laufendes Vorhaben setzt Kapazitaet frei, es bindet ja niemanden mehr.
-  function kapazitaet(liste, verfuegbar) {
+  // Seit Entscheidung 116 meint die Grenze die Gesamtkapazitaet: Das
+  // Tagesgeschaeft liegt als Sockel im Balken, Ueberhang und Freiraum rechnen
+  // deshalb auf gesamt (Sockel plus Eingeplantes), nicht mehr nur auf das
+  // Eingeplante. "gebunden" bleibt bewusst die reine Vorhaben-Summe, denn die
+  // Spaltensummen im Portfolio zeigen weiterhin nur Vorhaben.
+  // "vorher" ist die Referenzposition ohne die Warten- und Einstellen-
+  // Entscheidungen (Entscheidung 115, praezisiert nach Julias Review am
+  // 20.08.): gesamt plus alles, was diese Entscheidungen herausgenommen
+  // haben. So bleibt der Umriss beim Ziehen an derselben Stelle stehen,
+  // egal ob ein laufendes oder ein geplantes Vorhaben bewegt wird. Das Wort
+  // "frei" bleibt trotzdem allein der laufenden Arbeit vorbehalten
+  // (wirdFrei, Entscheidung 19): Der Umriss behauptet nichts, er erinnert.
+  function kapazitaet(liste, verfuegbar, tagesgeschaeft) {
     let gebunden = 0, wirdFrei = 0, nichtGebunden = 0, standOffen = 0;
     liste.forEach(v => {
       const wert = vzaeWert(v);
@@ -1431,13 +1478,19 @@
       if (v.laeuft === LAEUFT[1]) wirdFrei += wert;
       else nichtGebunden += wert;
     });
+    const tg = runde1(tagesgeschaeft > 0 ? tagesgeschaeft : 0);
+    const gesamt = runde1(gebunden + tg);
     return {
       gebunden: runde1(gebunden),
+      tagesgeschaeft: tg,
+      gesamt,
       wirdFrei: runde1(wirdFrei),
       nichtGebunden: runde1(nichtGebunden),
       standOffen: runde1(standOffen),
       verfuegbar: runde1(verfuegbar),
-      ueber: runde1(Math.max(0, gebunden - verfuegbar))
+      ueber: runde1(Math.max(0, gesamt - verfuegbar)),
+      frei: runde1(Math.max(0, verfuegbar - gesamt)),
+      vorher: runde1(gesamt + wirdFrei + nichtGebunden + standOffen)
     };
   }
 
@@ -1461,6 +1514,22 @@
       return wert + (Number.isFinite(zahl) && zahl > 0 ? zahl : 0);
     }, 0));
   }
+  // Entscheidung 116: Fehlt das Tagesgeschäft einzelner Referate, wird das
+  // geflaggt statt still verrechnet (dasselbe Ehrlichkeitsmuster wie "ohne
+  // Stand"). Fehlt heißt: Das Referat ist über Vorhaben oder Tagesgeschäfts-
+  // Zeilen bekannt, hat aber keinen brauchbaren VZÄ-Wert. Null ist eine
+  // vollwertige Angabe, nur Leeres oder Unlesbares fehlt.
+  function tagesgeschaeftFehlt(liste, zeilen) {
+    const angabe = new Map((zeilen || []).map(zeile => {
+      const zahl = parseFloat(String(zeile.vzae || '').replace(',', '.'));
+      return [zeile.referat, String(zeile.vzae || '').trim() !== '' && Number.isFinite(zahl) && zahl >= 0];
+    }));
+    const referate = [...new Set([
+      ...(liste || []).map(v => String(v.referat || '').trim()).filter(Boolean),
+      ...(zeilen || []).map(zeile => zeile.referat)
+    ])].sort((a, b) => a.localeCompare(b, 'de'));
+    return referate.filter(referat => !angabe.get(referat));
+  }
 
   // Der Einstieg in Schritt 1 darf nur behaupten, was aus den Daten folgt
   // (Entscheidung 61). Er rechnet die Kapazität nicht neu, er stellt zwei
@@ -1482,8 +1551,16 @@
     knapp: 'Mehr Vorhaben als Kapazität.',
     passt: 'Die Kapazität reicht. Passt auch das Portfolio?'
   };
-  function einstieg(liste, verfuegbar) {
+  // Seit Entscheidung 116 meint die Grenze die Gesamtkapazität, der Vergleich
+  // rechnet das Tagesgeschäft deshalb mit. Für die Ehrlichkeit gilt dieselbe
+  // Asymmetrie wie bei fehlenden VZÄ: Fehlende Tagesgeschäfts-Angaben machen
+  // die Summe nur kleiner, "knapp" bleibt also auch mit Lücken wahr, "passt"
+  // ist erst belegt, wenn nichts fehlt (tagesgeschaeftOffen zählt die
+  // Referate ohne Angabe, siehe tagesgeschaeftFehlt).
+  function einstieg(liste, verfuegbar, tagesgeschaeft, tagesgeschaeftOffen) {
     const offene = liste.filter(v => !istReif(v));
+    const tg = runde1(tagesgeschaeft > 0 ? tagesgeschaeft : 0);
+    const tgOffen = tagesgeschaeftOffen > 0 ? tagesgeschaeftOffen : 0;
     let bedarf = 0, ohneZahl = 0;
     liste.forEach(v => {
       // Eingestelltes kostet nichts mehr und darf den Bedarf nicht aufblähen
@@ -1496,8 +1573,8 @@
     let zustand;
     if (!liste.length) zustand = 'leer';
     else if (verfuegbar <= 0) zustand = 'unklar';
-    else if (bedarf > verfuegbar) zustand = 'knapp';
-    else if (ohneZahl > 0) zustand = 'unklar';
+    else if (runde1(bedarf + tg) > verfuegbar) zustand = 'knapp';
+    else if (ohneZahl > 0 || tgOffen > 0) zustand = 'unklar';
     else zustand = 'passt';
 
     // Bewusst keine wechselnde Primärhandlung (Revision in Entscheidung 62):
@@ -1507,7 +1584,8 @@
     return {
       zustand, kopf: EINSTIEG[zustand],
       gesamt: liste.length, reif: liste.length - offene.length,
-      offene, bedarf, ohneZahl
+      offene, bedarf, ohneZahl,
+      tagesgeschaeft: tg, tagesgeschaeftOffen: tgOffen
     };
   }
 
@@ -1666,11 +1744,12 @@
     return v;
   }
 
-  // Version 3 seit 18.08.: Der Wert "Leitungsportfolio" in der Spalte
-  // "Portfolio (abgeleitet)" heißt jetzt "Für Leitung nominiert" (N-03).
+  // Version 4 seit 20.08.: Die zwei Bereichsnamen in der Spalte
+  // "Portfolio (abgeleitet)" heißen jetzt "Für Leitungsportfolio nominiert"
+  // und "Restliches Abteilungsportfolio" (Entscheidung 113).
   // Werte dieser Spalte sind Teil des Exportvertrags, deshalb zählt die
   // Version hoch (gleiche Regel wie beim Spaltennamen, Entscheidung 91).
-  const SCHEMAVERSION = '3';
+  const SCHEMAVERSION = '4';
 
   function exportDatum(zeitpunkt) {
     const datum = zeitpunkt === undefined ? new Date() : new Date(zeitpunkt);
@@ -1829,7 +1908,17 @@
     return {
       v: 3,
       abteilung: 'Abteilung X',
-      verfuegbar: '42',
+      // Seit Entscheidung 116 meint die Grenze die Gesamtkapazität inklusive
+      // Tagesgeschäft: 49 VZÄ Vorhaben plus 26 VZÄ Tagesgeschäft bei Grenze
+      // 72 ergibt eine sichtbare, plausible Überbuchung von 3. X II 2 meldet
+      // absichtlich kein Tagesgeschäft, damit die Mangelmeldung in der Demo
+      // vorkommt (flaggen statt still verrechnen).
+      verfuegbar: '72',
+      tagesgeschaeft: [
+        { referat: 'X I 1', vzae: '9', gebundenDurch: 'Gremienbetreuung, Haushaltsaufstellung, IT-Betrieb' },
+        { referat: 'X I 3', vzae: '7', gebundenDurch: 'Presse- und Bürgeranfragen, interne Fortbildungen' },
+        { referat: 'X II 1', vzae: '10', gebundenDurch: 'Fachaufsicht, Länderabstimmungen, Berichtspflichten' }
+      ],
       // Altformat im Beispielstand: laden() migriert diesen Eintrag sofort zu
       // einem leeren Vorhaben und entfernt das Register.
       externe: [{ id: 'x1', name: 'Registermodernisierung des Bundes' }],
@@ -1841,7 +1930,7 @@
   // entsprechen, was man beim Einstieg sieht. abhAktivId ist bewusst vom
   // Entscheidungspanel getrennt: eine Kachel im Portfolio zeigt Beziehungen,
   // sie fordert keine Eingabe an und verändert die Scrollposition nicht.
-  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, abhAktivId = null, ziehId = null, klickNachZugId = null, quittung = null, quittungUhr = null, naechste = 1, lzReferat = 'alle', pfReferat = 'alle';
+  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, abhAktivId = null, ziehId = null, klickNachZugId = null, quittung = null, quittungUhr = null, belohnung = null, belohnungUhr = null, naechste = 1, lzReferat = 'alle', pfReferat = 'alle';
 
   function laden() {
     try {
@@ -2059,7 +2148,8 @@
   // Fingern wechselt, liest niemand, und sie behauptete zwischenzeitlich Dinge,
   // die nach dem nächsten Zeichen nicht mehr stimmen.
   function renderAuftakt() {
-    document.getElementById('auftaktKopf').textContent = einstieg(S.vorhaben, verfuegbarWert()).kopf;
+    const tg = tgLage();
+    document.getElementById('auftaktKopf').textContent = einstieg(S.vorhaben, verfuegbarWert(), tg.summe, tg.offen.length).kopf;
     // Beim Ankommen und in der Übersicht steht der Auftakt, beim Arbeiten am
     // Steckbrief tritt er zurück (Entscheidung 62). Sonst wäre er bei jedem
     // Besuch eine Fläche, die man wegscrollt. Zurück führt der Schriftzug oder
@@ -2073,22 +2163,31 @@
   // nichts aus der Anzahl der Vorhaben.
   function lageSatz(e, verfuegbar) {
     if (!e.gesamt) return e.kopf;
+    // Seit Entscheidung 116 zählt das Tagesgeschäft gegen die Gesamtkapazität
+    // und gehört deshalb in denselben Satz wie der Vorhaben-Bedarf.
+    const tg = e.tagesgeschaeft > 0 ? `, dazu kommen ${zahlText(e.tagesgeschaeft)} im Tagesgeschäft` : '';
     const zahlen = verfuegbar > 0
-      ? `Was nicht eingestellt ist, kostet zusammen ${zahlText(e.bedarf)} Vollzeitäquivalente, verfügbar sind ${zahlText(verfuegbar)}.`
+      ? `Was nicht eingestellt ist, kostet zusammen ${zahlText(e.bedarf)} Vollzeitäquivalente${tg}, verfügbar sind ${zahlText(verfuegbar)}.`
       : 'Eine Kapazität ist noch nicht gesetzt, ohne sie ist über Überbuchung nichts zu sagen.';
     // Fehlende Zahlen machen den Bedarf kleiner, nie größer. Das gehört dazu,
-    // sonst liest sich die Summe genauer, als sie ist.
+    // sonst liest sich die Summe genauer, als sie ist. Dieselbe Ehrlichkeit
+    // gilt für fehlendes Tagesgeschäft (Entscheidung 116: flaggen statt still
+    // verrechnen), das ist die Anmerkung für die Portfoliorunde.
     const luecke = e.ohneZahl
       ? ` Bei ${e.ohneZahl === 1 ? 'einem Vorhaben' : e.ohneZahl + ' Vorhaben'} fehlt die Zahl, der Bedarf liegt also höher.`
       : '';
-    return `${e.kopf} ${zahlen}${luecke}`;
+    const tgLuecke = e.tagesgeschaeftOffen
+      ? ` Für ${e.tagesgeschaeftOffen === 1 ? 'ein Referat' : e.tagesgeschaeftOffen + ' Referate'} fehlt das Tagesgeschäft, auch deshalb liegt die Lage höher.`
+      : '';
+    return `${e.kopf} ${zahlen}${luecke}${tgLuecke}`;
   }
 
   // Kopf der Vorbereiten-Sicht: links die Lage, rechts der Werkzettel, der bis
   // zum Sparring 11.08. im Auftakt von Schritt 1 stand. Die Lücken-Fußnote
   // behält ihre Mechanik und führt in den Steckbrief.
   function renderVorbereitenKopf() {
-    const e = einstieg(S.vorhaben, verfuegbarWert());
+    const tg = tgLage();
+    const e = einstieg(S.vorhaben, verfuegbarWert(), tg.summe, tg.offen.length);
     document.getElementById('vorbereitenLage').textContent = lageSatz(e, verfuegbarWert());
     const stand = document.getElementById('auftaktStand');
     stand.innerHTML = standHtml(e);
@@ -2373,36 +2472,63 @@
 
   /* ---------- Ansicht 2: Priorisieren ---------- */
 
+  // Der Stand des Tagesgeschäfts an einer Stelle: die Summe für die Rechnung
+  // (Entscheidung 116) und die Referate ohne Angabe für die Mangelmeldung.
+  function tgLage() {
+    const zeilen = tagesgeschaeftZeilen(S);
+    return { summe: tagesgeschaeftSumme(zeilen), offen: tagesgeschaeftFehlt(S.vorhaben, zeilen) };
+  }
+
+  // Gemeinsame Segmentgeometrie für Werkbankzeile und Druckansicht.
+  // Reihenfolge auf einer Zeitachse (Entscheidung 116): vorn das Tagesgeschäft
+  // als Sockel, dann das Eingeplante. Jenseits der Grenze ist alles Überzug in
+  // Kirsche, diesseits füllt Minze den Freiraum (Entscheidung 115). Der hohle
+  // Umriss ist die Referenzposition vor den Warten- und Einstellen-
+  // Entscheidungen; er überlagert den Freiraum, weil das Vorher dort endete.
+  // Kanten-Regel vom 20.08.: gerade Kanten, an jedem Übergang dieselbe kleine
+  // Lücke (2px), Rundung nur an den äußeren Balkenenden.
+  function kapSegmenteHtml(kap) {
+    const skala = Math.max(kap.gesamt, kap.vorher, kap.verfuegbar, 1);
+    const pct = wert => (wert / skala) * 100;
+    const teile = [];
+    const grauBis = Math.min(kap.tagesgeschaeft, kap.verfuegbar);
+    if (grauBis > 0) teile.push({ klasse: 'tg', von: 0, bis: grauBis });
+    const blauBis = Math.min(kap.gesamt, kap.verfuegbar);
+    if (blauBis > grauBis) teile.push({ klasse: 'gebunden', von: grauBis, bis: blauBis });
+    if (kap.gesamt > kap.verfuegbar) teile.push({ klasse: 'zuviel', von: kap.verfuegbar, bis: kap.gesamt });
+    else if (kap.frei > 0) teile.push({ klasse: 'luft', von: kap.gesamt, bis: kap.verfuegbar });
+    if (kap.vorher > kap.gesamt) teile.push({ klasse: 'vorher', von: kap.gesamt, bis: kap.vorher });
+    const html = teile.map(teil => {
+      const start = teil.von === 0 ? ' bd-start' : '';
+      const ende = Math.abs(teil.bis - skala) < 0.05 ? ' bd-ende' : '';
+      const luecke = teil.von === 0 ? '0px' : '2px';
+      return `<div class="bd-seg ${teil.klasse}${start}${ende}" style="left:calc(${pct(teil.von)}% + ${luecke}); width:calc(${pct(teil.bis - teil.von)}% - ${luecke})"></div>`;
+    }).join('');
+    return { html, skala, marke: pct(kap.verfuegbar), ende: pct(kap.gesamt) };
+  }
+
   function renderBudget() {
-    const kap = kapazitaet(S.vorhaben, verfuegbarWert());
-    const skala = Math.max(kap.gebunden, kap.verfuegbar, 1);
-    // Der gedeckte Teil und der Überhang sind zwei Segmente. Die Marke sitzt
-    // beim verfügbaren Wert, also genau an der Naht zwischen beiden. Sie heißt
-    // Grenze: "verfügbar" las sich wie ein Rest, obwohl die Zahl die
-    // Gesamtkapazität ist.
-    const gedeckt = Math.min(kap.gebunden, kap.verfuegbar);
-    const breiteGedeckt = (gedeckt / skala) * 100;
-    const breiteUeber = (kap.ueber / skala) * 100;
-    const marke = (kap.verfuegbar / skala) * 100;
-    // Die Einheit steht einmal in der Überschrift, danach nur noch Zahlen.
-    // Die Segmente tragen ihre Werte selbst: der Rechenweg stand vorher als
-    // Satz darunter ("Das ist eins zu viel"), und der las sich belehrend.
-    // "wird frei" und "bleiben ungebunden" sind gestrichen (Entscheidung 63):
-    // Dauerinventar, das bei jedem Blick mitgelesen werden musste und nichts
-    // entschied. Der fehlende Stand bleibt, aber als Mangelmeldung: er ist der
-    // einzige Hinweis darauf, dass die Rechnung an dieser Stelle unsicher ist,
-    // und er erscheint nur, wenn er zutrifft.
+    const tg = tgLage();
+    const kap = kapazitaet(S.vorhaben, verfuegbarWert(), tg.summe);
+    const geo = kapSegmenteHtml(kap);
+    // Die Marke sitzt beim verfügbaren Wert. Sie heißt Grenze: "verfügbar" las
+    // sich wie ein Rest, obwohl die Zahl die Gesamtkapazität ist.
+    // Zwei Mangelmeldungen, beide nur wenn sie zutreffen: der fehlende Stand
+    // (unsicher, ob etwas frei wird) und das fehlende Tagesgeschäft einzelner
+    // Referate (Entscheidung 116: flaggen statt still verrechnen). Die frühere
+    // Dauerzeile "wird aus laufender Arbeit frei" ist mit Entscheidung 115 in
+    // den Balken gewandert (Vorher-Umriss) und in die Kurzfassung.
     const standHinweis = kap.standOffen > 0
       ? `<p class="bd-stand"><b>${zahlText(kap.standOffen)} VZÄ ohne Stand.</b> Ob dabei etwas frei wird, ist offen: bei diesen Vorhaben fehlt die Angabe, ob sie schon laufen.</p>`
       : '';
-    // Die Veränderung steht als eigene Zeile unter dem Balken (Entscheidung
-    // 99): Der Balken zeigt die neue Lage zu einem Zeitpunkt, "wird frei" ist
-    // die Veränderung gegenüber dem vorherigen Stand. Beides in einem Stapel
-    // würde zwei Zeitpunkte addieren und bei Entlastung weiter Überbuchung
-    // zeigen.
-    const freiHinweis = kap.wirdFrei > 0
-      ? `<p class="bd-stand">Durch Warten und Einstellen werden <b>${zahlText(kap.wirdFrei)} VZÄ</b> aus laufender Arbeit frei.</p>`
+    const tgHinweis = tg.offen.length > 0
+      ? `<p class="bd-stand"><b>Das Tagesgeschäft von ${tg.offen.join(', ')} fehlt.</b> Die Gesamtlage liegt entsprechend höher, als die Leiste zeigt.</p>`
       : '';
+    const vorlesen = `Gebunden ${zahlText(kap.gesamt)} von ${zahlText(kap.verfuegbar)} Vollzeitäquivalenten`
+      + (kap.tagesgeschaeft > 0 ? `, davon ${zahlText(kap.tagesgeschaeft)} Tagesgeschäft` : '')
+      + (kap.ueber > 0 ? `, ${zahlText(kap.ueber)} über der Grenze` : '')
+      + (kap.wirdFrei > 0 ? `, ${zahlText(kap.wirdFrei)} aus laufender Arbeit frei geworden` : '')
+      + (kap.vorher > kap.gesamt ? `. Ohne die Warten- und Einstellen-Entscheidungen läge die Last bei ${zahlText(kap.vorher)}, dort endet der Umriss` : '');
 
     document.getElementById('budget').innerHTML = `
       <div class="bd-kopf">
@@ -2410,19 +2536,21 @@
         <span class="bd-eingabe">Die Abteilung hat<input type="text" inputmode="decimal" id="verfuegbar" value="${esc(S.verfuegbar)}" maxlength="6" aria-label="Verfügbare Vollzeitäquivalente"></span>
         <button class="textbtn blau bd-tg" type="button" id="tgOeffnen">Tagesgeschäft erfassen</button>
       </div>
-      <div class="bd-skala" role="img" aria-label="Gebunden ${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} Vollzeitäquivalenten${kap.ueber > 0 ? ', ' + zahlText(kap.ueber) + ' über der Grenze' : ''}">
-        <div class="bd-gedeckt" style="width:${breiteGedeckt}%"></div>
-        ${kap.ueber > 0 ? `<div class="bd-ueberhang" style="left:${marke}%; width:${breiteUeber}%"></div>` : ''}
-        ${gedeckt > 0 ? `<span class="bd-wert gedeckt" style="left:${breiteGedeckt / 2}%">${zahlText(gedeckt)}</span>` : ''}
-        ${kap.ueber > 0 ? `<span class="bd-wert ueber" style="left:${marke + breiteUeber / 2}%">+${zahlText(kap.ueber)}</span>` : ''}
-        <div class="bd-marke ${marke > 88 ? 'rechts' : ''}" style="left:${marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>
+      <div class="bd-skala" role="img" aria-label="${vorlesen}" title="${vorlesen}">
+        ${geo.html}
+        <div class="bd-marke ${geo.marke > 88 ? 'rechts' : ''}" style="left:${geo.marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>
+        ${belohnung ? `<span class="bd-belohnung" style="left:${Math.min(90, Math.max(10, geo.ende))}%">−${zahlText(belohnung)} VZÄ frei</span>` : ''}
       </div>
       `;
-    document.getElementById('bdStand').innerHTML = freiHinweis + standHinweis;
-    // Die Kurzfassung trägt die Zahlen, die vorher im Balken standen
+    document.getElementById('bdStand').innerHTML = standHinweis + tgHinweis;
+    // Die Kurzfassung trägt die Zahlen, die vorher im Balken standen. Die
+    // Einsparung steht bewusst nicht darin: Jeder Zusatz bricht die Zeile bei
+    // üblichen Breiten um, und die Leiste bleibt eine Zeile (Entscheidung 63).
+    // Die Einsparung trägt der Vorher-Umriss im Balken (Entscheidung 115),
+    // beziffert steht sie im Vorlesetext, im Skala-Tooltip und im Druck.
     document.getElementById('bdKurz').textContent = kap.ueber > 0
-      ? `${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} VZÄ, ${zahlText(kap.ueber)} zu viel`
-      : `${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} VZÄ gebunden`;
+      ? `${zahlText(kap.gesamt)} von ${zahlText(kap.verfuegbar)} VZÄ, ${zahlText(kap.ueber)} zu viel`
+      : `${zahlText(kap.gesamt)} von ${zahlText(kap.verfuegbar)} VZÄ gebunden`;
 
     const feld = document.getElementById('verfuegbar');
     feld.addEventListener('input', () => {
@@ -2550,7 +2678,7 @@
         ${zeile.gebundenDurch.trim() ? `<p>${esc(zeile.gebundenDurch)}</p>` : ''}
       </section>`).join('')}
       <section class="vs-block">
-        <p class="vs-leer">Die Summenkarte zählt noch nicht gegen die Kapazitätsgrenze. Ob die Grenze das Tagesgeschäft einschließt, ist als Bezugsgröße noch offen.</p>
+        <p class="vs-leer">Das Tagesgeschäft zählt gegen die Kapazitätsgrenze und liegt als Segment vorn in der Leiste: Die Grenze meint die Gesamtkapazität der Abteilung (Entscheidung 116).</p>
       </section>
       <div class="vs-fuss"><button class="btn primary" type="button" id="tgZurErfassung">Tagesgeschäft erfassen</button></div>
     </div>`;
@@ -2588,7 +2716,7 @@
       <button class="pt ${wahl} ${nominiert ? 'lf' : ''} ${v.id === aktivId ? 'aktiv' : ''}" type="button" data-kachel="${v.id}" title="${esc(korb)}${pflicht ? ' · ' + OFFENE_PFLICHT[pflicht].kurz : ''}">
         <span class="pt-name">${esc(v.name)}${pflicht ? `<span class="nur-vorlesen">, ${esc(OFFENE_PFLICHT[pflicht].kurz)}</span>` : ''}</span>
         ${zentralHinweis ? `<span class="pt-hinweis">${esc(zentralHinweis)}</span>` : ''}
-        ${nominiert ? '<span class="nur-vorlesen">Nominiert für Leitung</span>' : ''}
+        ${nominiert ? '<span class="nur-vorlesen">Für Leitungsportfolio nominiert</span>' : ''}
         ${ohneWiederholung ? '' : `<span class="pt-korb">${esc(korb)}</span>`}
         <span class="pt-foot">
           <span class="pt-foot-links">
@@ -2624,7 +2752,7 @@
     const nominierung = v.leitung === 'offen'
       ? 'Nominierung noch offen.'
       : IST_NOMINIERT(v.leitung)
-        ? 'Für Leitung nominiert. Ausgewählt wird im Haus.'
+        ? 'Für Leitungsportfolio nominiert. Ausgewählt wird im Haus.'
         : 'Nicht nominiert, die Abteilung steuert selbst.';
     wurzel.innerHTML = `<div class="vs-inhalt">
       <div class="vs-kopf">
@@ -2854,11 +2982,11 @@
       </div>` : '';
     const imKorb = korb => sortiert(S.vorhaben.filter(v => portfolio(v, S.vorhaben).wert === korb));
     const vzaeSumme = liste => liste.reduce((wert, v) => wert + vzaeWert(v), 0);
-    // Die Tagesgeschäftskarte (Entscheidung 100) liegt fest im
-    // Abteilungsportfolio: kein Vorhaben, nicht ziehbar, die Lupe zeigt die
-    // Aufgliederung nach Referaten. Ihre VZÄ zählen bewusst nicht in die
-    // Spaltensummen und nicht gegen die Grenze, solange die Bezugsgröße der
-    // Kapazität offen ist; die Lupe sagt das dazu.
+    // Die Tagesgeschäftskarte (Entscheidung 100) liegt fest im Bereich des
+    // restlichen Abteilungsportfolios: kein Vorhaben, nicht ziehbar, die Lupe
+    // zeigt die Aufgliederung nach Referaten. Ihre VZÄ zählen seit
+    // Entscheidung 116 gegen die Grenze (Sockel in der Leiste), aber weiterhin
+    // nicht in die Spaltensummen: Die Spalten zeigen nur Vorhaben.
     const tgZeilen = tagesgeschaeftZeilen(S);
     const tgSumme = tagesgeschaeftSumme(tgZeilen);
     const tgKarte = tgSumme > 0 ? `<div class="pt-wrap tg-wrap">
@@ -3114,16 +3242,36 @@
     const v = nachId(ziehId);
     ziehId = null;
     if (!v) return;
+    // Belohnung im Moment der Entscheidung (Entscheidung 115, Variante 5):
+    // Sie erscheint nur, wenn durch diesen Zug wirklich Kapazität aus
+    // laufender Arbeit frei wird, also wirdFrei steigt. Ein geplantes
+    // Vorhaben setzt nichts frei, es wird nur nicht gebunden (Entscheidung
+    // 19), und dafür gibt es keine Belohnung, das wäre gelogen.
+    const vorher = kapazitaet(S.vorhaben, verfuegbarWert(), tgLage().summe).wirdFrei;
     v.entscheidung = wahl;
     // Wer in die obere Zone zieht, nominiert fuer Leitung. Wer in die untere
     // Zone zieht, nimmt die Nominierung zurück. Die Begruendung bleibt
     // gespeichert, ein Zug zurück stellt sie wieder her.
     if (zone === 'haus' && !IST_NOMINIERT(v.leitung)) v.leitung = 'nominiert';
     if (zone === 'fach' && IST_NOMINIERT(v.leitung)) v.leitung = 'keine';
+    const delta = runde1(kapazitaet(S.vorhaben, verfuegbarWert(), tgLage().summe).wirdFrei - vorher);
+    if (delta > 0) belohnungFuer(delta);
     speichern();
     quittungFuer(v.id);
     mitFlug(renderPriorisieren);
     setTimeout(() => { if (klickNachZugId === v.id) klickNachZugId = null; }, 0);
+  }
+
+  // Die Belohnung lebt kurz und räumt sich selbst weg; sie blockiert nichts
+  // und wiederholt sich nicht beim nächsten Render.
+  function belohnungFuer(delta) {
+    belohnung = delta;
+    clearTimeout(belohnungUhr);
+    belohnungUhr = setTimeout(() => {
+      belohnung = null;
+      const pille = document.querySelector('.bd-belohnung');
+      if (pille) pille.remove();
+    }, 2700);
   }
 
   // Die Quittung steht am Raster und geht von selbst wieder weg. Was offen
@@ -3334,7 +3482,7 @@
     // Was der Zug kostet, steht in der Leiste, die jetzt stehen bleibt. Die
     // Quittung sagt nur noch, was gilt und was daran fehlt.
     box.innerHTML = `<p class="quittung">
-      <span class="qt-satz"><strong>${esc(v.name)}</strong> steht jetzt auf ${esc(ENTSCHEIDUNG[gewaehlt(v, S.vorhaben)])}${IST_NOMINIERT(v.leitung) && gewaehlt(v, S.vorhaben) === 'prio' ? ' und ist für Leitung nominiert' : ''}.</span>
+      <span class="qt-satz"><strong>${esc(v.name)}</strong> steht jetzt auf ${esc(ENTSCHEIDUNG[gewaehlt(v, S.vorhaben)])}${IST_NOMINIERT(v.leitung) && gewaehlt(v, S.vorhaben) === 'prio' ? ' und ist für Leitungsportfolio nominiert' : ''}.</span>
       ${pflicht ? `<button class="textbtn blau qt-tun" type="button" data-quittung="${v.id}">${esc(OFFENE_PFLICHT[pflicht].kurz.replace(' fehlt', ' ergänzen'))}</button>` : ''}
     </p>`;
     const knopf = box.querySelector('[data-quittung]');
@@ -3401,7 +3549,7 @@
     renderQuittung();
   }
 
-  /* ---------- Ansicht "Steuerungsrunde vorbereiten" (Sparring 11.08.) ---------- */
+  /* ---------- Ansicht "Portfoliorunde vorbereiten" (Sparring 11.08.) ---------- */
 
   // Die Ansicht baut sich bei jedem Aufruf frisch aus dem Zustand auf, wie die
   // anderen render-Funktionen auch. Kopf, Fragen, Ressourcenlücken,
@@ -3440,7 +3588,7 @@
 
   function renderDruck() {
     const liste = S.vorhaben;
-    document.getElementById('druckAbteilung').textContent = (S.abteilung || 'Abteilung') + ': Portfolio für die Steuerungsrunde';
+    document.getElementById('druckAbteilung').textContent = (S.abteilung || 'Abteilung') + ': Portfolio für die St-AL-Runde';
     document.getElementById('druckDatum').textContent = 'Stand ' + heuteText();
 
     const haus = liste.filter(v => portfolio(v, liste).wert === 'haus');
@@ -3453,7 +3601,7 @@
       : '<p class="druck-leer">Keine Nominierung gemeldet.</p>';
     document.getElementById('druckFachListe').innerHTML = fach.length
       ? fach.map(druckItemHtml).join('')
-      : '<p class="druck-leer">Kein Vorhaben im Abteilungsportfolio.</p>';
+      : '<p class="druck-leer">Kein Vorhaben im restlichen Abteilungsportfolio.</p>';
     document.getElementById('druckWarteListe').innerHTML = warte.length
       ? warte.map(v => druckKompaktZeile(v, 'wartet')).join('')
       : '<p class="druck-leer">Nichts wartet.</p>';
@@ -3461,21 +3609,23 @@
       ? nicht.map(v => druckKompaktZeile(v, 'nicht')).join('')
       : '<p class="druck-leer">Nichts eingestellt.</p>';
 
-    // Dieselbe Rechnung wie die Kapazitätsleiste in Schritt 2 (gebunden gegen
-    // Grenze), hier als eigene Zeile ohne die klebende Werkbank-Mechanik.
-    const kap = kapazitaet(liste, verfuegbarWert());
-    const skala = Math.max(kap.gebunden, kap.verfuegbar, 1);
-    const gedeckt = Math.min(kap.gebunden, kap.verfuegbar);
-    const breiteGedeckt = (gedeckt / skala) * 100;
-    const breiteUeber = (kap.ueber / skala) * 100;
-    const marke = (kap.verfuegbar / skala) * 100;
+    // Dieselbe Rechnung und dieselben Segmente wie die Kapazitätsleiste in
+    // Schritt 2 (Entscheidungen 115 und 116), hier als eigene Zeile ohne die
+    // klebende Werkbank-Mechanik. Die Einsparung steht in Minze-Text
+    // (Wertfarbe braucht die dunkle Stufe, Entscheidung 115).
+    const tgDruck = tgLage();
+    const kap = kapazitaet(liste, verfuegbarWert(), tgDruck.summe);
+    const geo = kapSegmenteHtml(kap);
+    const vorlesen = `Gebunden ${zahlText(kap.gesamt)} von ${zahlText(kap.verfuegbar)} Vollzeitäquivalenten`
+      + (kap.tagesgeschaeft > 0 ? `, davon ${zahlText(kap.tagesgeschaeft)} Tagesgeschäft` : '')
+      + (kap.ueber > 0 ? `, ${zahlText(kap.ueber)} über der Grenze` : '');
     document.getElementById('druckKapazitaet').innerHTML = `
-      <p class="druck-kap-zeile"><strong>${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} VZÄ gebunden</strong>${kap.ueber > 0 ? `, ${zahlText(kap.ueber)} über der Grenze` : ''}</p>
-      <div class="bd-skala" role="img" aria-label="Gebunden ${zahlText(kap.gebunden)} von ${zahlText(kap.verfuegbar)} Vollzeitäquivalenten${kap.ueber > 0 ? ', ' + zahlText(kap.ueber) + ' über der Grenze' : ''}">
-        <div class="bd-gedeckt" style="width:${breiteGedeckt}%"></div>
-        ${kap.ueber > 0 ? `<div class="bd-ueberhang" style="left:${marke}%; width:${breiteUeber}%"></div>` : ''}
-        <div class="bd-marke ${marke > 88 ? 'rechts' : ''}" style="left:${marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>
-      </div>`;
+      <p class="druck-kap-zeile"><strong>${zahlText(kap.gesamt)} von ${zahlText(kap.verfuegbar)} VZÄ gebunden</strong>${kap.tagesgeschaeft > 0 ? `, davon ${zahlText(kap.tagesgeschaeft)} Tagesgeschäft` : ''}${kap.ueber > 0 ? `, ${zahlText(kap.ueber)} über der Grenze` : ''}${kap.wirdFrei > 0 ? `, <span class="druck-frei">${zahlText(kap.wirdFrei)} aus laufender Arbeit frei geworden</span>` : ''}</p>
+      <div class="bd-skala" role="img" aria-label="${vorlesen}">
+        ${geo.html}
+        <div class="bd-marke ${geo.marke > 88 ? 'rechts' : ''}" style="left:${geo.marke}%"><b>Grenze: ${zahlText(kap.verfuegbar)}</b></div>
+      </div>
+      ${tgDruck.offen.length ? `<p class="druck-kap-zeile">Das Tagesgeschäft von ${esc(tgDruck.offen.join(', '))} fehlt, die Gesamtlage liegt entsprechend höher.</p>` : ''}`;
   }
 
   /* ---------- Rahmen ---------- */
