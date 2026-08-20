@@ -28,7 +28,7 @@ sed -e "s|\.\./\.\./\.\./Wirkungswerkstatt/site/assets/fonts/|assets/fonts/|g" \
 FAQ aktualisieren (aus `../mock/Entwürfe und Tests/faq.html`):
 
 ```bash
-sed -e "s|\.\./assets/fonts/|assets/fonts/|g" \
+sed -e "s|\.\./\.\./\.\./Wirkungswerkstatt/site/assets/fonts/|assets/fonts/|g" \
     -e 's|href="landing.html"|href="./"|g' \
     -e 's|href="\.\./portfolio-v3\.html"|href="werkzeug.html"|g' \
     "../mock/Entwürfe und Tests/faq.html" > faq.html
