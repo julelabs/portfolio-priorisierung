@@ -379,7 +379,7 @@
   /* Die Skala wächst mit dem verfügbaren Platz (Julias Review vom 20.08.):
      Mit Sockel, Marke, Überzug und Umriss braucht die Stückelung Breite,
      sonst ist hinter der Grenzlinie nichts mehr zu erkennen. */
-  .bd-skala { position: relative; height: 12px; border-radius: 4px; background: var(--lavendel);
+  .bd-skala { position: relative; height: 12px; border-radius: 4px; background: var(--weiss);
     order: 1; margin: 0; flex: 1 1 240px; min-width: 200px; max-width: 560px; }
   .bd-skala .bd-wert, .bd-marke b { display: none; }
   /* Segmente auf einer Zeitachse (Entscheidungen 115 und 116): Tagesgeschäft
@@ -387,14 +387,20 @@
      Kanten-Regel vom 20.08.: gerade Kanten an allen Übergängen (die Lücke
      rechnet kapSegmenteHtml), Rundung nur an den äußeren Balkenenden. */
   .bd-seg { position: absolute; top: 0; bottom: 0; transition: width .4s var(--ease), left .4s var(--ease); }
-  .bd-seg.tg { background: var(--blau-20); }
+  /* Sockel eine Stufe kräftiger als die Spaltenköpfe (Julias Wunsch vom
+     20.08. abends): Blau-20 stand dem leeren Umriss und dem Band zu nah.
+     Die Rangfolge bleibt: Sockel leiser als das Eingeplante in vollem Blau. */
+  .bd-seg.tg { background: var(--blau-40); }
   .bd-seg.gebunden { background: var(--blau); }
   .bd-seg.zuviel { background: var(--kirsche-text); }
   .bd-seg.luft { background: var(--minze); }
-  /* Der Umriss ist die Referenzposition vor den Warten- und Einstellen-
-     Entscheidungen (Entscheidung 115), er füllt nicht, er erinnert. Die
-     Mindestbreite hält die hohle Form auch bei kleiner Einsparung lesbar;
-     der genaue Wert steht im Tooltip und im Vorlesetext. */
+  /* Der Umriss ist die Referenzposition vom Start der Runde (Entscheidung
+     115, neu gefasst am 20.08. abends): anfangs liegt er auf dem Balkenende
+     und ist unsichtbar, beim Depriorisieren bleibt er stehen und zeigt als
+     ausgeleertes Glas, was seither herausgenommen wurde. Die leere Skala
+     ist deshalb weiß, nicht Lavendel: hohl soll hohl aussehen, und der
+     Sockel hebt sich davon ab. Die Mindestbreite hält die Form auch bei
+     kleiner Einsparung lesbar; der genaue Wert steht im Tooltip. */
   .bd-seg.vorher { background: transparent; border: 1.5px solid var(--blau-60); min-width: 7px; }
   .bd-seg.bd-start { border-radius: 4px 0 0 4px; }
   .bd-seg.bd-ende { border-radius: 0 4px 4px 0; }
@@ -1495,18 +1501,24 @@
   // deshalb auf gesamt (Sockel plus Eingeplantes), nicht mehr nur auf das
   // Eingeplante. "gebunden" bleibt bewusst die reine Vorhaben-Summe, denn die
   // Spaltensummen im Portfolio zeigen weiterhin nur Vorhaben.
-  // "vorher" ist die Referenzposition ohne die Warten- und Einstellen-
-  // Entscheidungen (Entscheidung 115, praezisiert nach Julias Review am
-  // 20.08.): gesamt plus alles, was diese Entscheidungen herausgenommen
-  // haben. So bleibt der Umriss beim Ziehen an derselben Stelle stehen,
-  // egal ob ein laufendes oder ein geplantes Vorhaben bewegt wird. Das Wort
-  // "frei" bleibt trotzdem allein der laufenden Arbeit vorbehalten
-  // (wirdFrei, Entscheidung 19): Der Umriss behauptet nichts, er erinnert.
-  function kapazitaet(liste, verfuegbar, tagesgeschaeft) {
-    let gebunden = 0, wirdFrei = 0, nichtGebunden = 0, standOffen = 0;
+  // "vorher" ist die Referenzposition des Umrisses (Entscheidung 115, neu
+  // gefasst am 20.08. abends): die Last, wie sie beim Start der Runde war.
+  // Der Umriss liegt anfangs genau auf dem Balkenende und bleibt dort
+  // stehen, während die Runde Vorhaben auf wartet und eingestellt setzt;
+  // der hohle Teil ist dann, was seit dem Start herausgenommen wurde. Ohne
+  // Rundenstart (start fehlt) gibt es keinen Umriss, vorher ist gesamt. Das
+  // Wort "frei" bleibt allein der laufenden Arbeit vorbehalten (wirdFrei,
+  // Entscheidung 19): Der Umriss behauptet nichts, er erinnert.
+  function kapazitaet(liste, verfuegbar, tagesgeschaeft, start) {
+    let gebunden = 0, wirdFrei = 0, nichtGebunden = 0, standOffen = 0, startGebunden = 0;
     liste.forEach(v => {
       const wert = vzaeWert(v);
       const wahl = gewaehlt(v, liste);
+      // Die Referenz rechnet mit der Entscheidung vom Rundenstart, aber mit
+      // den heutigen Zahlen: Ein Vorhaben, das die Runde nicht kannte, zählt
+      // so, wie es jetzt steht, und ändert den Abstand nicht.
+      const startWahl = start && Object.prototype.hasOwnProperty.call(start, v.id) ? start[v.id] : wahl;
+      if (startWahl === 'prio') startGebunden += wert;
       if (wahl === 'prio') { gebunden += wert; return; }
       if (wahl !== 'nicht' && wahl !== 'wartet') return;
       // Ohne Stand lässt sich nicht sagen, ob hier etwas frei wird oder nur
@@ -1527,8 +1539,18 @@
       verfuegbar: runde1(verfuegbar),
       ueber: runde1(Math.max(0, gesamt - verfuegbar)),
       frei: runde1(Math.max(0, verfuegbar - gesamt)),
-      vorher: runde1(gesamt + wirdFrei + nichtGebunden + standOffen)
+      vorher: start ? runde1(startGebunden + tg) : gesamt
     };
+  }
+
+  // Der Rundenstart (Julias Befund vom 20.08. abends): die wirksame
+  // Entscheidung je Vorhaben in dem Moment, in dem die Portfoliorunde das
+  // Bild zum ersten Mal sieht. Daraus rechnet kapazitaet() die
+  // Referenzposition des Umrisses.
+  function rundenstart(liste) {
+    const start = {};
+    liste.forEach(v => { start[v.id] = gewaehlt(v, liste); });
+    return start;
   }
 
   // Tagesgeschäft (Entscheidung 100): jedes Referat meldet einen VZÄ-Wert,
@@ -1905,6 +1927,10 @@
 
   const SPEICHER = 'portfolio-prio-v3';
   const SPEICHER_V2 = 'portfolio-prio-v2';
+  // Der Rundenstart lebt im Tab (sessionStorage): Er überlebt ein Neuladen
+  // mitten in der Runde und endet mit dem Tab. Eine Runde ist eine Sitzung
+  // am Bild, kein gespeicherter Zustand des Portfolios.
+  const RUNDE_SPEICHER = SPEICHER + '-runde';
 
   function beispieldaten() {
     const roh = [
@@ -2023,6 +2049,27 @@
   function speichern() {
     try { localStorage.setItem(SPEICHER, JSON.stringify(S)); } catch (fehler) { /* Privatmodus */ }
   }
+  // Rundenstart: beim ersten Blick aufs Bild festgehalten (renderBudget),
+  // danach unverändert, bis der Tab schließt oder die Beispieldaten
+  // zurückgesetzt werden. Ohne sessionStorage (Privatmodus, Datei) lebt er
+  // nur im Speicher der Seite.
+  let rundeStart = null;
+  function rundeStartLaden() {
+    try {
+      const roh = sessionStorage.getItem(RUNDE_SPEICHER);
+      if (roh) { const daten = JSON.parse(roh); if (daten && typeof daten === 'object') rundeStart = daten; }
+    } catch (fehler) { /* kein sessionStorage */ }
+  }
+  function rundeStartSetzen() {
+    if (rundeStart) return;
+    rundeStart = rundenstart(S.vorhaben);
+    try { sessionStorage.setItem(RUNDE_SPEICHER, JSON.stringify(rundeStart)); } catch (fehler) { /* kein sessionStorage */ }
+  }
+  function rundeStartLoeschen() {
+    rundeStart = null;
+    try { sessionStorage.removeItem(RUNDE_SPEICHER); } catch (fehler) { /* kein sessionStorage */ }
+  }
+  rundeStartLaden();
   const nachId = id => S.vorhaben.find(v => v.id === id) || null;
   const verfuegbarWert = () => {
     const zahl = parseFloat(String(S.verfuegbar || '').replace(',', '.'));
@@ -2566,7 +2613,8 @@
 
   function renderBudget() {
     const tg = tgLage();
-    const kap = kapazitaet(S.vorhaben, verfuegbarWert(), tg.summe);
+    rundeStartSetzen();
+    const kap = kapazitaet(S.vorhaben, verfuegbarWert(), tg.summe, rundeStart);
     const geo = kapSegmenteHtml(kap);
     // Die Marke sitzt beim verfügbaren Wert. Sie heißt Grenze: "verfügbar" las
     // sich wie ein Rest, obwohl die Zahl die Gesamtkapazität ist.
@@ -2585,7 +2633,7 @@
       + (kap.tagesgeschaeft > 0 ? `, davon ${zahlText(kap.tagesgeschaeft)} Tagesgeschäft` : '')
       + (kap.ueber > 0 ? `, ${zahlText(kap.ueber)} über der Grenze` : '')
       + (kap.wirdFrei > 0 ? `, ${zahlText(kap.wirdFrei)} aus laufender Arbeit frei geworden` : '')
-      + (kap.vorher > kap.gesamt ? `. Ohne die Warten- und Einstellen-Entscheidungen läge die Last bei ${zahlText(kap.vorher)}, dort endet der Umriss` : '');
+      + (kap.vorher > kap.gesamt ? `. Zu Beginn der Runde lag die Last bei ${zahlText(kap.vorher)}, dort endet der Umriss: seither ${zahlText(kap.vorher - kap.gesamt)} herausgenommen` : '');
 
     document.getElementById('budget').innerHTML = `
       <div class="bd-kopf">
@@ -3758,7 +3806,7 @@
     // klebende Werkbank-Mechanik. Die Einsparung steht in Minze-Text
     // (Wertfarbe braucht die dunkle Stufe, Entscheidung 115).
     const tgDruck = tgLage();
-    const kap = kapazitaet(liste, verfuegbarWert(), tgDruck.summe);
+    const kap = kapazitaet(liste, verfuegbarWert(), tgDruck.summe, rundeStart);
     const geo = kapSegmenteHtml(kap);
     const vorlesen = `Gebunden ${zahlText(kap.gesamt)} von ${zahlText(kap.verfuegbar)} Vollzeitäquivalenten`
       + (kap.tagesgeschaeft > 0 ? `, davon ${zahlText(kap.tagesgeschaeft)} Tagesgeschäft` : '')
@@ -3878,6 +3926,7 @@
       offenId = null;
       aktivId = null;
       abhAktivId = null;
+      rundeStartLoeschen();
       speichern();
       wechsle(ansicht);
     });
