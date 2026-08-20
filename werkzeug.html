@@ -55,14 +55,17 @@
   .brand .pg { color: var(--blau-20); font-weight: 600; }
   /* Leise Pille statt Minze-Fläche: das Abzeichen ist eine Fußnote, kein
      Feature, und Minze verliert damit eine ihrer zu vielen Bedeutungen. */
-  .mock-badge { font-family: var(--display); font-size: 12px; font-weight: 700; letter-spacing: .03em; color: var(--blau-20); background: transparent; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: 4px 10px; }
-  /* Zurück zur Startseite, im selben leisen Ton wie auf der FAQ-Seite. Der
-     Link zeigt sich nur, wenn das Werkzeug über http läuft: als einzelne
-     Datei auf SINA gibt es keine Startseite daneben, dort bliebe er ein
-     toter Klick. */
+  /* Das Prototyp-Abzeichen ist seit 20.08. raus (N-28, Julias Wunsch):
+     Das Werkzeug tritt als erste Version auf, nicht mehr als Prototyp. */
+  /* Der eigene Startseiten-Link ist seit 20.08. raus (Entscheidung 121):
+     Links oben zur Startseite ist das gelernte Muster, deshalb übernimmt der
+     Schriftzug diesen Weg, wo es eine Startseite gibt. Den Werkzeug-Rückweg
+     trägt stattdessen "Zur Übersicht" am offenen Steckbrief. */
   .top-rechts { display: flex; align-items: center; gap: 16px; }
-  .top-start { font-family: var(--display); font-size: 13.5px; font-weight: 600; color: var(--blau-20); text-decoration: none; }
-  .top-start:hover { color: var(--weiss); }
+  /* Leiser Rückweg aus dem offenen Steckbrief in die Übersicht (Entscheidung
+     121): Er ersetzt den Schriftzug als Werkzeug-Rückweg in Schritt 1. */
+  .sb-zurueck { display: inline-block; background: transparent; border: 0; cursor: pointer; font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--blau-60); padding: 0 0 10px; text-align: left; }
+  .sb-zurueck:hover { color: var(--blau); }
   /* Gleiche Hierarchie wie im Auftakt: der aktuelle Schritt ist eine klare
      Fläche, der Rückweg ein leiser Textknopf. Keine zweite Pillen-Navigation. */
   .schritte { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 20px; }
@@ -186,6 +189,12 @@
   .nav-neu .plus { font-size: 16px; font-weight: 800; line-height: 1; }
   .navfoot { margin: 0 0 10px; display: flex; flex-direction: column; gap: 8px; }
   .reife-legende { color: var(--fg-muted); font-size: 12.5px; margin-top: 12px; }
+  /* Zweiter Erfassungs-Einstieg (N-27): Das Tagesgeschäft ist kein Vorhaben
+     (Entscheidung 100) und steht deshalb über der Liste bei den Erfassungs-
+     Wegen, nicht in ihr. Leiser als "Vorhaben eintragen": ein Weg, keine
+     Konkurrenz, und die Haarlinie trennt ihn von den Vorhaben darunter. */
+  .nav-tg { display: block; width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--line); cursor: pointer; text-align: left; padding: 4px 10px 12px; margin-bottom: 8px; font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--blau-60); }
+  .nav-tg:hover { background: rgba(255,255,255,.6); color: var(--blau); }
   /* Freie Fläche in Schritt 1, solange kein Steckbrief offen ist. Seit
      Entscheidung 61 trägt sie keinen Stand und keine Aktion mehr, beides steht
      im Auftakt. Sie bleibt leise: eine Fläche, die ihren Zweck nennt. */
@@ -334,7 +343,24 @@
   .bf-titel { font-family: var(--display); font-weight: 700; font-size: 17px; color: var(--fg); }
   .bf-zahl { font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--kirsche-text); }
   .bf-hinweis { color: var(--fg-muted); font-size: 13.5px; }
+  /* Der Tab-Link öffnet die Vorbereiten-Sicht daneben (Entscheidung 122),
+     damit Portfolio und offene Punkte gleichzeitig sichtbar sein können. */
+  .bf-tab { margin-left: auto; font-family: var(--display); font-weight: 600; font-size: 12.5px; color: var(--fg-muted); text-decoration: none; }
+  .bf-tab:hover { color: var(--blau); text-decoration: underline; }
+  .briefing > summary::after { margin-left: 0; }
   .bf-koerper { padding: 0 clamp(18px, 2.4vw, 26px) clamp(18px, 2.2vw, 24px); }
+  /* Drei Kategorie-Karten mit Zählern (Entscheidung 122): erst der Klick auf
+     eine Karte zeigt ihre Punkte. Leere Karten bleiben gedimmt sichtbar. */
+  .bf-kacheln { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+  @media (max-width: 760px) { .bf-kacheln { grid-template-columns: 1fr; } }
+  .bf-kachel { display: flex; flex-direction: column; gap: 2px; text-align: left; background: var(--blau-10); border: 1px solid transparent; border-radius: 8px; padding: 12px 14px; cursor: pointer; }
+  .bf-kachel:hover { border-color: var(--blau-20); }
+  .bf-kachel.offen { background: var(--weiss); border-color: var(--blau); }
+  .bf-kachel.leer { cursor: default; opacity: .65; }
+  .bf-kachel .zahl { font-family: var(--display); font-weight: 800; font-size: 20px; color: var(--kirsche-text); font-variant-numeric: tabular-nums; }
+  .bf-kachel.leer .zahl { color: var(--fg-muted); }
+  .bf-kachel .wort { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg); }
+  .bf-kachel .unter { font-size: 12.5px; color: var(--fg-muted); line-height: 1.4; }
   .budget { color: var(--fg); }
   .bd-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
   .bd-titel { font-family: var(--display); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-2); }
@@ -550,7 +576,12 @@
      Fläche, nicht aus mehr Schriftgewicht: Versalien stehen bei 10,5px optisch
      schon so hoch wie der Vorhaben-Name in 13,5px Gemischtschrift. */
   .matrix.pf .pf-korb, .matrix.pf .pf-korb-leer { flex-basis: auto; width: calc(100% + 18px); margin: -9px -9px 8px; padding: 6px 10px; }
-  .matrix.pf .pf-korb { background: var(--lavendel); }
+  .matrix.pf .pf-korb { background: var(--lavendel); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Der Nominierungsrichtwert informiert, er quotiert nicht (Entscheidungen
+     114 und N-26, Wortlaut von Julia am 20.08.). Satzform statt Versalien,
+     damit er leiser spricht als das Band; bei Platznot wird er abgeschnitten,
+     die Zahl steht auch im Prosa-Hinweis der Nominierungen und in der FAQ. */
+  .pf-richtwert { text-transform: none; letter-spacing: normal; font-weight: 600; color: var(--fg-muted); margin-left: 10px; }
   /* Der Platzhalter der überspannenden Zellen muss so hoch sein wie das Band,
      sonst beginnt die erste Kachelzeile auf verschiedenen Höhen (Entscheidung
      47). Box-sizing ist border-box, also 15px Zeilenhöhe plus zweimal 6px
@@ -720,7 +751,8 @@
      Schatten und drei blaue Vollknöpfe, nicht durch dieses kleine Zeichen. Der
      negative Rand gleicht das Innenmaß aus, damit das Wort auf der Textkante
      der Zeile sitzt. Keine Umriss-Form: die bedeutet im Bild "wartet". */
-  .k-typ { display: inline-block; background: var(--lavendel); border-radius: 3px; padding: 2px 9px; margin: -2px 0 9px -9px; font-family: var(--display); font-size: 12px; font-weight: 700; line-height: 16px; color: var(--blau); }
+  /* Die Typ-Pille (Besprechen/Ausprobieren) ist mit Entscheidung 122 raus:
+     C wollte die Empfehlung unter dem Problem statt eines Etiketts darüber. */
   .konflikt .k-befund { font-family: var(--display); font-weight: 600; letter-spacing: -0.008em; color: var(--fg); font-size: 17px; line-height: 1.36; text-wrap: pretty; }
   .konflikt .k-befund strong { font-family: var(--display); font-weight: 700; }
   .konflikt .k-frage { color: var(--fg-2); font-size: 15px; line-height: 1.5; margin-top: 6px; text-wrap: pretty; }
@@ -825,8 +857,6 @@
     <button class="schritt" type="button" data-ansicht="priorisieren">Portfolio entscheiden</button>
   </nav>
   <div class="top-rechts">
-    <a class="top-start verborgen" id="zurStartseite" href="./">Startseite</a>
-    <div class="mock-badge">Prototyp v3</div>
   </div>
 </header>
 
@@ -877,6 +907,7 @@
           <input type="text" id="neuName" placeholder="Name des Vorhabens ..." autocomplete="off" aria-label="Name des neuen Vorhabens">
           <button class="btn minze" type="button" id="addBtn">Hinzufügen</button>
         </div>
+        <button class="nav-tg" type="button" id="tgSchritt1" title="Tagesgeschäft der Referate erfassen">Tagesgeschäft erfassen</button>
         <div id="nav"></div>
         <p class="reife-legende" id="reifeLegende"></p>
       </div>
@@ -895,16 +926,22 @@
     <!-- Das Briefing steht vor der Werkbank und ist einklappbar (Entscheidung 63).
          Der Klappzustand ist der Moduswechsel: aufgeklappt für eine Runde, die
          kalt ankommt, zugeklappt für alle, die im Vorgang schon drin sind. -->
+    <!-- Seit 20.08. (N-23, C's Feedback, Entscheidung 122) zeigt das
+         aufgeklappte Briefing drei Kategorie-Karten mit Zählern statt einer
+         Textliste; erst der Klick auf eine Karte öffnet deren Punkte. Der
+         Link daneben öffnet die Vorbereiten-Sicht in einem eigenen Tab,
+         damit Portfolio und offene Punkte nebeneinander passen. -->
     <details class="briefing" id="briefing">
       <summary>
         <span class="bf-titel">Bevor ihr entscheidet</span>
         <span class="bf-zahl" id="briefingZahl"></span>
-        <span class="bf-hinweis">Fragen, die vor der Entscheidung geklärt sein sollten</span>
+        <span class="bf-hinweis">Was vor der Entscheidung geklärt sein sollte</span>
+        <a class="bf-tab" id="briefingTab" href="#vorbereiten" target="_blank" rel="noopener">In eigenem Tab öffnen</a>
       </summary>
       <div class="bf-koerper">
-        <section class="spalte fragen-spalte" aria-labelledby="konflikteTitel">
-          <h3 id="konflikteTitel"></h3>
-          <div class="arbeitsflaeche" id="konflikte"></div>
+        <div class="bf-kacheln" id="bfKacheln"></div>
+        <section class="spalte fragen-spalte">
+          <div class="arbeitsflaeche" id="bfListe" hidden></div>
         </section>
       </div>
     </details>
@@ -1624,12 +1661,16 @@
   // Information, die Frage ihre Deutung, Entscheidung 50) und traegt einen
   // Typ als Wort: "besprechen" braucht die Runde, "ausprobieren" laedt ein,
   // im Bild zu experimentieren. Keine Farbcodes, die Ampel bleibt draussen.
-  function konflikte(liste, verfuegbar) {
+  // Seit Entscheidung 116 rechnet auch die Konfliktprüfung mit der
+  // Gesamtkapazität: Ohne das Tagesgeschäft meldete sie "passt", während die
+  // Leiste Überbuchung zeigte (Fund beim Briefing-Umbau, Entscheidung 122).
+  function konflikte(liste, verfuegbar, tagesgeschaeft) {
     const punkte = [];
-    const kap = kapazitaet(liste, verfuegbar);
+    const kap = kapazitaet(liste, verfuegbar, tagesgeschaeft);
 
     if (kap.ueber > 0) {
       punkte.push({
+        kategorie: 'kapazitaet',
         typ: 'ausprobieren',
         // Die Zahlen stehen schon in der Leiste oben, hier nur die Konsequenz
         befund: 'Die Kapazität reicht nicht für alles, was eingeplant ist.',
@@ -1640,6 +1681,7 @@
     const gestoppt = liste.filter(v => gewaehlt(v, liste) === 'nicht');
     if (kap.ueber > 0 && gestoppt.length === 0) {
       punkte.push({
+        kategorie: 'kapazitaet',
         typ: 'besprechen',
         befund: 'Kein einziges Vorhaben steht auf "eingestellt", obwohl die Kapazität nicht reicht.',
         frage: 'Was legt ihr weg?'
@@ -1666,6 +1708,7 @@
         const zustand = gewaehlt(anderer, liste);
         if (zustand !== 'wartet' && zustand !== 'nicht') return;
         punkte.push({
+          kategorie: 'abhaengigkeiten',
           typ: 'besprechen',
           befund: `"${prio.name}" ist eingeplant, hängt aber zusammen mit "${anderer.name}" (${ENTSCHEIDUNG[zustand]}).`,
           frage: 'Soll das so bleiben?',
@@ -1679,6 +1722,7 @@
       const zahl = verknuepfungsZahl(v, liste);
       if (zahl < 3 || gewaehlt(v, liste) !== 'nicht' || portfolio(v, liste).wert === 'offen') return;
       punkte.push({
+        kategorie: 'abhaengigkeiten',
         typ: 'besprechen',
         befund: `"${v.name}" ist eingestellt, ${zahl} Vorhaben hängen mit daran.`,
         frage: 'Bleibt das so?',
@@ -1690,6 +1734,7 @@
     const entschieden = liste.filter(v => gewaehlt(v, liste) !== 'offen');
     if (entschieden.length >= 4 && entschieden.every(v => gewaehlt(v, liste) === 'prio')) {
       punkte.push({
+        kategorie: 'kapazitaet',
         typ: 'besprechen',
         befund: `Alle ${entschieden.length} Vorhaben sind eingeplant. Ein Portfolio, das nichts weglässt, ist eine Liste.`,
         frage: 'Welche zwei würdet ihr streichen, wenn ihr müsstet?'
@@ -1710,7 +1755,11 @@
     // feuerte fast immer und wurde zu Rauschen. Im Bild bleiben leere
     // Bahnen sichtbar (Entscheidung 20), dort ist die Lücke Information.
 
-    return punkte.slice(0, 4);
+    // Der Vier-Meldungen-Deckel (Entscheidung 11) sitzt seit Entscheidung 122
+    // nicht mehr hier, sondern nur an der flachen Liste der Vorbereiten-
+    // Sicht: Die Kategorie-Karten des Briefings dosieren selbst, und ihre
+    // Zähler müssen stimmen, sonst schneidet der Deckel still Punkte weg.
+    return punkte;
   }
 
   function hinweisAnhaengen(v, text) {
@@ -1930,7 +1979,7 @@
   // entsprechen, was man beim Einstieg sieht. abhAktivId ist bewusst vom
   // Entscheidungspanel getrennt: eine Kachel im Portfolio zeigt Beziehungen,
   // sie fordert keine Eingabe an und verändert die Scrollposition nicht.
-  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, abhAktivId = null, ziehId = null, klickNachZugId = null, quittung = null, quittungUhr = null, belohnung = null, belohnungUhr = null, naechste = 1, lzReferat = 'alle', pfReferat = 'alle';
+  let S, ansicht = 'erfassen', sicht = 'portfolio', offenId = null, aktivId = null, abhAktivId = null, ziehId = null, klickNachZugId = null, quittung = null, quittungUhr = null, belohnung = null, belohnungUhr = null, briefingKategorie = null, naechste = 1, lzReferat = 'alle', pfReferat = 'alle';
 
   function laden() {
     try {
@@ -2214,6 +2263,7 @@
     const nominiert = IST_NOMINIERT(v.leitung);
 
     wurzel.innerHTML = `<div class="steckbrief">
+      <button class="sb-zurueck" type="button" id="sbZurueck">‹ Zur Übersicht</button>
       <div class="sb-kopf">
         <input class="sb-titel" type="text" id="titel" value="${esc(v.name)}" maxlength="90" aria-label="Name des Vorhabens">
         <span class="sb-schritt">Steckbrief</span>
@@ -2384,6 +2434,13 @@
       // Beim Tippen bleibt der Auftakt stehen, beim Verlassen des Feldes zieht
       // er nach: das ist die abgeschlossene Eingabe, ab der eine neue Aussage hält.
       if (el.tagName !== 'SELECT') el.addEventListener('change', renderStand);
+    });
+    // Der Rückweg am Steckbrief (Entscheidung 121): Der Schriftzug gehört
+    // jetzt der Startseite, wo es eine gibt, also braucht der Steckbrief
+    // seinen eigenen Weg zurück in die Übersicht.
+    document.getElementById('sbZurueck').addEventListener('click', () => {
+      offenId = null;
+      wechsle('erfassen');
     });
     const titel = document.getElementById('titel');
     titel.addEventListener('input', () => {
@@ -2649,11 +2706,14 @@
     const zu = () => {
       dialog.close();
       if (ansicht === 'priorisieren') renderPriorisieren();
+      // Seit N-27 gibt es den Einstieg auch in Schritt 1: dort liest die
+      // Auftakt-Überschrift das Tagesgeschäft mit (Entscheidung 116).
+      if (ansicht === 'erfassen') renderStand();
     };
     wurzel.querySelector('.vs-schliessen').addEventListener('click', zu);
     document.getElementById('tgFertig').addEventListener('click', zu);
     dialog.onclick = event => { if (event.target === dialog) zu(); };
-    dialog.oncancel = () => { setTimeout(() => { if (ansicht === 'priorisieren') renderPriorisieren(); }, 0); };
+    dialog.oncancel = () => { setTimeout(() => { if (ansicht === 'priorisieren') renderPriorisieren(); if (ansicht === 'erfassen') renderStand(); }, 0); };
     if (!dialog.open) dialog.showModal();
   }
 
@@ -3012,7 +3072,7 @@
       // setzt zusätzlich die Nominierung (Entscheidung 78).
       const zone = korb === 'haus' ? 'haus' : (korb === 'fach' ? 'fach' : '');
       return `<div class="mx-zelle ${spalte === 3 ? 'pf-gebunden' : ''}" role="cell" data-wahl="${wahl}"${zone ? ` data-zone="${zone}"` : ''}${spannt ? ' aria-rowspan="2"' : ''} style="grid-column:${spalte}; grid-row:${zeile}${spannt ? ' / span 2' : ''}">
-        ${label ? `<span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))} VZÄ</span>` : '<span class="pf-korb-leer" aria-hidden="true"></span>'}
+        ${label ? `<span class="pf-korb">${esc(label)} · ${zahlText(vzaeSumme(drin))} VZÄ${korb === 'haus' ? '<span class="pf-richtwert">StS und BM wählen hausweit ca. 8 bis 10 Vorhaben</span>' : ''}</span>` : '<span class="pf-korb-leer" aria-hidden="true"></span>'}
         ${korb === 'fach' ? tgKarte : ''}
         ${drin.map(v => kachel(v, true)).join('')}</div>`;
     };
@@ -3389,7 +3449,6 @@
     });
   }
 
-  const K_TYP = { besprechen: 'Besprechen', ausprobieren: 'Ausprobieren' };
   const FRAGEN_TITEL = ['Keine offenen Fragen', 'Eine Frage für die Runde', 'Zwei Fragen für die Runde', 'Drei Fragen für die Runde', 'Vier Fragen für die Runde'];
 
   // Ein Vorhaben im Bild aufschlagen: das passiert immer in Schritt 2, weil dort
@@ -3402,47 +3461,132 @@
     document.getElementById('entscheidPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  function renderKonflikte() {
-    const punkte = konflikte(S.vorhaben, verfuegbarWert());
-    // Derselbe Titel an beiden Orten: in Schritt 2 unter der Klappzeile, in der
-    // Vorbereiten-Sicht offen unter der Überschrift (Sparring 11.08.).
-    document.getElementById('konflikteTitel').textContent = FRAGEN_TITEL[punkte.length];
-    document.getElementById('vbKonflikteTitel').textContent = FRAGEN_TITEL[punkte.length];
-    // Die Zahl steht in der zugeklappten Zeile, sonst wäre der Block wieder
-    // unsichtbar, nur an anderer Stelle (Entscheidung 63).
-    document.getElementById('briefingZahl').textContent = punkte.length
-      ? (punkte.length === 1 ? '1 Frage' : punkte.length + ' Fragen')
-      : 'nichts offen';
-    // Der Befund zuerst, die Frage darunter (Entscheidung 50): das Vorhaben
-    // ist die Information, die Frage ihre Deutung. Die Namen tragen Gewicht.
+  // Die Punkte der Kategorie "Fehlende Informationen" (N-23): unreife
+  // Steckbriefe, offene Pflichten, fehlender Stand und fehlendes
+  // Tagesgeschäft. Jede Zeile trägt ihre Handlung als Empfehlung unter dem
+  // Problem (C's Wunsch, Entscheidung 122).
+  function fehlendeInfos() {
+    const punkte = [];
+    S.vorhaben.filter(v => !istReif(v)).forEach(v => punkte.push({
+      befund: `"${v.name}" ist noch nicht entscheidungsreif.`,
+      frage: `Es ${lueckenVerb(v)} ${lueckenText(v)}.`,
+      namen: [v.name], oeffneId: v.id, knopf: 'Steckbrief ergänzen'
+    }));
+    S.vorhaben.forEach(v => {
+      const pflicht = offenePflicht(v);
+      if (!pflicht) return;
+      punkte.push({
+        befund: `Bei "${v.name}" gilt: ${OFFENE_PFLICHT[pflicht].kurz}.`,
+        frage: OFFENE_PFLICHT[pflicht].frage,
+        namen: [v.name], vId: v.id, knopf: OFFENE_PFLICHT[pflicht].kurz.replace(' fehlt', ' ergänzen')
+      });
+    });
+    const tg = tgLage();
+    const kap = kapazitaet(S.vorhaben, verfuegbarWert(), tg.summe);
+    if (kap.standOffen > 0) punkte.push({
+      befund: `${zahlText(kap.standOffen)} VZÄ ohne Stand.`,
+      frage: 'Bei diesen Vorhaben fehlt die Angabe, ob sie schon laufen; ob etwas frei wird, ist deshalb offen.'
+    });
+    if (tg.offen.length) punkte.push({
+      befund: `Das Tagesgeschäft von ${tg.offen.join(', ')} fehlt.`,
+      frage: 'Die Gesamtlage liegt entsprechend höher, als die Leiste zeigt.',
+      tagesgeschaeft: true, knopf: 'Tagesgeschäft erfassen'
+    });
+    return punkte;
+  }
+
+  const BF_KATEGORIEN = [
+    { key: 'kapazitaet', wort: 'Kapazität', unter: 'Passt, was eingeplant ist?' },
+    { key: 'abhaengigkeiten', wort: 'Abhängigkeiten', unter: 'Verknüpfungen mit widersprüchlichen Entscheidungen' },
+    { key: 'infos', wort: 'Fehlende Informationen', unter: 'Unvollständige Steckbriefe und offene Pflichten' }
+  ];
+
+  // Eine Zeile je Punkt: der Befund führt, die Frage deutet, die Handlung
+  // steht als Empfehlung darunter. Die Typ-Pille aus Entscheidung 50 ist mit
+  // Entscheidung 122 raus (C's Wunsch: die Empfehlung unter dem Problem
+  // statt eines Etiketts darüber).
+  function punkteHtml(punkte) {
     const fett = p => {
       let html = esc(p.befund);
       (p.namen || []).forEach(name => { html = html.split(esc(name)).join(`<strong>${esc(name)}</strong>`); });
       return html;
     };
-    const html = punkte.length
-      ? punkte.map(p => `<article class="konflikt">
-          <p class="k-typ">${K_TYP[p.typ]}</p>
+    return punkte.map(p => `<article class="konflikt">
           <p class="k-befund">${fett(p)}</p>
           <p class="k-frage">${esc(p.frage)}</p>
-          ${p.vId
-            ? `<button class="textbtn k-zum" type="button" data-zum="${p.vId}">Zum Vorhaben</button>`
-            : `<button class="textbtn k-zum" type="button" data-portfolio>${p.typ === 'ausprobieren' ? 'Im Portfolio ausprobieren' : 'Im Portfolio prüfen'}</button>`}
-        </article>`).join('')
+          ${p.oeffneId
+            ? `<button class="textbtn k-zum" type="button" data-steckbrief="${p.oeffneId}">${esc(p.knopf)}</button>`
+            : p.vId
+            ? `<button class="textbtn k-zum" type="button" data-zum="${p.vId}">${esc(p.knopf || 'Zum Vorhaben')}</button>`
+            : p.tagesgeschaeft
+            ? `<button class="textbtn k-zum" type="button" data-tagesgeschaeft>${esc(p.knopf)}</button>`
+            : p.typ
+            ? `<button class="textbtn k-zum" type="button" data-portfolio>${p.typ === 'ausprobieren' ? 'Im Portfolio ausprobieren' : 'Im Portfolio prüfen'}</button>`
+            : ''}
+        </article>`).join('');
+  }
+
+  function punkteVerdrahten(wurzel) {
+    wurzel.querySelectorAll('[data-zum]').forEach(el =>
+      el.addEventListener('click', () => zumVorhabenImBild(el.dataset.zum)));
+    wurzel.querySelectorAll('[data-portfolio]').forEach(el => el.addEventListener('click', () => {
+      if (ansicht !== 'priorisieren') wechsle('priorisieren');
+      sichtWechseln('portfolio');
+      document.getElementById('bildKoerper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }));
+    wurzel.querySelectorAll('[data-steckbrief]').forEach(el => el.addEventListener('click', () => {
+      offenId = el.dataset.steckbrief;
+      wechsle('erfassen');
+    }));
+    wurzel.querySelectorAll('[data-tagesgeschaeft]').forEach(el => el.addEventListener('click', tgErfassenOeffnen));
+  }
+
+  function renderKonflikte() {
+    const punkte = konflikte(S.vorhaben, verfuegbarWert(), tgLage().summe);
+    // Die Vorbereiten-Sicht behält ihre offene Liste (Sparring 11.08.). Das
+    // Briefing über dem Portfolio gruppiert dieselben Punkte seit N-23 in
+    // Kategorien, siehe renderBriefing.
+    // Der Deckel von vier Meldungen (Entscheidung 11) gilt hier weiter: Die
+    // flache Liste soll kein Nörgel-Dashboard werden. Die Kategorien im
+    // Briefing zeigen dagegen alles, dort dosiert die Aufteilung selbst.
+    const gedeckelt = punkte.slice(0, 4);
+    document.getElementById('vbKonflikteTitel').textContent = FRAGEN_TITEL[gedeckelt.length];
+    const wurzel = document.getElementById('vbKonflikte');
+    wurzel.innerHTML = gedeckelt.length
+      ? punkteHtml(gedeckelt)
       : '<p class="ruhig">Das Gesamtbild passt zu dem, was ihr eingetragen habt.</p>';
-    // Dieselben Fragen in beiden Ansichten, aus einer Quelle gebaut und in
-    // beiden gleich bedienbar (Sparring 11.08.).
-    ['konflikte', 'vbKonflikte'].forEach(id => {
-      const wurzel = document.getElementById(id);
-      wurzel.innerHTML = html;
-      wurzel.querySelectorAll('[data-zum]').forEach(el =>
-        el.addEventListener('click', () => zumVorhabenImBild(el.dataset.zum)));
-      wurzel.querySelectorAll('[data-portfolio]').forEach(el => el.addEventListener('click', () => {
-        if (ansicht !== 'priorisieren') wechsle('priorisieren');
-        sichtWechseln('portfolio');
-        document.getElementById('bildKoerper').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }));
-    });
+    punkteVerdrahten(wurzel);
+    renderBriefing(punkte);
+  }
+
+  // Das Briefing zeigt drei Kategorie-Karten mit Zählern, erst der Klick auf
+  // eine Karte zeigt deren Punkte (Entscheidung 122). Karten ohne Punkte
+  // bleiben gedimmt sichtbar: Ihr Schweigen ist Information (Entscheidung 12).
+  function renderBriefing(punkte) {
+    const je = {
+      kapazitaet: punkte.filter(p => p.kategorie === 'kapazitaet'),
+      abhaengigkeiten: punkte.filter(p => p.kategorie === 'abhaengigkeiten'),
+      infos: fehlendeInfos()
+    };
+    const gesamt = je.kapazitaet.length + je.abhaengigkeiten.length + je.infos.length;
+    document.getElementById('briefingZahl').textContent = gesamt
+      ? (gesamt === 1 ? '1 offener Punkt' : gesamt + ' offene Punkte')
+      : 'nichts offen';
+    if (briefingKategorie && !je[briefingKategorie].length) briefingKategorie = null;
+    document.getElementById('bfKacheln').innerHTML = BF_KATEGORIEN.map(k => `
+      <button class="bf-kachel${je[k.key].length ? '' : ' leer'}${briefingKategorie === k.key ? ' offen' : ''}" type="button" data-kategorie="${k.key}"${je[k.key].length ? '' : ' disabled'}>
+        <span class="zahl">${je[k.key].length}</span>
+        <span class="wort">${k.wort}</span>
+        <span class="unter">${je[k.key].length ? k.unter : 'nichts offen'}</span>
+      </button>`).join('');
+    document.querySelectorAll('#bfKacheln .bf-kachel').forEach(el => el.addEventListener('click', () => {
+      briefingKategorie = briefingKategorie === el.dataset.kategorie ? null : el.dataset.kategorie;
+      renderKonflikte();
+    }));
+    const liste = document.getElementById('bfListe');
+    liste.hidden = !briefingKategorie;
+    liste.innerHTML = briefingKategorie ? punkteHtml(je[briefingKategorie]) : '';
+    if (briefingKategorie) punkteVerdrahten(liste);
   }
 
   function renderLeitungsfaelle() {
@@ -3664,14 +3808,28 @@
   function start() {
     laden();
     document.getElementById('brandAbt').textContent = ' · ' + (S.abteilung || 'Abteilung');
-    // Nur auf der gehosteten Site gibt es eine Startseite (siehe CSS-Kommentar)
-    if (location.protocol === 'http:' || location.protocol === 'https:') {
-      document.getElementById('zurStartseite').classList.remove('verborgen');
-    }
-    // Beides führt zurück in die Übersicht von Schritt 1, also auch aus einem
-    // offenen Steckbrief heraus: dort steht der Auftakt wieder (Entscheidung 62).
+    // Links oben führt zur Startseite, das ist das gelernte Muster
+    // (Entscheidung 121, revidiert die Schriftzug-Regel aus Entscheidung 40).
+    // Eine Startseite gibt es nur auf der gehosteten Site; als Datei (SINA)
+    // und auf SharePoint bleibt der Schriftzug der Rückweg in die Übersicht,
+    // dort führte "./" sonst in die Ordneransicht. Den Werkzeug-Rückweg aus
+    // dem offenen Steckbrief trägt seitdem "Zur Übersicht" am Steckbrief.
+    const hatStartseite = location.hostname === 'julelabs.github.io';
     const zurUebersicht = () => { offenId = null; wechsle('erfassen'); };
-    document.getElementById('brandHome').addEventListener('click', zurUebersicht);
+    const brand = document.getElementById('brandHome');
+    brand.title = hatStartseite ? 'Zur Startseite' : 'Zurück zu Schritt 1';
+    brand.addEventListener('click', () => {
+      if (hatStartseite) { location.href = './'; return; }
+      zurUebersicht();
+    });
+    document.getElementById('tgSchritt1').addEventListener('click', tgErfassenOeffnen);
+    // Der Tab-Link sitzt in der Klappzeile des Briefings: Ohne preventDefault
+    // würde der Klick zusätzlich das Briefing auf- oder zuklappen.
+    document.getElementById('briefingTab').addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      window.open(document.getElementById('briefingTab').href, '_blank', 'noopener');
+    });
     document.querySelectorAll('.schritt').forEach(el => el.addEventListener('click', () => {
       if (el.dataset.ansicht === 'erfassen') zurUebersicht(); else wechsle(el.dataset.ansicht);
     }));
