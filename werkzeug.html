@@ -62,6 +62,12 @@
      Schriftzug diesen Weg, wo es eine Startseite gibt. Den Werkzeug-Rückweg
      trägt stattdessen "Zur Übersicht" am offenen Steckbrief. */
   .top-rechts { display: flex; align-items: center; gap: 16px; }
+  /* Weg zur FAQ (Julias Entscheidung 21.08. nach dem Design-Critic-Durchgang):
+     Das Werkzeug hatte keinen. Leise gesetzt, in der Tonlage der Schritt-Knöpfe,
+     ohne Minze: Eine Anwendung schickt niemanden weg, sie hält den Ausgang nur
+     auffindbar. Steht nur, wo es die Site gibt, siehe hatStartseite. */
+  .top-link { font-family: var(--display); font-size: 13.5px; font-weight: 600; color: var(--blau-20); text-decoration: none; }
+  .top-link:hover { color: var(--weiss); text-decoration: underline; text-underline-offset: 3px; }
   /* Leiser Rückweg aus dem offenen Steckbrief in die Übersicht (Entscheidung
      121): Er ersetzt den Schriftzug als Werkzeug-Rückweg in Schritt 1. */
   .sb-zurueck { display: inline-block; background: transparent; border: 0; cursor: pointer; font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--blau-60); padding: 0 0 10px; text-align: left; }
@@ -69,10 +75,17 @@
   /* Gleiche Hierarchie wie im Auftakt: der aktuelle Schritt ist eine klare
      Fläche, der Rückweg ein leiser Textknopf. Keine zweite Pillen-Navigation. */
   .schritte { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 20px; }
-  .schritt { background: transparent; border: 0; border-bottom: 1px solid rgba(255,255,255,.3); border-radius: 0; cursor: pointer; font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--blau-20); padding: 0 0 3px; }
-  .schritt:hover { color: var(--weiss); border-color: var(--weiss); }
-  .schritt[aria-current="true"] { background: var(--minze); border: 0; border-radius: 6px; color: var(--dunkel); font-weight: 800; padding: 9px 16px; }
-  .schritt[aria-current="true"]:hover { background: var(--minze-40); }
+  /* Der aktive Schritt trug bis zum 22.08. eine gefüllte Minze-Fläche
+     (Entscheidung 68). Seit die Leiste auch in Schritt 1 steht, träfe sie dort
+     auf den Minze-Knopf des Auftakts, und zwei große Minze-Flächen auf einem
+     Bildschirm sind zu viel (Julias Befund). Die Leiste ist Orientierung, kein
+     Angebot: Sie bekommt deshalb dieselbe leise Behandlung wie das Menü auf
+     Startseite und FAQ, weißer Text mit einem kleinen Minze-Punkt darunter.
+     Minze bleibt damit im Kopf die eine Farbe für den Weg nach vorn. */
+  .schritt { position: relative; background: transparent; border: 0; border-radius: 0; cursor: pointer; font-family: var(--display); font-size: 13.5px; font-weight: 500; color: #A9A7D4; padding: 4px 0; }
+  .schritt:hover { color: var(--weiss); }
+  .schritt[aria-current="true"] { color: var(--weiss); font-weight: 700; }
+  .schritt[aria-current="true"]::after { content: ""; position: absolute; left: 50%; bottom: -5px; width: 4px; height: 4px; border-radius: 50%; background: var(--minze); transform: translateX(-50%); }
   @media (max-width: 820px) {
     .schritte { position: static; transform: none; flex-basis: 100%; justify-content: center; order: 3; }
   }
@@ -83,7 +96,7 @@
      bleiben: Wer das Werkzeug täglich benutzt, soll keinen Hero wegscrollen.
      Minze trägt hier ausschließlich der Knopf. Er ist die eine Handlung, und
      als einziger gesättigter Punkt im Bild braucht er keine Erklärung. */
-  .auftakt { background: var(--dunkel); color: var(--weiss); padding: clamp(24px, 3.2vw, 38px) clamp(16px, 4vw, 40px) clamp(24px, 3vw, 34px); position: relative; overflow: hidden; }
+  .auftakt { background: var(--dunkel); color: var(--weiss); padding: clamp(20px, 2.4vw, 30px) clamp(16px, 4vw, 40px) clamp(20px, 2.2vw, 28px); position: relative; overflow: hidden; }
   /* Ein einzelner sehr weicher Verlauf, sonst liest sich die Fläche als Balken.
      Kein Raster: das versprach eine Strategieplattform, die das Werkzeug nicht
      fortführt. Der Verlauf trägt keine Information und darf nichts verdecken. */
@@ -164,11 +177,64 @@
   .anriss p { color: var(--fg-2); font-size: 15.5px; }
 
   /* Ansicht 1: Erfassen */
-  .erfassen { display: grid; grid-template-columns: 268px minmax(0, 1fr); gap: clamp(18px, 2.6vw, 32px); align-items: start; }
-  .nav-sp { position: sticky; top: 16px; }
+  /* Schritt 1 hat zwei Zustände (R1, Julias Entscheidung 22.08.). Bei der
+     Ankunft ist die Liste die Seite: volle Breite, echte Spalten, kein leerer
+     Steckbrief-Platzhalter. Erst die Auswahl teilt die Fläche in Schiene und
+     Steckbrief. Vorher war die größte Fläche der Ankunft eine leere Karte,
+     während die Liste bei festen 268px die Hälfte der Titel abschnitt. */
+  .erfassen { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(18px, 2.6vw, 32px); align-items: start; }
+  .erfassen.hat-offen { grid-template-columns: 320px minmax(0, 1fr); }
+  .nav-sp { position: static; }
+  .erfassen.hat-offen .nav-sp { position: sticky; top: 16px; }
   /* Unter dieser Breite reicht der Platz nicht für zwei Spalten, sonst
      schrumpft der Steckbrief auf Fingerbreite zusammen. */
-  @media (max-width: 760px) { .erfassen { grid-template-columns: 1fr; } .nav-sp { position: static; } }
+  @media (max-width: 760px) { .erfassen.hat-offen { grid-template-columns: 1fr; } .erfassen.hat-offen .nav-sp { position: static; } }
+
+  /* Ankunft: Titel links, die zwei konstanten Wege rechts daneben. Sie heißen
+     weiter wie überall sonst (Entscheidung 62), sie stehen nur nicht mehr
+     untereinander in einer schmalen Spalte. */
+  .erfassen:not(.hat-offen) .nav-sp { display: grid; grid-template-columns: 1fr auto auto; gap: 0 16px; max-width: 980px;
+    grid-template-areas: "kopf neu tg" "form form form" "liste liste liste" "leg leg leg"; align-items: center; }
+  .erfassen:not(.hat-offen) .nav-kopf { grid-area: kopf; margin-bottom: 0; }
+  .erfassen:not(.hat-offen) .nav-neu { grid-area: neu; width: auto; margin-bottom: 0; }
+  /* Das Anlegen-Feld war in der schmalen Spalte ein kompakter Stapel. Über die
+     volle Breite wurde daraus ein riesiger Minze-Balken neben dem Minze-Knopf
+     im Auftakt (Julias Befund 22.08.). Es bleibt eine Zeile mit Maß: Feld
+     flexibel, Knopf so breit wie sein Wort. */
+  .erfassen:not(.hat-offen) #neuForm { grid-area: form; margin: 10px 0 0; flex-direction: row; align-items: center; max-width: 460px; }
+  .erfassen:not(.hat-offen) #neuForm input { flex: 1; min-width: 0; }
+  .erfassen:not(.hat-offen) #neuForm .btn { flex: none; padding: 9px 16px; font-size: 14px; }
+  .erfassen:not(.hat-offen) .nav-tg { grid-area: tg; width: auto; border-bottom: 0; padding: 11px 10px; margin-bottom: 0; }
+  .erfassen:not(.hat-offen) #nav { grid-area: liste; margin-top: 12px; }
+  .erfassen:not(.hat-offen) .reife-legende { grid-area: leg; }
+
+  /* Die Zeile der Ankunft. Leer heißt fertig: Wo in der letzten Spalte nichts
+     steht, fehlt am Steckbrief nichts. Das Auge sucht deshalb nach Text, nicht
+     nach Farbe, und die Liste bleibt ruhig. */
+  .vzeile { display: grid; grid-template-columns: 16px minmax(200px, 2.1fr) 92px 80px 84px minmax(150px, 1.5fr);
+    gap: 14px; align-items: center; width: 100%; text-align: left; background: transparent; border: 0;
+    border-bottom: 1px solid var(--line); padding: 13px 10px; }
+  button.vzeile { cursor: pointer; }
+  button.vzeile:hover { background: rgba(255,255,255,.7); }
+  button.vzeile:hover .vz-name { color: var(--blau); }
+  .vz-kopf { border-bottom: 1.5px solid var(--blau-20); padding-top: 0; padding-bottom: 9px; }
+  .vz-kopf span { font-family: var(--display); font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); }
+  .vz-name { font-family: var(--display); font-weight: 700; font-size: 14.5px; color: var(--fg); line-height: 1.3; }
+  .vz-ref, .vz-stand { font-size: 13px; color: var(--fg-muted); }
+  .vz-bedarf { font-size: 13px; color: var(--fg-muted); text-align: right; }
+  .vz-kopf .vz-bedarf { text-align: right; }
+  /* Etwas Luft nach links, sonst klebt die Lückenspalte an der rechtsbündigen Bedarfszahl. */
+  .vz-fehlt { font-size: 13px; color: var(--fg-2); line-height: 1.35; padding-left: 12px; }
+  /* Schmaler: die drei Nebenspalten treten weg, Name und was fehlt bleiben. */
+  @media (max-width: 1000px) {
+    .vzeile { grid-template-columns: 16px minmax(0, 1.6fr) minmax(0, 1.2fr); }
+    .vz-ref, .vz-stand, .vz-bedarf { display: none; }
+  }
+
+  /* In der Schiene bricht der Name um, statt abgeschnitten zu werden. */
+  .erfassen.hat-offen .nav-item { align-items: flex-start; }
+  .erfassen.hat-offen .nav-name { white-space: normal; overflow: visible; text-overflow: clip; }
+  .erfassen.hat-offen .reife { margin-top: 5px; }
   .nav-kopf { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 8px; }
   .nav-item { display: flex; align-items: center; gap: 9px; width: 100%; background: transparent; border: 0; border-radius: 6px; cursor: pointer; text-align: left; padding: 11px 10px; margin-bottom: 2px; }
   .nav-item:hover { background: rgba(255,255,255,.6); }
@@ -195,14 +261,6 @@
      Konkurrenz, und die Haarlinie trennt ihn von den Vorhaben darunter. */
   .nav-tg { display: block; width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--line); cursor: pointer; text-align: left; padding: 4px 10px 12px; margin-bottom: 8px; font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--blau-60); }
   .nav-tg:hover { background: rgba(255,255,255,.6); color: var(--blau); }
-  /* Freie Fläche in Schritt 1, solange kein Steckbrief offen ist. Seit
-     Entscheidung 61 trägt sie keinen Stand und keine Aktion mehr, beides steht
-     im Auftakt. Sie bleibt leise: eine Fläche, die ihren Zweck nennt. */
-  .frei-kopf { font-family: var(--display); font-size: 17px; font-weight: 700; color: var(--fg-2); margin-bottom: 7px; }
-  .frei-text { color: var(--fg-muted); font-size: 14.5px; line-height: 1.5; max-width: 54ch; }
-  /* Die Fläche behält ihre Höhe, auch wenn sie leer ist: sonst liest sie sich
-     als abgerissener Zettel, und das Öffnen eines Steckbriefs wäre ein Sprung. */
-  .sb-frei { min-height: clamp(240px, 34vh, 360px); }
 
   .steckbrief { background: var(--weiss); border-radius: 8px; box-shadow: 0 18px 44px rgba(13,12,43,.06); padding: clamp(20px, 2.6vw, 30px); }
   .sb-kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 4px; }
@@ -863,6 +921,7 @@
     <button class="schritt" type="button" data-ansicht="priorisieren">Portfolio entscheiden</button>
   </nav>
   <div class="top-rechts">
+    <a class="top-link verborgen" id="faqLink" href="faq.html">FAQ</a>
   </div>
 </header>
 
@@ -1705,7 +1764,7 @@
       punkte.push({
         kategorie: 'kapazitaet',
         typ: 'besprechen',
-        befund: 'Kein einziges Vorhaben steht auf "eingestellt", obwohl die Kapazität nicht reicht.',
+        befund: 'Kein einziges Vorhaben steht auf „eingestellt“, obwohl die Kapazität nicht reicht.',
         frage: 'Was legt ihr weg?'
       });
     }
@@ -1732,7 +1791,7 @@
         punkte.push({
           kategorie: 'abhaengigkeiten',
           typ: 'besprechen',
-          befund: `"${prio.name}" ist eingeplant, hängt aber zusammen mit "${anderer.name}" (${ENTSCHEIDUNG[zustand]}).`,
+          befund: `„${prio.name}“ ist eingeplant, hängt aber zusammen mit „${anderer.name}“ (${ENTSCHEIDUNG[zustand]}).`,
           frage: 'Soll das so bleiben?',
           namen: [prio.name, anderer.name],
           vId: prio.id
@@ -1746,7 +1805,7 @@
       punkte.push({
         kategorie: 'abhaengigkeiten',
         typ: 'besprechen',
-        befund: `"${v.name}" ist eingestellt, ${zahl} Vorhaben hängen mit daran.`,
+        befund: `„${v.name}“ ist eingestellt, ${zahl} Vorhaben hängen mit daran.`,
         frage: 'Bleibt das so?',
         namen: [v.name],
         vId: v.id
@@ -2083,12 +2142,39 @@
 
   /* ---------- Ansicht 1: Erfassen ---------- */
 
+  // Die Ankunft zeigt die Spalten, die Schritt 1 braucht; die Schiene neben dem
+  // offenen Steckbrief bleibt kompakt. Beide Fassungen tragen denselben
+  // Reifepunkt und öffnen dasselbe Vorhaben.
+  function vzeileHtml(v) {
+    const stand = v.laeuft === LAEUFT[1] ? 'läuft' : v.laeuft === LAEUFT[2] ? 'geplant' : '';
+    const bedarf = String(v.vzae || '').trim() ? zahlText(vzaeWert(v)) + ' VZÄ' : '';
+    const fehlt = luecken(v);
+    const vorlesen = fehlt.length ? `, es fehlt ${lueckenText(v)}` : ', Steckbrief vollständig';
+    return `<button class="vzeile" type="button" data-nav="${v.id}" aria-label="${esc(v.name)}${esc(vorlesen)}">
+      <span class="reife ${fehlt.length ? 'entwurf' : 'fertig'}"></span>
+      <span class="vz-name">${esc(v.name)}</span>
+      <span class="vz-ref">${esc(v.referat || '')}</span>
+      <span class="vz-stand">${stand}</span>
+      <span class="vz-bedarf">${esc(bedarf)}</span>
+      <span class="vz-fehlt">${fehlt.length ? esc(fehlt.join(', ')) : ''}</span>
+    </button>`;
+  }
+
   function renderNav() {
-    document.getElementById('nav').innerHTML = S.vorhaben.map(v => `
-      <button class="nav-item" type="button" data-nav="${v.id}" aria-current="${v.id === offenId}" title="${esc(v.name)}">
+    const wurzel = document.getElementById('nav');
+    if (!S.vorhaben.length) {
+      wurzel.innerHTML = '<p class="lane-leer">Noch kein Vorhaben.</p>';
+    } else if (offenId) {
+      wurzel.innerHTML = S.vorhaben.map(v => `
+      <button class="nav-item" type="button" data-nav="${v.id}" aria-current="${v.id === offenId}">
         <span class="reife ${istReif(v) ? 'fertig' : 'entwurf'}"></span>
         <span class="nav-name">${esc(v.name)}</span>
-      </button>`).join('') || '<p class="lane-leer">Noch kein Vorhaben.</p>';
+      </button>`).join('');
+    } else {
+      wurzel.innerHTML = `<div class="vzeile vz-kopf" aria-hidden="true">
+          <span></span><span>Vorhaben</span><span>Referat</span><span>Stand</span><span class="vz-bedarf">Bedarf</span><span>Was fehlt</span>
+        </div>` + S.vorhaben.map(vzeileHtml).join('');
+    }
     document.getElementById('nav').querySelectorAll('[data-nav]').forEach(el => el.addEventListener('click', () => {
       offenId = el.dataset.nav;
       renderErfassen();
@@ -2098,7 +2184,9 @@
     }));
     // Der Zähler steht seit Entscheidung 53 auf der freien Fläche, hier bliebe
     // er doppelt. Was der Punkt bedeutet, sagt die Legende weiter.
-    document.getElementById('reifeLegende').textContent = 'Gefüllter Punkt heißt: Steckbrief vollständig.';
+    document.getElementById('reifeLegende').textContent = offenId
+      ? 'Gefüllter Punkt heißt: Steckbrief vollständig.'
+      : 'Gefüllter Punkt heißt: Steckbrief vollständig. Wo rechts nichts steht, fehlt nichts.';
   }
 
   // Der Balken zeigt Bestandteile und Summe in einem. Die Zahl steht nie allein
@@ -2177,24 +2265,6 @@
     </div>`;
   }
 
-  // Die freie Fläche in Schritt 1, solange kein Steckbrief offen ist. Sie liegt
-  // auf derselben weißen Fläche wie der Steckbrief, damit die Ansicht beim
-  // Öffnen nicht springt und kein zweites Kartenmuster entsteht.
-  // Stand der Erfassung und die nächste Handlung stehen seit Entscheidung 61
-  // im Auftakt, hier stünden sie ein zweites Mal. Diese Fläche sagt jetzt nur,
-  // was sie ist. Der Weg zu einem einzelnen Vorhaben bleibt die Liste links.
-  function steckbriefLeer() {
-    // Ohne Vorhaben gibt es links nichts zu wählen, dann darf die Fläche nicht
-    // darauf verweisen
-    const text = S.vorhaben.length
-      ? 'Wählt links ein Vorhaben, oder tragt über "Vorhaben eintragen" eines ein. Sechs kurze Blöcke pro Vorhaben, und nichts davon entscheidet schon etwas.'
-      : 'Sobald das erste Vorhaben angelegt ist, führt diese Fläche durch sechs kurze Blöcke. Nichts davon entscheidet schon etwas.';
-    return `<div class="steckbrief sb-frei">
-      <p class="frei-kopf">Hier öffnet sich der Steckbrief</p>
-      <p class="frei-text">${text}</p>
-    </div>`;
-  }
-
   // Der Stand der Erfassung als Werkzettel (Entscheidung 62): drei Zeilen, die
   // sagen, wo die Abteilung mit dem Ausfüllen steht. Die konkrete Lücke steht
   // darunter als leise Fußnote und führt weiter, bestimmt den Auftakt aber nicht:
@@ -2205,7 +2275,7 @@
     const erstes = e.offene[0];
     const rest = offen - 1;
     const fuss = offen
-      ? `<button class="z-fuss" type="button" data-oeffne="${erstes.id}">Bei "${esc(erstes.name)}" ${lueckenVerb(erstes)} ${esc(lueckenText(erstes))}.${rest ? ` Und bei ${rest === 1 ? 'einem weiteren Vorhaben' : rest + ' weiteren Vorhaben'} noch etwas.` : ''}</button>`
+      ? `<button class="z-fuss" type="button" data-oeffne="${erstes.id}">Bei „${esc(erstes.name)}“ ${lueckenVerb(erstes)} ${esc(lueckenText(erstes))}.${rest ? ` Und bei ${rest === 1 ? 'einem weiteren Vorhaben' : rest + ' weiteren Vorhaben'} noch etwas.` : ''}</button>`
       : '<p class="z-fuss" style="cursor:default">Alle Steckbriefe sind vollständig.</p>';
     return `<p class="z-kopf">Stand der Erfassung</p>
       <div class="z-reihe"><span class="z-t">Vorhaben in der Abteilung</span><span class="z-w">${e.gesamt}</span></div>
@@ -2304,7 +2374,10 @@
     const wurzel = document.getElementById('steckbrief');
     const v = nachId(offenId);
     if (!v) {
-      wurzel.innerHTML = steckbriefLeer();
+      // Bei der Ankunft steht hier nichts mehr (R1, 22.08.). Der Platzhalter
+      // "Hier öffnet sich der Steckbrief" war die größte Fläche der Seite und
+      // sagte, dass sie leer ist. Die Liste daneben nimmt jetzt die Breite.
+      wurzel.innerHTML = '';
       return;
     }
     const nominiert = IST_NOMINIERT(v.leitung);
@@ -2526,7 +2599,7 @@
       renderErfassen();
     }));
     document.getElementById('loeschen').addEventListener('click', () => {
-      if (!confirm(`"${v.name}" wirklich entfernen?`)) return;
+      if (!confirm(`„${v.name}“ wirklich entfernen?`)) return;
       S.vorhaben = S.vorhaben.filter(eintrag => eintrag.id !== v.id);
       // Verweise auf das entfernte Vorhaben gehen mit, sonst zeigen Chips ins Leere
       S.vorhaben.forEach(x => { x.haengtAn = (x.haengtAn || []).filter(a => !(a.typ === 'v' && a.id === v.id)); });
@@ -2569,6 +2642,7 @@
   }
 
   function renderErfassen() {
+    document.querySelector('.erfassen').classList.toggle('hat-offen', !!nachId(offenId));
     renderStand();
     renderNav();
     renderSteckbrief();
@@ -3516,7 +3590,7 @@
   function fehlendeInfos() {
     const punkte = [];
     S.vorhaben.filter(v => !istReif(v)).forEach(v => punkte.push({
-      befund: `"${v.name}" ist noch nicht entscheidungsreif.`,
+      befund: `„${v.name}“ ist noch nicht entscheidungsreif.`,
       frage: `Es ${lueckenVerb(v)} ${lueckenText(v)}.`,
       namen: [v.name], oeffneId: v.id, knopf: 'Steckbrief ergänzen'
     }));
@@ -3524,7 +3598,7 @@
       const pflicht = offenePflicht(v);
       if (!pflicht) return;
       punkte.push({
-        befund: `Bei "${v.name}" gilt: ${OFFENE_PFLICHT[pflicht].kurz}.`,
+        befund: `Bei „${v.name}“ gilt: ${OFFENE_PFLICHT[pflicht].kurz}.`,
         frage: OFFENE_PFLICHT[pflicht].frage,
         namen: [v.name], vId: v.id, knopf: OFFENE_PFLICHT[pflicht].kurz.replace(' fehlt', ' ergänzen')
       });
@@ -3833,7 +3907,15 @@
     // Druckansicht ist kein vierter Schritt (Entscheidung 82) und hat ihre
     // eigene, nicht druckbare Leiste, die Schritt-Navigation bleibt also auch
     // hier verborgen.
-    document.getElementById('schrittNav').classList.toggle('verborgen', ansicht === 'erfassen' || ansicht === 'druck');
+    // Seit 22.08. steht die Leiste auch in Schritt 1 (Julias Entscheidung,
+    // revidiert Entscheidung 68 vom 10.08., die sie dort ausgeblendet hatte).
+    // Das Argument von damals war, der Auftakt zeige dieselben zwei Wege schon
+    // groß. Es trug nur zur Hälfte: Über den Auftakt erreicht man Schritt 1 und
+    // Schritt 3, die Portfoliorunde dazwischen war von der Startansicht des
+    // Werkzeugs aus gar nicht erreichbar. Seit die Ankunft eine Arbeitsseite
+    // mit Liste ist (R1), fehlte dort außerdem jede Orientierung.
+    // In der Druckansicht bleibt sie weg, die ist zum Ausdrucken.
+    document.getElementById('schrittNav').classList.toggle('verborgen', ansicht === 'druck');
     document.getElementById('ansicht-erfassen').classList.toggle('verborgen', ansicht !== 'erfassen');
     // Der Auftakt gehört zu Schritt 1 und liegt außerhalb der Bühne, also muss
     // er hier mitgeschaltet werden. In Schritt 1 entscheidet renderAuftakt
@@ -3863,9 +3945,16 @@
     // dort führte "./" sonst in die Ordneransicht. Den Werkzeug-Rückweg aus
     // dem offenen Steckbrief trägt seitdem "Zur Übersicht" am Steckbrief.
     const hatStartseite = location.hostname === 'julelabs.github.io';
+    // Der Weg zur FAQ steht dort, wo eine FAQ danebenliegt: auf der Site und
+    // seit dem 22.08. auch lokal, weil Startseite, FAQ und Werkzeug jetzt
+    // zusammen im Ordner mock/ liegen. Als verteilte Einzeldatei (SINA,
+    // SharePoint) liegt nichts daneben, dann bliebe der Link tot und weg.
+    const faqNebenan = hatStartseite
+      || (location.protocol === 'file:' && location.pathname.includes('/mock/'));
     const zurUebersicht = () => { offenId = null; wechsle('erfassen'); };
     const brand = document.getElementById('brandHome');
     brand.title = hatStartseite ? 'Zur Startseite' : 'Zurück zu Schritt 1';
+    document.getElementById('faqLink').classList.toggle('verborgen', !faqNebenan);
     brand.addEventListener('click', () => {
       if (hatStartseite) { location.href = './'; return; }
       zurUebersicht();

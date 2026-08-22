@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portfolio-Priorisierung · Steuern in vier Situationen</title>
-<meta name="description" content="Ein Werkzeug für Abteilungen mit mehr Vorhaben als Kapazität: erfassen, aktualisieren, Steuerungsrunde vorbereiten, entscheiden. Transparente Wenn-dann-Regeln statt Punktzahlen.">
+<meta name="description" content="Ein Werkzeug für Abteilungen mit mehr Vorhaben als Kapazität: erfassen, aktualisieren, Portfoliorunde vorbereiten, entscheiden. Transparente Wenn-dann-Regeln statt Punktzahlen.">
 <style>
   @font-face {
     font-family: 'Open Sans';
@@ -37,10 +37,15 @@
   /* ---------- Kopfleiste ---------- */
   nav.top { background: var(--hero-dunkel); color: var(--weiss); padding: 15px clamp(16px,4vw,40px); display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
   nav.top .brand { font-family: var(--display); font-weight: 800; font-size: 16px; text-decoration: none; }
-  nav.top .links { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
-  nav.top .links a { font-family: var(--display); font-size: 13.5px; font-weight: 600; color: var(--blau-20); text-decoration: none; }
+  /* Leiserer Zuschnitt (Julia, 22.08.: "zu viel Chrome"): Die Abschnittslinks
+     treten in Größe und Gewicht zurück, der eine Weg nach vorn bleibt der
+     einzige Farbpunkt. Randlos bleibt die Leiste hier, weil der Hero selbst
+     bis fast an den Rand geht; auf der FAQ liegt sie dagegen auf der Achse.
+     Regel: Die Leiste nimmt die Breite der Seite, auf der sie sitzt. */
+  nav.top .links { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  nav.top .links a { font-family: var(--display); font-size: 13px; font-weight: 500; color: #A9A7D4; text-decoration: none; }
   nav.top .links a:hover { color: var(--weiss); }
-  nav.top .links a.tool { background: var(--minze); color: var(--dunkel); font-weight: 800; padding: 8px 16px; border-radius: 999px; }
+  nav.top .links a.tool { background: var(--minze); color: var(--dunkel); font-weight: 700; font-size: 13px; padding: 7px 15px; border-radius: 999px; }
   nav.top .links a.tool:hover { color: var(--dunkel); filter: brightness(1.06); }
 
   /* ---------- Hero ---------- */
@@ -368,10 +373,10 @@
         <a class="karte" href="werkzeug.html#vorbereiten">
           <span class="situation">Vor der Runde</span>
           <span class="fuer">für die Abteilung</span>
-          <h3>Steuerungsrunde vorbereiten</h3>
+          <h3>Portfoliorunde vorbereiten</h3>
           <span class="lage">Die Runde steht an. Was ist reif, was fehlt, was ist überbucht?</span>
           <p>Stand der Erfassung, offene Lücken, Kapazitätslage und die Fragen, die vor der Entscheidung geklärt sein sollten, auf einen Blick statt in fünf Mails.</p>
-          <span class="go">Runde vorbereiten</span>
+          <span class="go">Portfoliorunde vorbereiten</span>
         </a>
       </div>
       <div class="schritt">
