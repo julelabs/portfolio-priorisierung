@@ -48,9 +48,10 @@
   h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.14; }
 
   /* Der Schriftzug ist der Rückweg zu Schritt 1, einen eigenen Start gibt es
-     nicht. Die Schritt-Navigation ist im Einstieg redundant und dort verborgen.
-     In Schritt 2 bleibt sie als Rückweg, geometrisch in der Kopfzeile zentriert. */
-  header.top { position: relative; background: var(--dunkel); color: var(--weiss); padding: 12px clamp(16px, 4vw, 40px); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+     nicht. Die Schritt-Navigation bleibt in allen Arbeitsansichten sichtbar
+     und geometrisch in der Kopfzeile zentriert. */
+  header.top { background: var(--dunkel); color: var(--weiss); padding: 15px 0; }
+  .top-innen { position: relative; max-width: 1180px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 24px) 0 calc(clamp(16px, 4vw, 24px) + 10px); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
   .brand { background: none; border: 0; cursor: pointer; padding: 0; text-align: left; color: var(--weiss); font-family: var(--display); font-weight: 800; font-size: 16px; }
   .brand .pg { color: var(--blau-20); font-weight: 600; }
   /* Leise Pille statt Minze-Fläche: das Abzeichen ist eine Fußnote, kein
@@ -75,63 +76,47 @@
   /* Gleiche Hierarchie wie im Auftakt: der aktuelle Schritt ist eine klare
      Fläche, der Rückweg ein leiser Textknopf. Keine zweite Pillen-Navigation. */
   .schritte { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 20px; }
-  /* Der aktive Schritt trug bis zum 22.08. eine gefüllte Minze-Fläche
-     (Entscheidung 68). Seit die Leiste auch in Schritt 1 steht, träfe sie dort
-     auf den Minze-Knopf des Auftakts, und zwei große Minze-Flächen auf einem
-     Bildschirm sind zu viel (Julias Befund). Die Leiste ist Orientierung, kein
-     Angebot: Sie bekommt deshalb dieselbe leise Behandlung wie das Menü auf
-     Startseite und FAQ, weißer Text mit einem kleinen Minze-Punkt darunter.
-     Minze bleibt damit im Kopf die eine Farbe für den Weg nach vorn. */
+  /* Die Leiste ist Orientierung, kein Angebot. Der aktive Schritt braucht nur
+     den weißen, kräftigeren Text; der frühere Minze-Punkt fügte keine zweite
+     Information hinzu. */
   .schritt { position: relative; background: transparent; border: 0; border-radius: 0; cursor: pointer; font-family: var(--display); font-size: 13.5px; font-weight: 500; color: #A9A7D4; padding: 4px 0; }
   .schritt:hover { color: var(--weiss); }
   .schritt[aria-current="true"] { color: var(--weiss); font-weight: 700; }
-  .schritt[aria-current="true"]::after { content: ""; position: absolute; left: 50%; bottom: -5px; width: 4px; height: 4px; border-radius: 50%; background: var(--minze); transform: translateX(-50%); }
   @media (max-width: 820px) {
     .schritte { position: static; transform: none; flex-basis: 100%; justify-content: center; order: 3; }
   }
 
-  /* Auftakt zu Schritt 1 (Entscheidung 61): Die Kopfleiste wächst nach unten
-     weiter, damit die Ansicht nicht mit Liste und Formular beginnt. Bewusst
-     knapp gehalten, bei 1440x860 muss ein Teil der Arbeitsfläche sichtbar
-     bleiben: Wer das Werkzeug täglich benutzt, soll keinen Hero wegscrollen.
-     Minze trägt hier ausschließlich der Knopf. Er ist die eine Handlung, und
-     als einziger gesättigter Punkt im Bild braucht er keine Erklärung. */
-  .auftakt { background: var(--dunkel); color: var(--weiss); padding: clamp(20px, 2.4vw, 30px) clamp(16px, 4vw, 40px) clamp(20px, 2.2vw, 28px); position: relative; overflow: hidden; }
-  /* Ein einzelner sehr weicher Verlauf, sonst liest sich die Fläche als Balken.
-     Kein Raster: das versprach eine Strategieplattform, die das Werkzeug nicht
-     fortführt. Der Verlauf trägt keine Information und darf nichts verdecken. */
-  /* Der Verlauf saß mit seinem Mittelpunkt genau auf der Oberkante, dadurch war
-     die Aufhellung an der Naht zur Kopfleiste am stärksten und die Kante wurde
-     sichtbar. Jetzt sitzt er in der Mitte rechts, und die oberen Pixel werden
-     zusätzlich auf die Farbe der Leiste zurückgezogen: die Fläche schließt an. */
-  .auftakt::before { content: ''; position: absolute; inset: 0; pointer-events: none;
-    background:
-      linear-gradient(180deg, var(--dunkel) 0%, rgba(13,12,43,0) 86px),
-      radial-gradient(85% 115% at 92% 52%, rgba(89,87,180,.40) 0%, rgba(89,87,180,0) 70%); }
-  /* Gleiche Achse wie die Bühne, damit die Überschrift genau über der Liste sitzt */
-  .auf-innen { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 24px);
-    display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(22px, 4vw, 54px); align-items: start; }
-  .auftakt h1 { font-size: clamp(26px, 3.4vw, 40px); max-width: 20ch; }
+  /* Der Unterseiten-Kopf folgt derselben Grammatik wie die FAQ: dunkles Band,
+     Punktraster, Kicker und ein kleiner Vorgang rechts. */
+  .auftakt { background: var(--dunkel); color: var(--weiss); padding: 30px 0; position: relative; overflow: hidden; }
+  .auftakt-raster { position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(circle at center, rgba(197,196,234,.34) 1px, transparent 1.6px); background-size: 24px 24px; -webkit-mask-image: radial-gradient(58% 150% at 72% 50%, #000 26%, transparent 84%); mask-image: radial-gradient(58% 150% at 72% 50%, #000 26%, transparent 84%); }
+  .auf-innen { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 24px) 0 calc(clamp(16px, 4vw, 24px) + 10px); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: clamp(24px, 4vw, 60px); align-items: center; }
+  .auf-kicker { color: var(--minze); font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 10px; }
+  .auftakt h1 { font-size: clamp(26px, 3.2vw, 38px); max-width: 25ch; }
   .auf-sub { margin-top: 12px; max-width: 54ch; color: var(--blau-20); font-size: 15.5px; }
-  /* Schritt 1 trägt seit dem Sparring 11.08. keinen Werkzettel mehr, der steht
-     jetzt in der Vorbereiten-Sicht. Die rechte Spalte fällt damit weg statt
-     leer zu bleiben, und die Textspalte darf breiter atmen. Begrenzt bleibt sie
-     trotzdem: über etwa 26 Zeichen Überschrift und 64 Zeichen Fließtext wird
-     die Zeile zu lang, um sie noch am Stück zu lesen. Die Achse zur Bühne
-     bleibt unverändert, die Überschrift sitzt weiter über der Liste. */
-  .auf-innen.auf-solo { grid-template-columns: minmax(0, 1fr); }
+  /* Schritt 1 trägt keinen Werkzettel mehr, der steht in der Vorbereiten-Sicht.
+     Rechts zeigt der Kopf stattdessen den kleinen Steckbrief-Vorgang. Die
+     Überschrift bleibt begrenzt und sitzt auf derselben Achse wie die Liste. */
   .auf-solo h1 { max-width: 26ch; }
-  .auf-solo .auf-sub { max-width: 64ch; }
-  /* Zwei Wege, eine Hierarchie: eintragen ist die laute Geste, ansehen die
-     leise. Beide sind konstant beschriftet. */
-  .auf-ctas { margin-top: 22px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
-  .leiselink { background: none; border: 0; cursor: pointer; font-family: var(--display); font-weight: 700; font-size: 14px;
-    color: var(--blau-20); border-bottom: 1px solid rgba(255,255,255,.3); padding: 0 0 3px; }
-  .leiselink:hover { color: var(--weiss); border-color: var(--weiss); }
+  .kopf-obj { width: 320px; height: 91px; pointer-events: none; }
+  .kopf-mini { width: 100%; background: var(--weiss); color: var(--fg); border-radius: 8px; padding: 2px 16px; box-shadow: 0 13px 28px rgba(4,4,22,.46); overflow: hidden; animation: kopfHerein .5s var(--ease) .2s backwards; }
+  .kopf-mini-zeile { display: flex; align-items: center; gap: 11px; padding: 12px 0; }
+  .kopf-mini-name { flex: 1; font-family: var(--display); font-size: 12.5px; font-weight: 600; line-height: 1.3; }
+  .kopf-mini-pfeil { width: 17px; height: 17px; border: 1.4px solid var(--blau); border-radius: 50%; position: relative; transform: rotate(180deg); animation: kopfDreht .5s var(--ease) .7s backwards; }
+  .kopf-mini-pfeil::before { content: ''; position: absolute; left: 50%; top: 50%; width: 5.5px; height: 5.5px; border-right: 1.4px solid var(--blau); border-bottom: 1.4px solid var(--blau); transform: translate(-50%,-78%) rotate(45deg); }
+  .kopf-mini-detail { display: grid; grid-template-rows: 1fr; animation: kopfKlappt .5s var(--ease) .7s backwards; }
+  .kopf-mini-detail > div { overflow: hidden; }
+  .kopf-mini-innen { border-top: 1px solid var(--line); padding: 9px 0 12px; }
+  .kopf-mini-linien span { display: block; height: 5px; border-radius: 3px; background: #E3E6F2; }
+  .kopf-mini-linien span + span { width: 63%; margin-top: 6px; }
+  @keyframes kopfHerein { from { opacity: 0; transform: translateY(14px); } }
+  @keyframes kopfKlappt { from { grid-template-rows: 0fr; } }
+  @keyframes kopfDreht { from { transform: rotate(0deg); } }
+  @media (prefers-reduced-motion: reduce) { .kopf-mini, .kopf-mini-detail, .kopf-mini-pfeil { animation: none; } }
   .auftakt :focus-visible { outline: 3px solid var(--weiss); outline-offset: 3px; }
   /* Der Stand verschwindet schmal nicht, er rutscht unter die Copy: das Wissen,
      wo die Erfassung steht, ist der Grund für den Auftakt. */
-  @media (max-width: 979px) { .auf-innen { grid-template-columns: 1fr; gap: 20px; } }
+  @media (max-width: 979px) { .auf-innen { grid-template-columns: 1fr; gap: 20px; } .kopf-obj { width: min(320px, 100%); } }
 
   /* Stand der Erfassung als Werkzettel: drei Zeilen, Zahlen rechts auf einer
      Achse, Hairlines statt Kasten. Die Zahlen bleiben weiß, Minze gehört im
@@ -190,12 +175,11 @@
      schrumpft der Steckbrief auf Fingerbreite zusammen. */
   @media (max-width: 760px) { .erfassen.hat-offen { grid-template-columns: 1fr; } .erfassen.hat-offen .nav-sp { position: static; } }
 
-  /* Ankunft: Titel links, die zwei konstanten Wege rechts daneben. Sie heißen
-     weiter wie überall sonst (Entscheidung 62), sie stehen nur nicht mehr
-     untereinander in einer schmalen Spalte. */
-  .erfassen:not(.hat-offen) .nav-sp { display: grid; grid-template-columns: 1fr auto auto; gap: 0 16px; max-width: 980px;
-    grid-template-areas: "kopf neu tg" "form form form" "liste liste liste" "leg leg leg"; align-items: center; }
-  .erfassen:not(.hat-offen) .nav-kopf { grid-area: kopf; margin-bottom: 0; }
+  /* Ankunft: Die zwei konstanten Wege stehen als leise Navigation über der
+     Liste. Ihre Textkante folgt den Vorhabennamen; nur die Haarlinien greifen
+     zehn Pixel weiter nach außen. */
+  .erfassen:not(.hat-offen) .nav-sp { display: grid; grid-template-columns: auto auto 1fr; gap: 0 22px; max-width: 980px;
+    grid-template-areas: "neu tg ." "form form form" "liste liste liste" "leg leg leg"; align-items: center; }
   .erfassen:not(.hat-offen) .nav-neu { grid-area: neu; width: auto; margin-bottom: 0; }
   /* Das Anlegen-Feld war in der schmalen Spalte ein kompakter Stapel. Über die
      volle Breite wurde daraus ein riesiger Minze-Balken neben dem Minze-Knopf
@@ -204,22 +188,23 @@
   .erfassen:not(.hat-offen) #neuForm { grid-area: form; margin: 10px 0 0; flex-direction: row; align-items: center; max-width: 460px; }
   .erfassen:not(.hat-offen) #neuForm input { flex: 1; min-width: 0; }
   .erfassen:not(.hat-offen) #neuForm .btn { flex: none; padding: 9px 16px; font-size: 14px; }
-  .erfassen:not(.hat-offen) .nav-tg { grid-area: tg; width: auto; border-bottom: 0; padding: 11px 10px; margin-bottom: 0; }
-  .erfassen:not(.hat-offen) #nav { grid-area: liste; margin-top: 12px; }
+  .erfassen:not(.hat-offen) .nav-tg { grid-area: tg; width: auto; border-bottom: 0; padding: 5px 0; margin-bottom: 0; }
+  .erfassen:not(.hat-offen) #nav { grid-area: liste; margin-top: 18px; }
   .erfassen:not(.hat-offen) .reife-legende { grid-area: leg; }
 
   /* Die Zeile der Ankunft. Leer heißt fertig: Wo in der letzten Spalte nichts
      steht, fehlt am Steckbrief nichts. Das Auge sucht deshalb nach Text, nicht
      nach Farbe, und die Liste bleibt ruhig. */
-  .vzeile { display: grid; grid-template-columns: 16px minmax(200px, 2.1fr) 92px 80px 84px minmax(150px, 1.5fr);
+  .vzeile { display: grid; grid-template-columns: minmax(230px, 2.1fr) 92px 80px 84px minmax(150px, 1.5fr);
     gap: 14px; align-items: center; width: 100%; text-align: left; background: transparent; border: 0;
     border-bottom: 1px solid var(--line); padding: 13px 10px; }
   button.vzeile { cursor: pointer; }
   button.vzeile:hover { background: rgba(255,255,255,.7); }
   button.vzeile:hover .vz-name { color: var(--blau); }
   .vz-kopf { border-bottom: 1.5px solid var(--blau-20); padding-top: 0; padding-bottom: 9px; }
-  .vz-kopf span { font-family: var(--display); font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); }
-  .vz-name { font-family: var(--display); font-weight: 700; font-size: 14.5px; color: var(--fg); line-height: 1.3; }
+  .vz-kopf span { font-family: var(--display); font-size: 12.5px; font-weight: 600; color: var(--fg-muted); }
+  .spalten-zahl { margin-left: 4px; color: var(--blau-60); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .vz-name { font-family: var(--display); font-weight: 600; font-size: 14.5px; color: var(--fg); line-height: 1.3; }
   .vz-ref, .vz-stand { font-size: 13px; color: var(--fg-muted); }
   .vz-bedarf { font-size: 13px; color: var(--fg-muted); text-align: right; }
   .vz-kopf .vz-bedarf { text-align: right; }
@@ -227,20 +212,18 @@
   .vz-fehlt { font-size: 13px; color: var(--fg-2); line-height: 1.35; padding-left: 12px; }
   /* Schmaler: die drei Nebenspalten treten weg, Name und was fehlt bleiben. */
   @media (max-width: 1000px) {
-    .vzeile { grid-template-columns: 16px minmax(0, 1.6fr) minmax(0, 1.2fr); }
+    .vzeile { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.2fr); }
     .vz-ref, .vz-stand, .vz-bedarf { display: none; }
   }
 
   /* In der Schiene bricht der Name um, statt abgeschnitten zu werden. */
   .erfassen.hat-offen .nav-item { align-items: flex-start; }
   .erfassen.hat-offen .nav-name { white-space: normal; overflow: visible; text-overflow: clip; }
-  .erfassen.hat-offen .reife { margin-top: 5px; }
-  .nav-kopf { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 8px; }
-  .nav-item { display: flex; align-items: center; gap: 9px; width: 100%; background: transparent; border: 0; border-radius: 6px; cursor: pointer; text-align: left; padding: 11px 10px; margin-bottom: 2px; }
+  .nav-item { display: flex; align-items: center; gap: 9px; width: 100%; background: transparent; border: 0; border-left: 3px solid transparent; cursor: pointer; text-align: left; padding: 10px 10px 10px 13px; margin-bottom: 2px; }
   .nav-item:hover { background: rgba(255,255,255,.6); }
-  .nav-item[aria-current="true"] { background: var(--weiss); box-shadow: 0 6px 18px rgba(13,12,43,.07); }
-  .nav-name { font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
-  .reife { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .nav-item[aria-current="true"] { border-left-color: var(--blau); background: rgba(255,255,255,.78); }
+  .nav-name { font-family: var(--display); font-weight: 600; font-size: 13.5px; color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+  .reife { display: none; }
   .reife.fertig { background: var(--blau); }
   /* Gestrichelt heißt unfertig (wie auf den Kacheln), aber kräftig genug,
      dass man den Unterschied nicht suchen muss */
@@ -250,26 +233,25 @@
      (Entscheidung 62). Die Zeile wird
      erst auf Klick zum Formular, ein dauerhaft leeres Eingabefeld sähe nach
      Formular aus. */
-  .nav-neu { display: flex; align-items: center; gap: 9px; width: 100%; background: transparent; border: 0; border-radius: 6px; cursor: pointer; text-align: left; padding: 11px 10px; margin-bottom: 8px; font-family: var(--display); font-weight: 700; font-size: 13.5px; color: var(--blau); }
+  .nav-neu { display: flex; align-items: center; gap: 5px; width: 100%; background: transparent; border: 0; cursor: pointer; text-align: left; padding: 5px 10px; margin-bottom: 8px; font-family: var(--display); font-weight: 600; font-size: 13.5px; color: var(--blau); }
   .nav-neu:hover { background: rgba(255,255,255,.6); }
   .nav-neu .plus { font-size: 16px; font-weight: 800; line-height: 1; }
   .navfoot { margin: 0 0 10px; display: flex; flex-direction: column; gap: 8px; }
-  .reife-legende { color: var(--fg-muted); font-size: 12.5px; margin-top: 12px; }
+  .reife-legende { display: none; }
   /* Zweiter Erfassungs-Einstieg (N-27): Das Tagesgeschäft ist kein Vorhaben
      (Entscheidung 100) und steht deshalb über der Liste bei den Erfassungs-
      Wegen, nicht in ihr. Leiser als "Vorhaben eintragen": ein Weg, keine
      Konkurrenz, und die Haarlinie trennt ihn von den Vorhaben darunter. */
-  .nav-tg { display: block; width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--line); cursor: pointer; text-align: left; padding: 4px 10px 12px; margin-bottom: 8px; font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--blau-60); }
+  .nav-tg { display: block; width: 100%; background: transparent; border: 0; cursor: pointer; text-align: left; padding: 5px 10px; margin-bottom: 8px; font-family: var(--display); font-weight: 600; font-size: 13.5px; color: var(--blau-60); }
   .nav-tg:hover { background: rgba(255,255,255,.6); color: var(--blau); }
 
   .steckbrief { background: var(--weiss); border-radius: 8px; box-shadow: 0 18px 44px rgba(13,12,43,.06); padding: clamp(20px, 2.6vw, 30px); }
-  .sb-kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 4px; }
-  .steckbrief input.sb-titel { font-family: var(--display); font-weight: 700; font-size: 21px; border: 0; border-bottom: 1.5px solid transparent; background: transparent; color: var(--fg); width: 100%; max-width: 560px; padding: 2px 0; }
+  .sb-kopf { border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 4px; }
+  .steckbrief input.sb-titel { font-family: var(--display); font-weight: 700; font-size: 21px; border: 0; border-bottom: 1.5px solid transparent; background: transparent; color: var(--fg); width: 100%; padding: 2px 0; }
   /* Der Titel bleibt eine Überschrift und bekommt keine Feldfläche. Damit man
      trotzdem merkt, dass er editierbar ist, zeigt er die Kante beim Überfahren. */
   .steckbrief input.sb-titel:hover { border-bottom-color: var(--blau-20); }
   .steckbrief input.sb-titel:focus { outline: none; border-bottom-color: var(--blau); }
-  .sb-schritt { font-family: var(--display); font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted); }
 
   /* Struktur über Raum, nicht über noch eine Schriftgröße: der Block hat eine
      Nummer in der linken Spalte, die Felder stehen eingerückt darunter. */
@@ -912,16 +894,18 @@
 </head>
 <body>
 <header class="top">
-  <button class="brand" type="button" id="brandHome" title="Zurück zu Schritt 1">Portfolio-Priorisierung<span class="pg" id="brandAbt"> · Abteilung</span></button>
-  <nav class="schritte" id="schrittNav" aria-label="Schritte">
-    <button class="schritt" type="button" data-ansicht="erfassen">Vorhaben erfassen</button>
-    <!-- Die Vorbereitung ist seit dem Sparring 11.08. ein eigener Schritt und
-         steht zwischen Erfassen und Entscheiden, weil sie genau dort passiert. -->
-    <button class="schritt" type="button" data-ansicht="vorbereiten">Portfoliorunde vorbereiten</button>
-    <button class="schritt" type="button" data-ansicht="priorisieren">Portfolio entscheiden</button>
-  </nav>
-  <div class="top-rechts">
-    <a class="top-link verborgen" id="faqLink" href="faq.html">FAQ</a>
+  <div class="top-innen">
+    <button class="brand" type="button" id="brandHome" title="Zurück zu Schritt 1">Portfolio-Priorisierung<span class="pg" id="brandAbt"> · Abteilung</span></button>
+    <nav class="schritte" id="schrittNav" aria-label="Schritte">
+      <button class="schritt" type="button" data-ansicht="erfassen">Vorhaben erfassen</button>
+      <!-- Die Vorbereitung ist seit dem Sparring 11.08. ein eigener Schritt und
+           steht zwischen Erfassen und Entscheiden, weil sie genau dort passiert. -->
+      <button class="schritt" type="button" data-ansicht="vorbereiten">Portfoliorunde vorbereiten</button>
+      <button class="schritt" type="button" data-ansicht="priorisieren">Portfolio entscheiden</button>
+    </nav>
+    <div class="top-rechts">
+      <a class="top-link verborgen" id="faqLink" href="faq.html">FAQ</a>
+    </div>
   </div>
 </header>
 
@@ -931,15 +915,18 @@
      hier bis zum Sparring 11.08. und wohnt jetzt in der Vorbereiten-Sicht:
      hier ging es ums Beschreiben, dort ums Vorbereiten der Runde. -->
 <div class="auftakt" id="auftakt">
+  <div class="auftakt-raster" aria-hidden="true"></div>
   <div class="auf-innen auf-solo">
     <div>
+      <p class="auf-kicker">Vorhaben erfassen</p>
       <h1 id="auftaktKopf">Was liegt für das nächste Halbjahr auf dem Tisch?</h1>
-      <p class="auf-sub">Erst beschreiben, dann entscheiden. Ein kurzer Steckbrief pro Vorhaben, unter fünf Minuten. Danach liegen alle nebeneinander.</p>
-      <!-- Die zwei Wege des Werkzeugs, in denselben Worten wie überall sonst
-           (Entscheidung 62): eintragen oder ansehen. -->
-      <div class="auf-ctas">
-        <button class="btn minze" type="button" id="auftaktNeu">Vorhaben eintragen</button>
-        <button class="leiselink" type="button" id="auftaktPortfolio">Portfolio ansehen &#8594;</button>
+    </div>
+    <div class="kopf-obj" aria-hidden="true">
+      <div class="kopf-mini">
+        <div class="kopf-mini-zeile"><span class="kopf-mini-name">Digitale Antragsstrecke Wohngeld</span><span class="kopf-mini-pfeil"></span></div>
+        <div class="kopf-mini-detail"><div><div class="kopf-mini-innen">
+          <span class="kopf-mini-linien"><span></span><span></span></span>
+        </div></div></div>
       </div>
     </div>
   </div>
@@ -949,6 +936,7 @@
      Auftakt, deshalb dieselben Klassen und dieselbe Achse. Links die Leitfrage
      der Runde und die Kapazitätslage aus einstieg(), rechts der Werkzettel. -->
 <div class="auftakt vb-kopf verborgen" id="vorbereitenKopf">
+  <div class="auftakt-raster" aria-hidden="true"></div>
   <div class="auf-innen">
     <div>
       <!-- Kein Kicker: der minzefarbene Navigationseintrag direkt darüber
@@ -966,7 +954,6 @@
   <section id="ansicht-erfassen">
     <div class="erfassen">
       <div class="nav-sp">
-        <p class="nav-kopf">Vorhaben der Abteilung</p>
         <button class="nav-neu" type="button" id="neuZeigen"><span class="plus">+</span>Vorhaben eintragen</button>
         <div class="navfoot verborgen" id="neuForm">
           <input type="text" id="neuName" placeholder="Name des Vorhabens ..." autocomplete="off" aria-label="Name des neuen Vorhabens">
@@ -2171,8 +2158,13 @@
         <span class="nav-name">${esc(v.name)}</span>
       </button>`).join('');
     } else {
-      wurzel.innerHTML = `<div class="vzeile vz-kopf" aria-hidden="true">
-          <span></span><span>Vorhaben</span><span>Referat</span><span>Stand</span><span class="vz-bedarf">Bedarf</span><span>Was fehlt</span>
+      const offenAnzahl = S.vorhaben.filter(v => luecken(v).length).length;
+      wurzel.innerHTML = `<div class="vzeile vz-kopf" role="row">
+          <span role="columnheader">Vorhaben <span class="spalten-zahl">${S.vorhaben.length}</span></span>
+          <span role="columnheader">Referat</span>
+          <span role="columnheader">Stand</span>
+          <span class="vz-bedarf" role="columnheader">Bedarf</span>
+          <span role="columnheader">Fehlende Angaben <span class="spalten-zahl">${offenAnzahl} offen</span></span>
         </div>` + S.vorhaben.map(vzeileHtml).join('');
     }
     document.getElementById('nav').querySelectorAll('[data-nav]').forEach(el => el.addEventListener('click', () => {
@@ -2386,7 +2378,6 @@
       <button class="sb-zurueck" type="button" id="sbZurueck">‹ Zur Übersicht</button>
       <div class="sb-kopf">
         <input class="sb-titel" type="text" id="titel" value="${esc(v.name)}" maxlength="90" aria-label="Name des Vorhabens">
-        <span class="sb-schritt">Steckbrief</span>
       </div>
 
       <div class="block">
@@ -3970,8 +3961,6 @@
     document.querySelectorAll('.schritt').forEach(el => el.addEventListener('click', () => {
       if (el.dataset.ansicht === 'erfassen') zurUebersicht(); else wechsle(el.dataset.ansicht);
     }));
-    document.getElementById('auftaktNeu').addEventListener('click', () => document.getElementById('neuZeigen').click());
-    document.getElementById('auftaktPortfolio').addEventListener('click', () => wechsle('priorisieren'));
     // Die zwei Wege am Fuß der Vorbereiten-Sicht (Sparring 11.08.): weiter in
     // die Runde oder zurück an die Steckbriefe, dort ohne vorausgewähltes
     // Vorhaben wie über den Schriftzug.

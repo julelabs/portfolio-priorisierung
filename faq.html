@@ -44,11 +44,9 @@
      dorthin statt über die Startseite zu suchen.
      Die Leiste liegt auf der Textachse, nicht randlos: Leiste und Kopf sind
      hier dieselbe dunkle Fläche, also im Auge ein Block, und darin soll es
-     eine linke Kante geben statt zwei. Auf Startseite und Werkzeug bleibt sie
-     randlos, dort gehen die Inhalte selbst bis an den Rand.
-     Leiser Zuschnitt: Die Abschnittslinks treten zurück, der aktive Punkt
-     trägt einen kleinen Minze-Punkt, und der eine Weg nach vorn bleibt der
-     einzige Farbpunkt. */
+     eine linke Kante geben statt zwei. Das Werkzeug folgt inzwischen derselben
+     Achse. Leiser Zuschnitt: Die Abschnittslinks treten zurück, der aktive
+     Link wird allein durch helleren, kräftigeren Text markiert. */
   nav.top { background: var(--hero-dunkel); color: var(--weiss); padding: 15px 0; }
   nav.top .innen { max-width: 1180px; margin: 0 auto; padding: 0 clamp(16px,4vw,24px); display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
   nav.top .brand { font-family: var(--display); font-weight: 800; font-size: 16px; text-decoration: none; }
@@ -56,7 +54,6 @@
   nav.top .links a { font-family: var(--display); font-size: 13px; font-weight: 500; color: #A9A7D4; text-decoration: none; }
   nav.top .links a:hover { color: var(--weiss); }
   nav.top .links a.aktiv { color: var(--weiss); font-weight: 600; position: relative; }
-  nav.top .links a.aktiv::after { content: ""; position: absolute; left: 50%; bottom: -7px; width: 4px; height: 4px; border-radius: 50%; background: var(--minze); transform: translateX(-50%); }
   nav.top .links a.tool { background: var(--minze); color: var(--dunkel); font-weight: 700; font-size: 13px; padding: 7px 15px; border-radius: 999px; }
   nav.top .links a.tool:hover { color: var(--dunkel); filter: brightness(1.06); }
   nav.top a:focus-visible { outline-color: var(--weiss); }
